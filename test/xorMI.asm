@@ -1,0 +1,11 @@
+xor r14, 0xffffffffffffffff
+xor rax, 0xffffffffffffffff
+xor r12, 0xffffffffffffffff
+xor rbp, 0xffffffffffffffff
+xor rdx, 0xffffffffffffffff
+xor rdi, 0xffffffffffffffff
+xor r15, 0xffffffffffffffff
+xor rcx, 0xffffffffffffffff
+xor rbx, 0xffffffffffffffff
+xor rsi, 0xffffffffffffffff
+xor r15, 0xffffffffffffffff
