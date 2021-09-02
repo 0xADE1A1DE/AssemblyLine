@@ -1,70 +1,69 @@
 # Description
 
-A c library interface for generating the machine code representation of x64 assembly language and  
-executing on the fly without invoking a compiler, assembler, or linker.
-
+A C library and binary for generating machine code of x86\_64 assembly language and executing on the fly without invoking another compiler, assembler or linker.
 
 
 # How to use
 
-***note: please refer to [/src/instructions.h](https://github.com/0xADE1A1DE/AssemblyLine/tree/main/src/instructions.h) for a complete list of supported instructions
+***note: refer to [/src/instructions.h](https://github.com/0xADE1A1DE/AssemblyLine/tree/main/src/instructions.h) for a complete list of supported instructions***
 
 1. `$ ./configure` or `$ CFLAGS='-g -O3' ./configure` to generate Makefiles.
 1. `$ make` to compile
-1. `$ make install prefix=pwd` to install it locally or `$ sudo make install` to install globally
-1. `$ gcc -o executable your_program.c -lassmblyline` to compile a c program using assemblyline  
+1. `$ make install prefix=$(pwd)` to install it locally or `$ sudo make install` to install globally
+1. `$ gcc -o executable your_program.c -lassemblyline` to compile a c program using assemblyline  
 
 # Example
 
-***note: please refer to [/src/assemblyline.h](https://github.com/0xADE1A1DE/AssemblyLine/tree/main/src/assemblyline.h) for more information
+***note: refer to [/src/assemblyline.h](https://github.com/0xADE1A1DE/AssemblyLine/tree/main/src/assemblyline.h) for more information***
 
 1. Include the required header files
-    ```
+    ```c
     #include <stdint.h>
     #include <sys/mman.h>
     #include <assemblyline.h>
     ```
-1. allocate an executable buffer of sufficient size (> 20 bytes) using mmap
+1. Allocate an executable buffer of sufficient size (> 20 bytes) using mmap
+    ```c
+    uint8_t *mybuffer = mmap(NULL, sizeof(uint8_t) * 300,
+    	PROT_READ | PROT_WRITE | PROT_EXEC, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
     ```
-    uint8_t *mybuffer = mmap(NULL, sizeof(uint8_t) * 300, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
-    ```
-1. create an instance of assemblyline_t and attach buffer or set it to NULL for internal memory allocation 
-    ```
+1. Create an instance of assemblyline_t and attach buffer or set it to NULL for internal memory allocation 
+    ```c
     // external memory allocation
     assemblyline_t al = asm_create_instance(mybuffer, 300);
     // internal memory allocation
     assemblyline_t al = asm_create_instance(NULL, 0);
     ```
-1. OPTIONAL: enable debug mode to view machine code
-    ```
+1. OPTIONAL: Enable debug mode to view machine code
+    ```c
     asm_set_debug(al, true);
     ```
-1. OPTIONAL: set a chunk size boundary 
-    ```
+1. OPTIONAL: Set a chunk size boundary 
+    ```c
     /*this will ensure no instruction opcode will cross the 
     specified chunk boundary length via nop padding*/
     asm_set_chunk_size(al, chunk_size);
     ```
-1. assemble a file or string containing x64 assembly code (machine code will be written to mybuffer or an internal buffer)
-    ```
+1. Sssemble a file or string containing x64 assembly code (machine code will be written to mybuffer or an internal buffer)
+    ```c
     assemble_file(al, /path/to/x64/assembly/file);
     assemble_str(al, string_containing_x64_assembly_code);
     ```
-1. get the start address of the buffer containing the start of the assembly program
-    ```
+1. Get the start address of the buffer containing the start of the assembly program
+    ```c
     void (*funcB)() =(void (*)())(asm_get_code(al));
     ```
-1. free all memory associated with assembyline (external buffer is not freed)
-    ```
+1. Free all memory associated with assembyline (external buffer is not freed)
+    ```c
     asm_destroy_instance(al);
     ```
 
 
 # Test files
 
-`make check` to run all test suites
+`$ make check` to run all test suites
 
-* To run only one testsuite `TESTS=seto.asm make -e check`, then check the s./asmcompare.sh /path/to/file.asmeto.log
+* To run only one testsuite `TESTS=seto.asm make -e check`, then check the ./asmcompare.sh /path/to/file.asmeto.log
 * Or run the `./al_nasm_compare.sh seto.asm`
 * Adding a new test: add the testfile e.g. `sub.asm` to the directory and add `sub.asm` to the `TESTS`-variable in `Makefile.am`
 then run `$ make check`. Finally, add `Makefile.am` and `sub.asm` to git.
@@ -72,7 +71,7 @@ then run `$ make check`. Finally, add `Makefile.am` and `sub.asm` to git.
 
 # Command-line tool: asmline
 
-***note: run tool without any command-line parameters to view usage information ex: `$ asmline` or `$ asmline --help`
+***note: run tool without any command-line parameters to view usage information ex: `$ asmline` or `$ asmline --help` ***
 ```
 USAGE:
 	asmline [-r] [-p] [-c CHUNK_SIZE>2] [-o ELF_FILENAME_NO_EXT] path/to/file.asm
@@ -84,7 +83,7 @@ DESCRIPTION:
 ```
 ## Features:
 
-### create ELF file from assembly code
+### Create ELF file from assembly code
 
 1. `$ asmline -o FILENAME path/to/file.asm` to output the generated machine code into a binary file (FILENAME.bin)
     ```
@@ -93,12 +92,12 @@ DESCRIPTION:
             the current directory.
     ```
 1. The above call will generate a binary file FILENAME.bin and the command below could be used to create an ELF file.
-    ```
+    ```bash
     $ objcopy --input-target=binary --globalize-symbol=FILENAME --rename-section .data=.text --output-target=elf64-x86-64 FILENAME.bin FILENAME.o
     # link the elf object file with a c program
     $ gcc linker linker.c FILENAME.o
     ```
-### print assembled machine code to stdout
+### Print assembled machine code to stdout
 
 1. `$ asmline -p path/to/file.asm` to write the generated machine code from `file.asm` to stdout
     ```
@@ -108,7 +107,7 @@ DESCRIPTION:
     ```
 1. The above call will output some machine code in the hexadecimal format given `path/to/file.asm`.
 
-### chunk size fitting
+### Chunk size fitting
 
 1. `$ asmline -c CHUNK_SIZE>2 path/to/file.asm` to appy chunk size fitting when assembling `path/to/file.asm`.
     ```
@@ -117,11 +116,11 @@ DESCRIPTION:
             ensure no instruction opcode crosses the specified CHUNK_SIZE boundary.
     ```
 1. A specific chunk size within a memory block could be specified (chunk sizes less than 2 are invalid),
-1. when a chunk size is given, assemblyline will ensure no instruction opcode crosses the chunk boundary by applying nop padding
+1. Then a chunk size is given, assemblyline will ensure no instruction opcode crosses the chunk boundary by applying nop padding
 
-### executing machine code directly from memory
+### Executing machine code directly from memory
 
-1. `$ asmrun --return path/to/file.asm` to directly execute `path/to/file.asm` given the following options:
+1. `$ asmline --return path/to/file.asm` to directly execute `path/to/file.asm` given the following options:
     ```
     -r --return
             Executes assembly code and prints out the contents of the 
@@ -145,7 +144,7 @@ DESCRIPTION:
 1. Add a new entry to INSTR\_TABLE[] for the specific instruction(see below for more details).  
 
 #### Instruction table format: 
-```
+```c
 struct INSTR_TABLE[] {
   // null terminated string represeantation of an instruction ex: "mov"
   char instr_name[14]               
