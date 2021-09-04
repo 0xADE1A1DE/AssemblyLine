@@ -131,9 +131,9 @@ DESCRIPTION:
   
 # How to add new instructions
 
-1. Get the instruction opcode layout and operand encoding format(please refer to: https://www.felixcloutier.com/x86/).
-1. Add the new instruction to the asm\_instr enumerator set (found in the enums.h file in the src directory).
-1. Add a new entry to INSTR\_TABLE[] for the specific instruction(see below for more details).  
+1. Get the instruction opcode layout and operand encoding format (please refer to: https://www.felixcloutier.com/x86/).
+1. Add the new instruction to the asm\_instr enumerator set found in the [/src/enums.h](https://github.com/0xADE1A1DE/AssemblyLine/tree/main/src/enums.h).
+1. Add a new entry to INSTR\_TABLE[] [/src/instructions.h](https://github.com/0xADE1A1DE/AssemblyLine/tree/main/src/enums.h) for the specific instruction (see below for more details).  
 
 #### Instruction table format: 
 ```c
