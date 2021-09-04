@@ -140,13 +140,13 @@ DESCRIPTION:
 struct INSTR_TABLE[] {
 
   // null terminated string represeantation of an instruction ex: "mov"
-  char instr_name[14];
-  
-  // contians the valid operand formats for an instruction (at most 2 for a single operand encoding)
-  int opd_format[2];
+  char instr_name[MAX_INSTR_LEN];
   
   // asm_instr enumerator for uniquely identifying a single instruction
-  int name;   
+  int name;
+  
+  // contians the valid operand formats for an instruction (at most 2 for a single operand encoding)
+  int opd_format[VALID_OPERAND_FORMATS];  
   
   // operand encoding format as an enumerator (determines how instruction operands will be encoded)
   operand_encoding encode_operand;  
@@ -158,16 +158,21 @@ struct INSTR_TABLE[] {
   int op_offset_i;        
   
   // 'i' index of opcode[i] when an offset is present for a register value, use NA if not applicable  
-  int rd_offset_i;           
+  int rd_offset_i;        
+  
   
   // only used for 'M' operand encoding denotes the modRM byte
-  int single_reg_r;          
+  int single_reg_r;  
+  
   
   // length of instruction opcode  
   int instr_size;         
   
+  // displacement for the w0 prefix
+  int w0_disp;
+  
   // opcode layout ex: {REX,0x0f,0xa9,REG}
-  unsigned int opcode[10];           
+  unsigned int opcode[10];                
 }
 ```
 
