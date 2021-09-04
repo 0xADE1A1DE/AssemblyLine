@@ -160,10 +160,8 @@ struct INSTR_TABLE[] {
   // 'i' index of opcode[i] when an offset is present for a register value, use NA if not applicable  
   int rd_offset_i;        
   
-  
   // only used for 'M' operand encoding denotes the modRM byte
   int single_reg_r;  
-  
   
   // length of instruction opcode  
   int instr_size;         
