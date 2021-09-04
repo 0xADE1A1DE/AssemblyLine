@@ -35,25 +35,29 @@ const static struct {
 
 // defines opcode layout of each supported instruction
 const static struct {
+
+  // null terminated string represeantation of an instruction ex: "mov"
   char instr_name[MAX_INSTR_LEN];
+  // asm_instr enumerator for uniquely identifying a single instruction
   int name;
+  // contians the valid operand formats for an instruction (at most 2 for a single operand encoding)
   int opd_format[VALID_OPERAND_FORMATS];
-  // determines operand encoding
+  // operand encoding format as an enumerator (determines how instruction operands will be encoded)
   operand_encoding encode_operand;
-  // specifies the type of an instruction
+  // enumerator for defining the semantic type of an instruction
   instr_type type;
-  /*offset (defualt -1) for opcode based on register size (in bytes)
-  stores indexs to opcode (add more if needed);*/
+  // 'i' index of opcode[i] when an offset is present for a x64 registers, use NA if not applicable
   int op_offset_i;
+  // 'i' index of opcode[i] when an offset is present for a register value, use NA if not applicable
   int rd_offset_i;
-  // only use for M and "MI" encoding
+  // only used for 'M' operand encoding denotes the modRM byte
   int single_reg_r;
-  // max opcodes for each instruction
+  // length of instruction opcode
   int instr_size;
-  // displacement for w0
+  // displacement for the w0 prefix
   int w0_disp;
-  // stores the instruction opcode
-  unsigned int opcode[MAX_OPCODE_LEN];
+  // opcode layout ex: {REX,0x0f,0xa9,REG}
+  unsigned int opcode[MAX_OPCODE_LEN]; 
 
 } INSTR_TABLE[] = {
     {{'\0'},      EOI,       {NA, NA},   NA,   ASSEMBLYLINE,   NA,  NA,  NA,  0,  0, {0}},
