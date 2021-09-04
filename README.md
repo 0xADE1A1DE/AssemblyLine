@@ -128,9 +128,9 @@ DESCRIPTION:
     ```
 1. `-r` executes assembly program specified by `path/to/file.asm` and print out the return value of that program  
   
-### asmcompare
+### al_nasm_compare.sh
 
-####   `./asmcompare.sh /path/to/file.asm`   
+####   `./al_nasm_compare.sh /path/to/file.asm`   
 1. assemble the given file with assemblyline and output `objdump`-like output
 1. assemble the given file with `$ nasm -t elf64 /path/to/file.asm`
 1. run `objdump` on the `nasm` generated file and finally run
