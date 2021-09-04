@@ -110,13 +110,13 @@ DESCRIPTION:
 
 ### Chunk size fitting
 
-1. `$ asmline -c CHUNK_SIZE>2 path/to/file.asm` to appy chunk size fitting when assembling `path/to/file.asm`.
+1. `$ asmline -c CHUNK_SIZE>1 path/to/file.asm` to appy chunk size fitting when assembling `path/to/file.asm`.
     ```
-    -c --chunk CHUNK_SIZE>2
+    -c --chunk CHUNK_SIZE>1
             Sets a given CHUNK_SIZE boundary in bytes. Nop padding will be used to 
             ensure no instruction opcode crosses the specified CHUNK_SIZE boundary.
     ```
-1. A specific chunk size within a memory block could be specified (chunk sizes less than 2 are invalid),
+1. A specific chunk size within a memory block could be specified (chunk sizes less must be greater than 1),
 1. Then a chunk size is given, assemblyline will ensure no instruction opcode crosses the chunk boundary by applying nop padding
 
 ### Executing machine code directly from memory
