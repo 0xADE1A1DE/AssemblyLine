@@ -26,7 +26,7 @@
 void err_print_usage(char *error_msg) {
   fprintf(
       stderr,
-      "%s\n\nUSAGE:\n\tasmline [-r] [-p] [-c CHUNK_SIZE>2] [-o "
+      "%s\n\nUSAGE:\n\tasmline [-r] [-p] [-c CHUNK_SIZE>1] [-o "
       "ELF_FILENAME_NO_EXT] path/to/file.asm\n\nDESCRIPTION:\n\tGenerates "
       "machine code from a x64 assembly file. Machine code could be "
       "executed directly without the need of an executable file format.\n "
@@ -39,7 +39,7 @@ void err_print_usage(char *error_msg) {
       "\t-p --print\n"
       "\t\tWhen assembling path/to/file.asm the corresponding machine code "
       "will be printed to stdout.\n\n"
-      "\t-c --chunk CHUNK_SIZE>2\n"
+      "\t-c --chunk CHUNK_SIZE>1\n"
       "\t\tSets a given CHUNK_SIZE boundary in bytes. Nop padding will be used "
       "to ensure no instruction\n"
       "\t\topcode will cross the specified CHUNK_SIZE "
@@ -111,7 +111,7 @@ int main(int argc, char *argv[]) {
       break;
     case 'c':
       if (check_digit(optarg))
-        err_print_usage("Error: [-c CHUNK_SIZE>2] expects an integer");
+        err_print_usage("Error: [-c CHUNK_SIZE>1] expects an integer");
       chunk_size = atoi(optarg);
       asm_set_chunk_size(al, chunk_size);
       break;
