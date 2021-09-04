@@ -16,21 +16,22 @@ A C library and binary for generating machine code of x86\_64 assembly language 
 
 ***note: refer to [/src/assemblyline.h](https://github.com/0xADE1A1DE/AssemblyLine/tree/main/src/assemblyline.h) for more information***
 
-1. Include the required header files
+1. Include the required header files and preprocessors
     ```c
     #include <stdint.h>
     #include <sys/mman.h>
     #include <assemblyline.h>
+    #define BUFFER_SIZE 300
     ```
 1. Allocate an executable buffer of sufficient size (> 20 bytes) using mmap
     ```c
-    uint8_t *mybuffer = mmap(NULL, sizeof(uint8_t) * 300,
+    uint8_t *mybuffer = mmap(NULL, sizeof(uint8_t) * BUFFER_SIZE,
     	PROT_READ | PROT_WRITE | PROT_EXEC, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
     ```
 1. Create an instance of assemblyline_t and attach buffer or set it to NULL for internal memory allocation 
     ```c
     // external memory allocation
-    assemblyline_t al = asm_create_instance(mybuffer, 300);
+    assemblyline_t al = asm_create_instance(mybuffer, BUFFER_SIZE);
     // internal memory allocation
     assemblyline_t al = asm_create_instance(NULL, 0);
     ```
