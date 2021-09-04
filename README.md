@@ -64,7 +64,7 @@ A C library and binary for generating machine code of x86\_64 assembly language 
 
 `$ make check` to run all test suites
 
-* To run only one testsuite `TESTS=seto.asm make -e check`, then check the ./asmcompare.sh /path/to/file.asmeto.log
+* To run only one testsuite `TESTS=seto.asm make -e check`, then check the ./al_nasm_compare.sh /path/to/file.asmeto.log
 * Or run the `./al_nasm_compare.sh seto.asm`
 * Adding a new test: add the testfile e.g. `sub.asm` to the directory and add `sub.asm` to the `TESTS`-variable in `Makefile.am`
 then run `$ make check`. Finally, add `Makefile.am` and `sub.asm` to git.
@@ -75,7 +75,7 @@ then run `$ make check`. Finally, add `Makefile.am` and `sub.asm` to git.
 ***note: run tool without any command-line parameters to view usage information ex: `$ asmline` or `$ asmline --help` ***
 ```
 USAGE:
-	asmline [-r] [-p] [-c CHUNK_SIZE>2] [-o ELF_FILENAME_NO_EXT] path/to/file.asm
+	asmline [-r] [-p] [-c CHUNK_SIZE>1] [-o ELF_FILENAME_NO_EXT] path/to/file.asm
 
 DESCRIPTION:
 	Generates machine code from a file containing x64 assembly instructions. 
@@ -129,15 +129,6 @@ DESCRIPTION:
     ```
 1. `-r` executes assembly program specified by `path/to/file.asm` and print out the return value of that program  
   
-### al_nasm_compare.sh
-
-####   `./al_nasm_compare.sh /path/to/file.asm`   
-1. assemble the given file with assemblyline and output `objdump`-like output
-1. assemble the given file with `$ nasm -t elf64 /path/to/file.asm`
-1. run `objdump` on the `nasm` generated file and finally run
-1. `diff` to see if assemblyline has generated the same machine code as nasm
-
-
 # How to add new instructions
 
 1. Get the instruction opcode layout and operand encoding format(please refer to: https://www.felixcloutier.com/x86/).
