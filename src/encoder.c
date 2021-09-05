@@ -103,6 +103,8 @@ static void encode_two_opds(struct instr *instruc, int r, int m) {
       set_zero_byte(instruc, m);
     instruc->reg_hex =
         get_modRM32_64(instruc, instruc->opd[m], instruc->opd[r]);
+    instruc->vex_prefix_hex =
+        get_vex_prefix(instruc->opd[r], instruc->opd[m]) + 1;
     if (instruc->mem_disp && (instruc->opd[m] & VALUE_MASK) == spl)
       instruc->sib = true;
   } else {

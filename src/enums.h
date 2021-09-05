@@ -160,6 +160,7 @@ typedef enum {
   rcr,
   rdtsc,
   ret,
+  rorx,
   sar,
   sarx,
   sbb,
