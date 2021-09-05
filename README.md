@@ -139,10 +139,9 @@ DESCRIPTION:
 ```c
 struct INSTR_TABLE[] {
   
- 
-  /* null terminated string represeantation of an instruction ex: "mov"
+  /* null terminated string representation of an instruction ex: "mov"
    * subsequent instructions of the same name with a different operand
-   * encoding will be place contigiously with the first instance of the
+   * encoding will be place contiguously with the first instance of the
    * instuction and will have the '\0' string
    */
   char instr_name[MAX_INSTR_LEN];
@@ -150,7 +149,7 @@ struct INSTR_TABLE[] {
   // asm_instr enumerator for uniquely identifying a single instruction
   int name;
   
-  /* contians the valid operand formats for an instruction that maps
+  /* contains the valid operand formats for an instruction that maps
    * to the same operand enccoding (at most 2 for a single operand encoding)
    * ex: rr (instr reg,reg) && rm (instr reg, [mem]) -> RM 
    */
@@ -183,7 +182,7 @@ struct INSTR_TABLE[] {
   // used instructions with a single register operand denoted as '/num'
   int single_reg_r;  
   
-  // length of instruction opcode excluding immediates and memory displacement 
+  // length of instruction opcode excluding immediate and memory displacement 
   int instr_size;         
   
   // displacement for the W0 prefix (following byte after the vector extension prefix VEX)
