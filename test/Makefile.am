@@ -38,6 +38,7 @@ TEST_ASM =\
 		  nop.asm \
 		  not.asm \
 		  or.asm \
+		  rorx.asm \
 		  sarx.asm \
 		  setc.asm \
 		  seto.asm \

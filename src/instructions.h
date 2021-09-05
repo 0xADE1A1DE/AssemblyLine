@@ -90,7 +90,7 @@ const static struct {
    * REX and REG are placeholders for the prefix and register values
    * more can be found in enums.h op_encoding
    */
-  unsigned int opcode[10];
+  unsigned int opcode[MAX_OPCODE_LEN];
 
 } INSTR_TABLE[] = {
     {{'\0'},      EOI,       {NA, NA},   NA,   ASSEMBLYLINE,   NA,  NA,  NA,  0,  0, {0}},
