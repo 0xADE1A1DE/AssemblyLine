@@ -161,14 +161,23 @@ struct INSTR_TABLE[] {
    * ex: MI -> M , RMI -> RM , I -> I
    */
   operand_encoding encode_operand;  
-  
-  // enumerator for defining the semantic type of an instruction
+
+  /* enumerator for defining the semantic type of an instruction 
+   * if the instruction type is not known set this value to 'OTHER'
+   * refer to the link below to find the correct type for the instruction
+   * https://docs.oracle.com/cd/E36784_01/html/E36859/eoizp.html#scrolltoc
+   */
   instr_type type;        
   
-  // 'i' index of opcode[i] when an offset is present for a x64 registers, use NA if not applicable  
+  /* 'i' index of opcode[i] when a byte changes in the opcode depending  
+   * on the register size for the instruction
+   * set this value to NA if not applicable to the instruction
+   */
   int op_offset_i;        
-  
-  // 'i' index of opcode[i] when an offset is present for a register value, use NA if not applicable  
+    
+  /* 'i' index of opcode[i] when an offset is present for a REG value denoted as '+ rd'
+   * set this value to NA if not applicable to the instruction
+   */
   int rd_offset_i;        
   
   // used instructions with a single register operand denoted as '/num'
