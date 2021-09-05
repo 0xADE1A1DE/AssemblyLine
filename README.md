@@ -138,17 +138,28 @@ DESCRIPTION:
 #### Instruction table format: 
 ```c
 struct INSTR_TABLE[] {
-
-  // null terminated string represeantation of an instruction ex: "mov"
+  
+ 
+  /* null terminated string represeantation of an instruction ex: "mov"
+   * subsequent instructions of the same name with a different operand
+   * encoding will be place contigiously with the first instance of the
+   * instuction and will have the '\0' string
+   */
   char instr_name[MAX_INSTR_LEN];
   
   // asm_instr enumerator for uniquely identifying a single instruction
   int name;
   
-  // contians the valid operand formats for an instruction (at most 2 for a single operand encoding)
+  /* contians the valid operand formats for an instruction that maps
+   * to the same operand enccoding (at most 2 for a single operand encoding)
+   * ex: rr (instr reg,reg) && rm (instr reg, [mem]) -> RM 
+   */
   int opd_format[VALID_OPERAND_FORMATS];  
   
-  // operand encoding format as an enumerator (determines how instruction operands will be encoded)
+  /* operand encoding format as an enumerator (determines how instruction operands will be encoded)
+   * in assemblyline the 'I' character op/en will be ignored unless it is standalone
+   * ex: MI -> M , RMI -> RM , I -> I
+   */
   operand_encoding encode_operand;  
   
   // enumerator for defining the semantic type of an instruction
@@ -160,24 +171,23 @@ struct INSTR_TABLE[] {
   // 'i' index of opcode[i] when an offset is present for a register value, use NA if not applicable  
   int rd_offset_i;        
   
-  // only used for 'M' operand encoding denotes the modRM byte
+  // used instructions with a single register operand denoted as '/num'
   int single_reg_r;  
   
-  // length of instruction opcode  
+  // length of instruction opcode excluding immediates and memory displacement 
   int instr_size;         
   
-  // displacement for the w0 prefix
+  // displacement for the W0 prefix (following byte after the vector extension prefix VEX)
   int w0_disp;
-  
-  // opcode layout ex: {REX,0x0f,0xa9,REG}
+    
+  /* opcode layout for an instruction ex: {REX,0x0f,0xa9,REG}
+   * REX and REG are placeholders for the prefix and register values
+   * more can be found in enums.h op_encoding
+   */
   unsigned int opcode[10];                
 }
 ```
 
-
-
-
----
 ## Acknowledgements
 #### Developers:
 
