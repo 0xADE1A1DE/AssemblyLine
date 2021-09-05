@@ -36,28 +36,61 @@ const static struct {
 // defines opcode layout of each supported instruction
 const static struct {
 
-  // null terminated string represeantation of an instruction ex: "mov"
+  /* null terminated string representation of an instruction ex: "mov"
+   * subsequent instructions of the same name with a different operand
+   * encoding will be place contiguously with the first instance of the
+   * instuction and will have the '\0' string
+   */
   char instr_name[MAX_INSTR_LEN];
+
   // asm_instr enumerator for uniquely identifying a single instruction
   int name;
-  // contians the valid operand formats for an instruction (at most 2 for a single operand encoding)
+
+  /* contains the valid operand formats for an instruction that maps
+   * to the same operand enccoding (at most 2 for a single operand encoding)
+   * ex: rr (instr reg,reg) && rm (instr reg, [mem]) -> RM
+   */
   int opd_format[VALID_OPERAND_FORMATS];
-  // operand encoding format as an enumerator (determines how instruction operands will be encoded)
+
+  /* operand encoding format as an enumerator (determines how instruction
+   * operands will be encoded) in assemblyline the 'I' character op/en will be
+   * ignored unless it is standalone ex: MI -> M , RMI -> RM , I -> I
+   */
   operand_encoding encode_operand;
-  // enumerator for defining the semantic type of an instruction
+
+  /* enumerator for defining the semantic type of an instruction
+   * if the instruction type is not known set this value to 'OTHER'
+   * refer to the link below to find the correct type for the instruction
+   * https://docs.oracle.com/cd/E36784_01/html/E36859/eoizp.html#scrolltoc
+   */
   instr_type type;
-  // 'i' index of opcode[i] when an offset is present for a x64 registers, use NA if not applicable
+
+  /* 'i' index of opcode[i] when a byte changes in the opcode depending
+   * on the register size for the instruction
+   * set this value to NA if not applicable to the instruction
+   */
   int op_offset_i;
-  // 'i' index of opcode[i] when an offset is present for a register value, use NA if not applicable
+
+  /* 'i' index of opcode[i] when an offset is present for a REG value denoted as
+   * '+ rd' set this value to NA if not applicable to the instruction
+   */
   int rd_offset_i;
-  // only used for 'M' operand encoding denotes the modRM byte
+
+  // used instructions with a single register operand denoted as '/num'
   int single_reg_r;
-  // length of instruction opcode
+
+  // length of instruction opcode excluding immediate and memory displacement 
   int instr_size;
-  // displacement for the w0 prefix
+
+  // displacement for the W0 prefix (following byte after the vector extension
+  // prefix VEX)
   int w0_disp;
-  // opcode layout ex: {REX,0x0f,0xa9,REG}
-  unsigned int opcode[MAX_OPCODE_LEN]; 
+
+  /* opcode layout for an instruction ex: {REX,0x0f,0xa9,REG}
+   * REX and REG are placeholders for the prefix and register values
+   * more can be found in enums.h op_encoding
+   */
+  unsigned int opcode[10];
 
 } INSTR_TABLE[] = {
     {{'\0'},      EOI,       {NA, NA},   NA,   ASSEMBLYLINE,   NA,  NA,  NA,  0,  0, {0}},
