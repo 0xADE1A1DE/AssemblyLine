@@ -20,6 +20,7 @@ libassemblyline_la_SOURCES = \
 							 instructions.h \
 							 reg_parser.c \
 							 reg_parser.h \
+							 supported_instructions.h \
 							 registers.h
 
 include_HEADERS = assemblyline.h
