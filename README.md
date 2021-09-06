@@ -72,7 +72,7 @@ then run `$ make check`. Finally, add `Makefile.am` and `sub.asm` to git.
 
 # Command-line tool: asmline
 
-***note: run tool without any command-line parameters to view usage information ex: `$ asmline` or `$ asmline --help` ***
+***note: run `$ asmline` or `$ asmline --help` to view usage information***
 ```
 USAGE:
 	asmline [-r] [-p] [-c CHUNK_SIZE>1] [-o ELF_FILENAME_NO_EXT] path/to/file.asm
