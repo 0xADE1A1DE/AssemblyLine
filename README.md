@@ -25,40 +25,69 @@ A C library and binary for generating machine code of x86\_64 assembly language 
     ```
 1. Allocate an executable buffer of sufficient size (> 20 bytes) using mmap
     ```c
+    // the machince code will be written to this location
     uint8_t *mybuffer = mmap(NULL, sizeof(uint8_t) * BUFFER_SIZE,
     	PROT_READ | PROT_WRITE | PROT_EXEC, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
     ```
-1. Create an instance of assemblyline_t and attach buffer or set it to NULL for internal memory allocation 
+1. Create an instance of assemblyline_t and attach `mybuffer` or set it to NULL for internal memory allocation (will `realloc` if it was too small)
     ```c
     // external memory allocation
     assemblyline_t al = asm_create_instance(mybuffer, BUFFER_SIZE);
     // internal memory allocation
     assemblyline_t al = asm_create_instance(NULL, 0);
     ```
-1. OPTIONAL: Enable debug mode to view machine code
+1. OPTIONAL: Enable debug mode to print the machinecode in hex to stdout.
     ```c
     asm_set_debug(al, true);
     ```
-1. OPTIONAL: Set a chunk size boundary 
+1. OPTIONAL: Set a chunk size boundary to ensure that no instruction opcode will cross the specified chunk boundary length.
+    *** note: refer instructions `nop, nop2, ..., nop11`
     ```c
-    /*this will ensure no instruction opcode will cross the 
-    specified chunk boundary length via nop padding*/
+    // It will use the appropriate `nop` instruction for the remaining bytes to fill the chunk boundry.
+    int chunk_size = 16;
     asm_set_chunk_size(al, chunk_size);
     ```
-1. Sssemble a file or string containing x64 assembly code (machine code will be written to mybuffer or an internal buffer)
+1. Assemble a file or string containing x64 assembly code. The machine code will be written to `mybuffer` or the internal buffer. You can call those functions sequentially; the new machinecode will be appended at the end.
     ```c
-    assemble_file(al, /path/to/x64/assembly/file);
-    assemble_str(al, string_containing_x64_assembly_code);
+    assemble_file(al, "./path/to/x64_file.asm");
+    assemble_str(al, "mov rax, 0x0\nadd rax, 0x2; adds two");
+    assemble_str(al, "sub rax, 0x1; subs one\nret");
     ```
 1. Get the start address of the buffer containing the start of the assembly program
     ```c
-    void (*funcB)() =(void (*)())(asm_get_code(al));
+    void (*func)() =(void (*)())(asm_get_code(al));
+    // you can then call the function
+    int result = func();
     ```
 1. Free all memory associated with assembyline (external buffer is not freed)
     ```c
     asm_destroy_instance(al);
     ```
+1. Full example:
+    ```c
+    #include <stdint.h>
+    #include <sys/mman.h>
+    #include <assemblyline.h>
+    #define BUFFER_SIZE 300
+    
+    uint8_t *mybuffer = mmap(NULL, sizeof(uint8_t) * BUFFER_SIZE,
+    	PROT_READ | PROT_WRITE | PROT_EXEC, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
+    
+    assemblyline_t al = asm_create_instance(mybuffer, BUFFER_SIZE); 
+    
+    asm_set_chunk_size(al, 16); 
+    
+    assemble_str(al, "mov rax, 0x0\nadd rax, 0x2; adds two");
+    assemble_str(al, "sub rax, 0x1; subs one\nret");
+ 
+    void (*func)() =(void (*)())(asm_get_code(al));
+    
+    int result = func();
+    printf("The result is: %d\n", result); 
+    // prints "The result is: 1\n"
 
+    asm_destroy_instance(al);
+    ```
 
 # Test files
 
@@ -141,12 +170,12 @@ struct INSTR_TABLE[] {
   
   /* null terminated string representation of an instruction ex: "mov"
    * subsequent instructions of the same name with a different operand
-   * encoding will be place contiguously with the first instance of the
-   * instuction and will have the '\0' string
+   * encoding must be places contiguously with the first instance of the
+   * instuction and must have the '\0' string
    */
   char instr_name[MAX_INSTR_LEN];
   
-  // asm_instr enumerator for uniquely identifying a single instruction
+  // asm_instr enumerator for uniquely identifying a single instruction (the one from enums.h)
   int name;
   
   /* contains the valid operand formats for an instruction that maps
