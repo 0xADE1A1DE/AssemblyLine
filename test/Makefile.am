@@ -39,6 +39,7 @@ TEST_ASM =\
 		  not.asm \
 		  or.asm \
 		  rorx.asm \
+		  prefetch.asm \
 		  sarx.asm \
 		  setc.asm \
 		  seto.asm \
