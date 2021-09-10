@@ -33,6 +33,10 @@ static void auto_set_byte(struct instr *instruc) {
     switch (INSTR_TABLE[instruc->key].name) {
     case setc:
     case seto:
+    case prefetcht0:
+    case prefetcht1:
+    case prefetcht2:
+    case prefetchnta:
     case clflush:
       instruc->is_byte = true;
       instruc->op_offset = 0;
