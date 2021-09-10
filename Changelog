@@ -1,3 +1,9 @@
+version 1.0.2-release (2021-09-09)
+
+	- added support for the prefetch instruction
+	- added support for all registers (prefetch)
+
+
 version 1.0.1-release (2021-09-09)
 
 	- added support for the rorx instruction
@@ -8,39 +14,3 @@ version 1.0.0-release (2021-08-26)
 	
 	- initial release
 
-
-version 5.3.4-beta (2021-08-18)
-
-	FEATURES
-	- added support for "[register + register]" syntax for all instuctions with RM or MR operand encoding
-	- added support for all 'cmovcc' instructions
-
-	BUG FIXES
-	- additional information is provided via errno when any system call fails
-	- improvments were made to register opcode encoding
-	- missing zero byte opcode is address
-	- negative memory displacement parsing bug is fixed
-
-
-version 5.1.1-beta (2021-07-26)
-
-	API CHANGES
-	- addressed compatibility issues with measuresuite: a chunk size of 0 could now be provided to 
-	  assemble_string_counting_chunks() it will be treated as assemble_str()
-
-	FEATURES
-	- added support in code multi length nop instructions (treated as marcos in when using nasm)
-	- assemblyline ignores macros within .asm files as well as in strings
-
-	BUG FIXES
-	- an error is returned when the 'short' keyword is used for branch instructions with offsets 
-	  greater than 0x7f
-
-
-version 4.8.2-beta (2021-06-21)
-
-	FEATURES
-	- added support for counting the number of instructions that break s chunk boundry of specified size
-	
-	BUG FIXES
-	- fixed segmentation fault when using count_chunk_brks with invalid file
