@@ -13,4 +13,14 @@ diff --ignore-trailing-space --side-by-side --left-column \
   <(${AP} "${1}") \
   <(nasm -f elf64 "${1}" -l /dev/stdout |
     sed -e "1,/.*:/d" -e 's/^[[:space:]]*[[:digit:]]\+ [[:xdigit:]]\+ \([[:xdigit:]]\+\)[[:space:]]\+[^$]\+/\L\1/g' |
-    sed -e '/\s*[0-9]*\s*[\%|;].*/d')
+    sed -e '/\s*[0-9]*\s*[\%|;].*/d' | sed -e 's/^\s*[0-9]*\s[A-F|0-9]*\s//g'| sed -e 's/\-.*//g' | tr '[:upper:]' '[:lower:]')
+
+
+
+#  <(nasm -f elf64 "${1}" -l /dev/stdout | sed -e "1,/.*:/d" -e 's/^[[:space:]]*[[:digit:]]\+ [[:xdigit:]]\+ \([[:xdigit:]]\+\)[[:space:]]\+[^$]\+/\L\1/g' | sed -e '/\s*[0-9]*\s*[\%|;].*/d' | sed -e 's/\-\s.*//g' | sed -e 's/^\s*[0-9]*\s[0-9|A-Z]*\s//g' | sed -e 's/[a-z][a-z][a-z].*//g' | tr '[:upper:]' '[:lower:]')
+
+
+# nasm -f elf64 mov.asm -l /dev/stdout | sed -e 's/^\s*[0-9]*\s[A-F|0-9]*\s//g' | sed -e 's/[a-z][a-z][a-z].*//g'
+
+
+# nasm -f elf64 mulx.asm -l /dev/stdout | sed -e 's/^\s*[0-9]*\s[A-F|0-9]*\s//g' | sed -e 's/[a-z][a-z][a-z].*//g' | sed -e '/\s*[\%|;].*/d' | sed -e 's/\-//g' | sed -e '/SECTION/d' | sed -e '/GLOBAL/d' | tr '[:upper:]' '[:lower:]'

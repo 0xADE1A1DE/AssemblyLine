@@ -51,7 +51,11 @@ int main(int argc, char **argv) {
     int off = asm_get_offset(al);
 
     for (int i = 0; i < off; i++) {
-      printf("%02x", *(code + i));
+      //printf("%02x", *(code + i));
+      if(i==9)
+        printf("\n%02x", *(code + i));
+      else
+        printf("%02x", *(code + i));
     }
     if (off > 0)
       printf("\n");
