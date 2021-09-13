@@ -161,3 +161,5 @@ const struct instr_table INSTR_TABLE[] = {
     {{'\0'},        xor,         {NA, NA},   I,   LOGICAL,        1,   NA,  NA,  2,  0, {REX, 0x34}},
     {"xend",        xend,        {n,  n},    NA,  CONTROL_FLOW,   NA,  NA,  NA,  3,  0, {0x0f, 0x01, 0xd5}},
     {{'\0'},        NA,          {NA, NA},   NA,  ASSEMBLYLINE,   NA,  NA,  NA,  0,  0, {0}}};
+
+int instr_table_index[26] = {NA};

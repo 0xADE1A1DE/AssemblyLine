@@ -96,5 +96,5 @@ struct instr_table{
 }; 
 
 extern const struct instr_table INSTR_TABLE[];
-
+extern int instr_table_index[26];
 #endif

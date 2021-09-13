@@ -37,7 +37,7 @@ operand_format get_opd_format(char *opd_en) {
 
 int str_to_instr_key(char *instruction, operand_format opd_index) {
 
-  int i = 2;
+  int i = instr_table_index[instruction[0] - 'a'] - 1;
   while (INSTR_TABLE[++i].name != NA) {
     if (INSTR_TABLE[i].instr_name[0] != '\0') {
       // compare intruction strings
