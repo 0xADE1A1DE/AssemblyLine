@@ -28,6 +28,19 @@
 #include <sys/mman.h>
 #include <sys/stat.h>
 
+static void asm_build_index_table(assemblyline_t al) {
+  int i = 3;
+  char previous_char = 'a' - 1;
+  while (INSTR_TABLE[i].name != NA) {
+    if (INSTR_TABLE[i].instr_name[0] != '\0') {
+      if (previous_char != INSTR_TABLE[i].instr_name[0])
+        instr_table_index[INSTR_TABLE[i].instr_name[0] - 'a'] = i;
+      previous_char = INSTR_TABLE[i].instr_name[0];
+    }
+    i++;
+  }
+}
+
 assemblyline_t asm_create_instance(uint8_t *buffer, int len) {
 
   assemblyline_t al = malloc(sizeof(struct assemblyline));
@@ -55,6 +68,7 @@ assemblyline_t asm_create_instance(uint8_t *buffer, int len) {
   al->chunk_size++;
   al->debug = false;
   al->finalized = false;
+  asm_build_index_table(al);
   return al;
 }
 
