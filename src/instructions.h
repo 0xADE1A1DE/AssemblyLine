@@ -94,5 +94,7 @@ struct instr_table{
   unsigned int opcode[MAX_OPCODE_LEN];
 
 }; 
-#include "supported_instructions.h"
+
+extern const struct instr_table INSTR_TABLE[];
+
 #endif

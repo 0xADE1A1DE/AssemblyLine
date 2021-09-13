@@ -1,11 +1,9 @@
-#ifndef SUPPORTED_INSTRUCTIONS_H
-#define SUPPORTED_INSTRUCTIONS_H
 #include "common.h"
 #include "enums.h"
 #include <inttypes.h>
 #include "instructions.h"
 
-const static struct instr_table INSTR_TABLE[] = {
+const struct instr_table INSTR_TABLE[] = {
     {{'\0'},        EOI,         {NA, NA},   NA,  ASSEMBLYLINE,   NA,  NA,  NA,  0,  0, {0}},
     {{'\0'},        LABEL,       {NA, NA},   NA,  ASSEMBLYLINE,   NA,  NA,  NA,  0,  0, {0}},
     {{'\0'},        SKIP,        {NA, NA},   NA,  ASSEMBLYLINE,   NA,  NA,  NA,  0,  0, {0}},
@@ -163,5 +161,3 @@ const static struct instr_table INSTR_TABLE[] = {
     {{'\0'},        call,        {NA, NA},   D,   CONTROL_FLOW,   NA,  NA,  NA,  3,  0, {0xff, 0x14, 0x25}},
     {"ret",         ret,         {n,  n},    NA,  CONTROL_FLOW,   NA,  NA,  NA,  1,  0, {0xc3}},
     {{'\0'},        NA,          {NA, NA},   NA,  ASSEMBLYLINE,   NA,  NA,  NA,  0,  0, {0}}};
-
-#endif
