@@ -162,7 +162,7 @@ DESCRIPTION:
 
 1. Get the instruction opcode layout and operand encoding format (please refer to: https://www.felixcloutier.com/x86/).
 1. Add the new instruction to the asm\_instr enumerator set found in the [/src/enums.h](https://github.com/0xADE1A1DE/AssemblyLine/tree/main/src/enums.h).
-1. Add a new entry to INSTR\_TABLE[] [/src/instructions.h](https://github.com/0xADE1A1DE/AssemblyLine/tree/main/src/enums.h) for the specific instruction (see below for more details).  
+1. Add a new entry to INSTR\_TABLE[] [/src/instructions.h](https://github.com/0xADE1A1DE/AssemblyLine/tree/main/src/enums.h) while maintaining alphabetical alphabetical order  
 
 #### Instruction table format: 
 ```c
@@ -191,9 +191,9 @@ struct INSTR_TABLE[] {
   operand_encoding encode_operand;
 
   /* enumerator for defining the semantic type of an instruction
-   * if the instruction type is not known set this value to 'OTHER'
-   * refer to the link below to find the correct type for the instruction
-   * https://docs.oracle.com/cd/E36784_01/html/E36859/eoizp.html#scrolltoc
+   * where special encoding is required ( currently, only applicable for 
+   * SHIFT, DATA_TRANSFER, and CONTROLFLOW type instructions) 
+   * else set this to 'OTHER'
    */
   instr_type type;
 
