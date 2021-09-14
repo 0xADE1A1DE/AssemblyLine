@@ -144,6 +144,8 @@ const struct instr_table INSTR_TABLE[] = {
     {{'\0'},        rcr,         {NA, NA},   M,   SHIFT,          1,   NA,  2,   3,  0, {REX, 0xc1, REG}},
     {"rdtsc",       rdtsc,       {n,  n},    NA,  OTHER,          NA,  NA,  NA,  1,  0, {0x0f, 0x31}},
     {"ret",         ret,         {n,  n},    NA,  CONTROL_FLOW,   NA,  NA,  NA,  1,  0, {0xc3}},
+    {"ror",         ror,         {NA, ri},   M,   SHIFT,          NA,  NA,  1,   3,  0, {REX, 0xd1, REG}},
+    {{'\0'},        ror,         {NA, NA},   M,   SHIFT,          NA,  NA,  1,   3,  0, {REX, 0xc1, REG}},
     {"rorx",        rorx,        {rri, rmi}, RM,  OTHER,          NA,  NA,  NA,  5,  0, {0xc4, VEX, 0xfb, 0xf0, REG}},
     {"sar",         sar,         {mi, ri},   M,   SHIFT,          1,   NA,  7,   3,  0, {REX, 0xd0, REG}},
     {{'\0'},        sar,         {NA, NA},   M,   SHIFT,          1,   NA,  7,   3,  0, {REX, 0xc0, REG}},

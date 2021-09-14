@@ -38,6 +38,8 @@ TEST_ASM =\
 		  nop.asm \
 		  not.asm \
 		  or.asm \
+		  ror.asm \
+		  rorx.asm \
 		  prefetch.asm \
 		  rdtsc.asm \
 		  rdtscp.asm \
