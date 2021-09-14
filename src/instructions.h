@@ -68,23 +68,24 @@ struct instr_table{
 
   /* 'i' index of opcode[i] when a byte changes in the opcode depending
    * on the register size for the instruction
-   * set this value to NA if not applicable to the instruction
+   * (set this value to NA if not applicable to the instruction)
    */
   int op_offset_i;
 
   /* 'i' index of opcode[i] when an offset is present for a REG value denoted as
-   * '+ rd' set this value to NA if not applicable to the instruction
+   * '+ rd' in felixcloutier (set this value to NA if not applicable to the instruction)
    */
   int rd_offset_i;
 
-  // used instructions with a single register operand denoted as '/num'
+  // used instructions with a single register operand denoted as '/num' in felixcloutier
   int single_reg_r;
 
-  // length of instruction opcode excluding immediate and memory displacement 
+  // length of the instruction opcode excluding immediate and memory displacement 
   int instr_size;
 
-  // displacement for the W0 prefix (following byte after the vector extension
-  // prefix VEX)
+  /* displacement for the W0 prefix (following byte after the vector extension
+   * prefix VEX)
+   */
   int w0_disp;
 
   /* opcode layout for an instruction ex: {REX,0x0f,0xa9,REG}
