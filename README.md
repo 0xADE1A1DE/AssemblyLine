@@ -170,7 +170,7 @@ struct INSTR_TABLE[] {
   
   /* null-terminated string representation of an instruction ex: "mov"
    * subsequent instructions of the same name with a different operand
-   * encoding will be place contiguously with the first instance of the
+   * encoding will be placed contiguously with the first instance of the
    * instuction and will have the '\0' string
    */
   char instr_name[MAX_INSTR_LEN];
