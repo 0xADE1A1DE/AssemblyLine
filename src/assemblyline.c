@@ -28,6 +28,11 @@
 #include <sys/mman.h>
 #include <sys/stat.h>
 
+/**
+ * called when an instance of @param al is created and maps the index of
+ * INSTR_TABLE[] where the first occurrence of each letter of the alphabet to
+ * instr_index_table for more efficient instruction lookup
+ */
 static void asm_build_index_table(assemblyline_t al) {
   int i = 3;
   char previous_char = 'a' - 1;
