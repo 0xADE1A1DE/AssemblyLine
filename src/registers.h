@@ -14,20 +14,21 @@
  * limitations under the License.
  */
 
-/*declares all register conss and structs*/
+/*contains register string to asm_reg enum mapping*/
 #ifndef REGISTERS_H
 #define REGISTERS_H
 
 #include "common.h"
+/*stores all string representation of registers along 
+  with their corresponding generic type*/
 #include "enums.h"
 #include <stdint.h>
 
-// stores all registers along with their corresponding information
 const static struct {
+  // generic register type
   asm_reg gen_reg;
+  // list of registers in string format that map to a single generic register type 
   char reg_conversion[NUM_OF_REGISTERS][REGISTER_LEN];
-  // used to map rex prefix
-  // indices for modRM32_64 table
 
 } REG_TABLE[] = {{al,   {"al",   "\0", "ax",   "eax",  "rax",  "\0"  }},             
                  {cl,   {"cl",   "\0", "cx",   "ecx",  "rcx",  "\0"  }},    
