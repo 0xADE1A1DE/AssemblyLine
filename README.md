@@ -5,7 +5,7 @@ A C library and binary for generating machine code of x86\_64 assembly language 
 
 # How to use
 
-***note: refer to [/src/supported_instructions.h](https://github.com/0xADE1A1DE/AssemblyLine/tree/main/src/supported_instructions.h) for a complete list of supported instructions***
+***note: refer to [/src/instructions.c](https://github.com/0xADE1A1DE/AssemblyLine/tree/main/src/instructions.c) for a complete list of supported instructions***
 
 1. `$ ./configure` or `$ CFLAGS='-g -O3' ./configure` to generate Makefiles.
 1. `$ make` to compile
