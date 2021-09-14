@@ -80,7 +80,7 @@ struct instr_table{
   // used instructions with a single register operand denoted as '/num' in felixcloutier
   int single_reg_r;
 
-  // length of the instruction opcode excluding immediate and memory displacement 
+  // number of bytes in the opcode[MAX_OPCODE_LEN] field
   int instr_size;
 
   /* displacement for the W0 prefix (following byte after the vector extension
