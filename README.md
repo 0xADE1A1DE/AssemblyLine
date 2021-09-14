@@ -162,7 +162,7 @@ DESCRIPTION:
 
 1. Get the instruction opcode layout and operand encoding format (please refer to: https://www.felixcloutier.com/x86/).
 1. Add the new instruction to the asm\_instr enumerator set found in the [/src/enums.h](https://github.com/0xADE1A1DE/AssemblyLine/tree/main/src/enums.h).
-1. Add a new entry to INSTR\_TABLE[] [/src/instructions.h](https://github.com/0xADE1A1DE/AssemblyLine/tree/main/src/enums.h) while maintaining alphabetical alphabetical order  
+1. Add a new entry to INSTR\_TABLE[] [/src/instructions.h](https://github.com/0xADE1A1DE/AssemblyLine/tree/main/src/enums.h) while maintaining alphabetical order  
 
 #### Instruction table format: 
 ```c
@@ -208,7 +208,7 @@ struct INSTR_TABLE[] {
    */
   int rd_offset_i;
 
-  // used instructions with a single register operand denoted as '/num' in felixcloutier
+  // used for instructions with a single register operand denoted as '/num' in felixcloutier
   int single_reg_r;
 
   // number of bytes in the opcode[MAX_OPCODE_LEN] field
