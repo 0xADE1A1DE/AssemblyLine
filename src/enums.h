@@ -188,15 +188,18 @@ typedef enum {
 // used to catagorize instruction based on their functionality
 typedef enum {
 
+  // enforce a different mode of processing constant operand 
   DATA_TRANSFER,
-  LOGICAL,
-  ARITHMETIC,
-  SHIFT,
-  SHIFT_S,
-  BIT,
+  /* to ensure shift instruction such as "shr REG, 1" does not
+   * assemble the predefined constant 1 operand
+   */
+  SHIFT,  
+  /* for control flow instructions constant operand is handled
+   * differently due to no having an associated register
+   */
   CONTROL_FLOW,
-  OTHER,
-  ASSEMBLYLINE,
+  // instructions that do not require special encodings
+  OTHER
 } instr_type;
 
 // register bit size and catagory(ext denotes extended x64 registers)
