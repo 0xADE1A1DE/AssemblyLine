@@ -207,7 +207,7 @@ void encode_operands(struct instr *instruc) {
 
 void encode_imm(struct instr *instruc) {
 
-  // ignore imm value if instruction is a branch
+  // ignore imm value if instruction is a branch type
   if ((INSTR_TABLE[instruc->key].type == SHIFT && instruc->cons == 1) ||
       INSTR_TABLE[instruc->key].type == CONTROL_FLOW)
     instruc->imm = false;
