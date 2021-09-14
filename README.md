@@ -175,7 +175,7 @@ struct INSTR_TABLE[] {
    */
   char instr_name[MAX_INSTR_LEN];
 
-  // asm_instr enumerator for uniquely identifying a single instruction
+  // asm_instr enumerator for uniquely identifying a instruction
   int name;
 
   /* contains the valid operand formats for an instruction that maps
@@ -211,7 +211,7 @@ struct INSTR_TABLE[] {
   // used instructions with a single register operand denoted as '/num' in felixcloutier
   int single_reg_r;
 
-  // length of the instruction opcode excluding immediate and memory displacement 
+  // number of bytes in the opcode[MAX_OPCODE_LEN] field
   int instr_size;
 
   // displacement for the W0 prefix (following byte after the vector extension prefix VEX)
