@@ -21,6 +21,7 @@
 
 #include "common.h"
 #include "enums.h"
+#include "instructions.h"
 #include <inttypes.h>
 #include <stdbool.h>
 #include <stdio.h>

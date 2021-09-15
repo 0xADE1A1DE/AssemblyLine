@@ -41,7 +41,6 @@
 #define MAX_UNSIGNED_8BIT 0xff
 #define MAX_SIGNED_32BIT 0x7fffffff
 #define MAX_UNSIGNED_32BIT 0xffffffff
-#define MOVI 6
 
 // set register length to 1 byte
 #define SET_BYTE ~(reg16 | reg32 | reg64)

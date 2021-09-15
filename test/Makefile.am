@@ -20,10 +20,10 @@ TEST_EXTENSIONS = .asm
 
 # add .asm-tests here
 TEST_ASM =\
-		  and.asm \
 		  adcx.asm \
 		  add.asm \
 		  adox.asm \
+		  and.asm \
 		  bzhi.asm \
 		  clc.asm \
 		  imul.asm \
@@ -41,6 +41,7 @@ TEST_ASM =\
 		  prefetch.asm \
 		  rdtsc.asm \
 		  rdtscp.asm \
+		  ror.asm \
 		  rorx.asm \
 		  sarx.asm \
 		  setc.asm \
