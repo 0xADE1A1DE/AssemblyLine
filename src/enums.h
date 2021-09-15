@@ -163,6 +163,7 @@ typedef enum {
   push,
   rcr,
   rdtsc,
+  rdtscp,
   ret,
   rorx,
   sar,
