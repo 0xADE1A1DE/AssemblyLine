@@ -1,3 +1,9 @@
+version 1.0.3-wip (tbd)
+
+	- FIX rdtsc
+
+	- ADD rdtscp, ror (ri only for now)
+
 version 1.0.2-release (2021-09-09)
 
 	- added support for the prefetch instruction
