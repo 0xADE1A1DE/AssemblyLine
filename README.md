@@ -160,7 +160,7 @@ DESCRIPTION:
   
 # How to add new instructions
 
-1. Get the instruction opcode layout and operand encoding format (please refer to: https://www.felixcloutier.com/x86/).
+1. Get the instruction opcode layout and operand encoding format (please refer to the [intel manual](https://www.intel.com/content/dam/www/public/us/en/documents/manuals/64-ia-32-architectures-software-developer-instruction-set-reference-manual-325383.pdf)).
 1. Add the new instruction to the asm\_instr enumerator set found in the [/src/enums.h](https://github.com/0xADE1A1DE/AssemblyLine/tree/main/src/enums.h).
 1. Add a new entry to INSTR\_TABLE[] [/src/instructions.h](https://github.com/0xADE1A1DE/AssemblyLine/tree/main/src/enums.h) while maintaining alphabetical order  
 
@@ -204,17 +204,22 @@ struct INSTR_TABLE[] {
   int op_offset_i;
 
   /* 'i' index of opcode[i] when an offset is present for a REG value denoted as
-   * '+ rd' in felixcloutier (set this value to NA if not applicable to the instruction)
+   * '+ rd' in the intel manual section 3.1.1.1 
+   * (set this value to NA if not applicable to the instruction)
    */
   int rd_offset_i;
 
-  // used for instructions with a single register operand denoted as '/num' in felixcloutier
+  /* used for instructions with a single register operand denoted as '/digit'
+   * in the intel manual section 3.1.1.1
+   */
   int single_reg_r;
 
   // number of bytes in the opcode[MAX_OPCODE_LEN] field
   int instr_size;
 
-  // displacement for the W0 prefix (following byte after the vector extension prefix VEX)
+  /* displacement for the W0 prefix (following byte after the vector extension prefix VEX)
+   * check intel manaul section 3.1.1.2
+   */
   int w0_disp;
 
   /* opcode layout for an instruction ex: {REX,0x0f,0xa9,REG}
