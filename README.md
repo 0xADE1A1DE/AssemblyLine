@@ -211,6 +211,7 @@ struct INSTR_TABLE[] {
 
   /* used for instructions with a single register operand denoted as '/digit'
    * in the intel manual section 3.1.1.1
+   * (set this value to NA if not applicable to the instruction)
    */
   int single_reg_r;
 
@@ -219,6 +220,7 @@ struct INSTR_TABLE[] {
 
   /* displacement for the W0 prefix (following byte after the vector extension prefix VEX)
    * check intel manaul section 3.1.1.2
+   * (set this value to NA if not applicable to the instruction)
    */
   int w0_disp;
 
