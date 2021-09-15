@@ -219,7 +219,7 @@ struct INSTR_TABLE[] {
   int instr_size;
 
   /* displacement for the W0 prefix (following byte after the vector extension prefix VEX)
-   * check intel manaul section 3.1.1.2
+   * check intel manual section 3.1.1.2
    * (set this value to NA if not applicable to the instruction)
    */
   int w0_disp;
