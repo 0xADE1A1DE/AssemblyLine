@@ -5,7 +5,7 @@ A C library and binary for generating machine code of x86\_64 assembly language 
 
 # How to use
 
-***note: refer to [/src/supported_instructions.h](https://github.com/0xADE1A1DE/AssemblyLine/tree/main/src/supported_instructions.h) for a complete list of supported instructions***
+***note: refer to [/src/instructions.c](https://github.com/0xADE1A1DE/AssemblyLine/tree/main/src/instructions.c) for a complete list of supported instructions***
 
 1. `$ ./configure` or `$ CFLAGS='-g -O3' ./configure` to generate Makefiles.
 1. `$ make` to compile
@@ -160,68 +160,75 @@ DESCRIPTION:
   
 # How to add new instructions
 
-1. Get the instruction opcode layout and operand encoding format (please refer to: https://www.felixcloutier.com/x86/).
+1. Get the instruction opcode layout and operand encoding format (please refer to the [intel manual](https://www.intel.com/content/dam/www/public/us/en/documents/manuals/64-ia-32-architectures-software-developer-instruction-set-reference-manual-325383.pdf)).
 1. Add the new instruction to the asm\_instr enumerator set found in the [/src/enums.h](https://github.com/0xADE1A1DE/AssemblyLine/tree/main/src/enums.h).
-1. Add a new entry to INSTR\_TABLE[] [/src/instructions.h](https://github.com/0xADE1A1DE/AssemblyLine/tree/main/src/enums.h) for the specific instruction (see below for more details).  
+1. Add a new entry to INSTR\_TABLE[] [/src/instructions.h](https://github.com/0xADE1A1DE/AssemblyLine/tree/main/src/enums.h) while maintaining alphabetical order  
 
 #### Instruction table format: 
 ```c
 struct INSTR_TABLE[] {
   
-  /* null terminated string representation of an instruction ex: "mov"
+  /* null-terminated string representation of an instruction ex: "mov"
    * subsequent instructions of the same name with a different operand
-   * encoding must be places contiguously with the first instance of the
-   * instuction and must have the '\0' string
+   * encoding will be placed contiguously with the first instance of the
+   * instuction and will have the '\0' string
    */
   char instr_name[MAX_INSTR_LEN];
-  
-  // asm_instr enumerator for uniquely identifying a single instruction (the one from enums.h)
+
+  // asm_instr enumerator for uniquely identifying a instruction
   int name;
-  
+
   /* contains the valid operand formats for an instruction that maps
    * to the same operand enccoding (at most 2 for a single operand encoding)
-   * ex: rr (instr reg,reg) && rm (instr reg, [mem]) -> RM 
+   * ex: rr (instr reg,reg) && rm (instr reg, [mem]) -> RM
    */
-  int opd_format[VALID_OPERAND_FORMATS];  
-  
-  /* operand encoding format as an enumerator (determines how instruction operands will be encoded)
-   * in assemblyline the 'I' character op/en will be ignored unless it is standalone
-   * ex: MI -> M , RMI -> RM , I -> I
-   */
-  operand_encoding encode_operand;  
+  int opd_format[VALID_OPERAND_FORMATS];
 
-  /* enumerator for defining the semantic type of an instruction 
-   * if the instruction type is not known set this value to 'OTHER'
-   * refer to the link below to find the correct type for the instruction
-   * https://docs.oracle.com/cd/E36784_01/html/E36859/eoizp.html#scrolltoc
+  /* operand encoding format as an enumerator (determines how instruction
+   * operands will be encoded) in assemblyline the 'I' character op/en will be
+   * ignored unless it is standalone ex: MI -> M , RMI -> RM , I -> I
    */
-  instr_type type;        
-  
-  /* 'i' index of opcode[i] when a byte changes in the opcode depending  
+  operand_encoding encode_operand;
+
+  /* enumerator for defining the semantic type of an instruction
+   * where special encoding is required ( currently, only applicable for 
+   * SHIFT, DATA_TRANSFER, and CONTROLFLOW type instructions) 
+   * else set this to 'OTHER'
+   */
+  instr_type type;
+
+  /* 'i' index of opcode[i] when a byte changes in the opcode depending
    * on the register size for the instruction
-   * set this value to NA if not applicable to the instruction
+   * (set this value to NA if not applicable to the instruction)
    */
-  int op_offset_i;        
-    
-  /* 'i' index of opcode[i] when an offset is present for a REG value denoted as '+ rd'
-   * set this value to NA if not applicable to the instruction
+  int op_offset_i;
+
+  /* 'i' index of opcode[i] when an offset is present for a REG value denoted as
+   * '+ rd' in the intel manual section 3.1.1.1 
+   * (set this value to NA if not applicable to the instruction)
    */
-  int rd_offset_i;        
-  
-  // used instructions with a single register operand denoted as '/num'
-  int single_reg_r;  
-  
-  // length of instruction opcode excluding immediate and memory displacement 
-  int instr_size;         
-  
-  // displacement for the W0 prefix (following byte after the vector extension prefix VEX)
+  int rd_offset_i;
+
+  /* used for instructions with a single register operand denoted as '/digit'
+   * in the intel manual section 3.1.1.1
+   * (set this value to NA if not applicable to the instruction)
+   */
+  int single_reg_r;
+
+  // number of bytes in the opcode[MAX_OPCODE_LEN] field
+  int instr_size;
+
+  /* displacement for the W0 prefix (following byte after the vector extension prefix VEX)
+   * check intel manual section 3.1.1.2
+   * (set this value to NA if not applicable to the instruction)
+   */
   int w0_disp;
-    
+
   /* opcode layout for an instruction ex: {REX,0x0f,0xa9,REG}
    * REX and REG are placeholders for the prefix and register values
    * more can be found in enums.h op_encoding
    */
-  unsigned int opcode[10];                
+  unsigned int opcode[MAX_OPCODE_LEN];                 
 }
 ```
 

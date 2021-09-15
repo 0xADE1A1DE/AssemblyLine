@@ -33,8 +33,15 @@ lib/
 libtool
 run_test
 stamp-h1
-!tools/test_*.[ch]
-!tools/Makefile.[amin]
+tools/*
+!tools/*.[ch]
+!tools/Makefile.am
+
+test/*
+!test/*.c
+!test/*.sh
+!test/*.asm
+!test/Makefile.am
 
 *.in
 aclocal.m4
@@ -42,3 +49,5 @@ configure
 build-aux/*
 m4/*
 config.h.in
+
+

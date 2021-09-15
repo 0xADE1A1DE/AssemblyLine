@@ -207,7 +207,7 @@ void encode_operands(struct instr *instruc) {
 
 void encode_imm(struct instr *instruc) {
 
-  // ignore imm value if instruction is a branch
+  // ignore imm value if instruction is a branch type
   if ((INSTR_TABLE[instruc->key].type == SHIFT && instruc->cons == 1) ||
       INSTR_TABLE[instruc->key].type == CONTROL_FLOW)
     instruc->imm = false;
@@ -251,19 +251,20 @@ void encode_imm(struct instr *instruc) {
                INSTR_TABLE[instruc->key].type == DATA_TRANSFER) {
       if (instruc->cons > MAX_SIGNED_32BIT && (instruc->opd[0] & reg64)) {
         if (instruc->cons != NEG64BIT) {
-          instruc->key = MOVI;
+          instruc->key++;
           instruc->op_offset = 8;
         }
       }
       if (IN_RANGE(instruc->cons, NEG32BIT + 1, NEG64BIT) &&
           (instruc->opd[0] & reg64)) {
         if (instruc->cons != NEG64BIT)
-          instruc->key = MOVI;
+          instruc->key++;
         else
           instruc->cons -= NEG32BIT;
         instruc->reduced_imm = true;
       }
-      if (instruc->key == MOVI)
+      if (INSTR_TABLE[instruc->key].name == mov &&
+          INSTR_TABLE[instruc->key].encode_operand == I)
         instruc->rd_offset = instruc->opd[0] & VALUE_MASK;
     }
     // mask all bits except for the most significant byte
