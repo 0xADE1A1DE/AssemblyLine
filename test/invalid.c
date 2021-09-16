@@ -19,7 +19,7 @@
 #include <stdlib.h>
 
 /**
- *  This file contains invalid string, on which assemblyline must fail to
+ * This file contains invalid string, on which assemblyline must fail to
  * assemble.
  */
 const char *const testStrings[] = {

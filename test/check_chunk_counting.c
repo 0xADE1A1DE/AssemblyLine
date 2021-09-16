@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+/**
+ * Test the functionality of assemblyline for counting the number 
+ * of instructions that break a specified chunk size set for the 
+ * memory block
+ */
 #include <assemblyline.h>
 #include <stdint.h>
 #include <stdio.h>
