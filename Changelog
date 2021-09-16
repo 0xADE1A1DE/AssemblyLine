@@ -1,8 +1,12 @@
-version 1.0.3-wip (tbd)
+version 1.0.3-release (2021-09-16)
 
 	- FIX rdtsc
 
-	- ADD rdtscp, ror (ri only for now)
+	- ADD rdtscp,
+	- ADD ror (ri encoding only for now)
+
+	- code maintenance
+	- added library versioning
 
 version 1.0.2-release (2021-09-09)
 
