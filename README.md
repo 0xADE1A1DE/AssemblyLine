@@ -1,9 +1,9 @@
-# Description
+# Assemblyline
 
 A C library and binary for generating machine code of x86\_64 assembly language and executing on the fly without invoking another compiler, assembler or linker.
 
 
-# How to use
+## How to use
 
 ***note: refer to [/src/instructions.c](https://github.com/0xADE1A1DE/AssemblyLine/tree/main/src/instructions.c) for a complete list of supported instructions***
 
@@ -12,7 +12,7 @@ A C library and binary for generating machine code of x86\_64 assembly language 
 1. `$ make install prefix=$(pwd)` to install it locally or `$ sudo make install` to install globally
 1. `$ gcc -o executable your_program.c -lassemblyline` to compile a c program using assemblyline  
 
-# Example
+## Example
 
 ***note: refer to [/src/assemblyline.h](https://github.com/0xADE1A1DE/AssemblyLine/tree/main/src/assemblyline.h) for more information***
 
@@ -89,7 +89,7 @@ A C library and binary for generating machine code of x86\_64 assembly language 
     asm_destroy_instance(al);
     ```
 
-# Test files
+## Test files
 
 `$ make check` to run all test suites
 
@@ -99,7 +99,7 @@ A C library and binary for generating machine code of x86\_64 assembly language 
 then run `$ make check`. Finally, add `Makefile.am` and `sub.asm` to git.
 
 
-# Command-line tool: asmline
+## Command-line tool: asmline
 
 ***note: run `$ asmline` or `$ asmline --help` to view usage information***
 ```
@@ -111,9 +111,9 @@ DESCRIPTION:
         Machine code could be executed directly without the need for an executable file format. 
         Obtain command-line instructions for generating an ELF binary file from assembly code.
 ```
-## Features:
+### Features:
 
-### Create ELF file from assembly code
+#### Create ELF file from assembly code
 
 1. `$ asmline -o FILENAME path/to/file.asm` to output the generated machine code into a binary file (FILENAME.bin)
     ```
@@ -127,7 +127,7 @@ DESCRIPTION:
     # link the elf object file with a c program
     $ gcc linker linker.c FILENAME.o
     ```
-### Print assembled machine code to stdout
+#### Print assembled machine code to stdout
 
 1. `$ asmline -p path/to/file.asm` to write the generated machine code from `file.asm` to stdout
     ```
@@ -137,7 +137,7 @@ DESCRIPTION:
     ```
 1. The above call will output some machine code in the hexadecimal format given `path/to/file.asm`.
 
-### Chunk size fitting
+#### Chunk size fitting
 
 1. `$ asmline -c CHUNK_SIZE>1 path/to/file.asm` to appy chunk size fitting when assembling `path/to/file.asm`.
     ```
@@ -148,7 +148,7 @@ DESCRIPTION:
 1. A specific chunk size within a memory block could be specified (chunk sizes less must be greater than 1),
 1. Then a chunk size is given, assemblyline will ensure no instruction opcode crosses the chunk boundary by applying nop padding
 
-### Executing machine code directly from memory
+#### Executing machine code directly from memory
 
 1. `$ asmline --return path/to/file.asm` to directly execute `path/to/file.asm` given the following options:
     ```
@@ -158,7 +158,7 @@ DESCRIPTION:
     ```
 1. `-r` executes assembly program specified by `path/to/file.asm` and print out the return value of that program  
   
-# How to add new instructions
+## How to add new instructions
 
 1. Get the instruction opcode layout and operand encoding format (please refer to the [intel manual](https://www.intel.com/content/dam/www/public/us/en/documents/manuals/64-ia-32-architectures-software-developer-instruction-set-reference-manual-325383.pdf)).
 1. Add the new instruction to the asm\_instr enumerator set found in the [/src/enums.h](https://github.com/0xADE1A1DE/AssemblyLine/tree/main/src/enums.h).
