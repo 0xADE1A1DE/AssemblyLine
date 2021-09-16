@@ -26,7 +26,7 @@
 void err_print_usage(char *error_msg) {
   fprintf(
       stderr,
-      "%s\n\nUSAGE:\n\tasmline [-r] [-p] [-c CHUNK_SIZE>1] [-o "
+      "%s\nUSAGE:\n\tasmline [-r] [-p] [-c CHUNK_SIZE>1] [-o "
       "ELF_FILENAME_NO_EXT] path/to/file.asm\n\nDESCRIPTION:\n\tGenerates "
       "machine code from a x64 assembly file. Machine code could be "
       "executed directly without the need of an executable file format.\n "
@@ -46,9 +46,31 @@ void err_print_usage(char *error_msg) {
       "boundary.\n\n"
       "\t-o --object FILENAME\n"
       "\t\tGenerates a binary file from path/to/file.asm called "
-      "FILENAME.bin in the current directory.\n",
+      "FILENAME.bin in the current directory.\n\n"
+      "\t-H --help\n"
+      "\t\tPrints usage information to stdout and exits.\n\n"
+      "\t-H --version\n"
+      "\t\tPrints version information to stdout and exits.\n",
       error_msg);
   exit(EXIT_FAILURE);
+}
+
+void print_version() {
+
+  printf("asmline v1.0.3\n"
+         ""
+         "Copyright 2021 University of Adelaide\n\n"
+         "Licensed under the Apache License, Version 2.0 (the \"License\");\n"
+         "You may obtain a copy of the License at\n\n"
+         "\thttp://www.apache.org/licenses/LICENSE-2.0\n\n"
+         "Unless required by applicable law or agreed to in writing, software\n"
+         "distributed under the License is distributed on an \"AS IS\" BASIS,\n"
+         "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or "
+         "implied.\n"
+         "See the License for the specific language governing permissions and\n"
+         "limitations under the License.\n\n"
+         "Written by David Wu and Joel Kuepper\n");
+  exit(EXIT_SUCCESS);
 }
 
 int check_digit(char *optarg) {
@@ -83,7 +105,8 @@ int main(int argc, char *argv[]) {
   char *write_file = NULL;
 
   static struct option long_options[] = {/* These options set a flag. */
-                                         {"help", no_argument, 0, 'h'},
+                                         {"version", no_argument, 0, 'V'},
+                                         {"help", no_argument, 0, 'H'},
                                          {"return", no_argument, 0, 'r'},
                                          {"print", no_argument, 0, 'p'},
                                          {"chunk", required_argument, 0, 'c'},
@@ -94,13 +117,16 @@ int main(int argc, char *argv[]) {
   int option_index = 0;
 
   if (argc < 2 && isatty(fileno(stdin)))
-    err_print_usage("Error: invalid number of arguments");
+    err_print_usage("Error: invalid number of arguments\n");
 
   assemblyline_t al = asm_create_instance(NULL, 0);
-  while ((opt = getopt_long(argc, argv, "hrpc:o:", long_options,
+  while ((opt = getopt_long(argc, argv, "HVrpc:o:", long_options,
                             &option_index)) != -1) {
     switch (opt) {
-    case 'h':
+    case 'V':
+      print_version();
+      break;
+    case 'H':
       err_print_usage("");
       break;
     case 'r':
@@ -111,19 +137,19 @@ int main(int argc, char *argv[]) {
       break;
     case 'c':
       if (check_digit(optarg))
-        err_print_usage("Error: [-c CHUNK_SIZE>1] expects an integer");
+        err_print_usage("Error: [-c CHUNK_SIZE>1] expects an integer\n");
       chunk_size = atoi(optarg);
       asm_set_chunk_size(al, chunk_size);
       break;
     case 'o':
       if (strchr(optarg, '.'))
-        err_print_usage("elf filename cannot have an extension");
+        err_print_usage("elf filename cannot have an extension\n");
       create_bin = 1;
       write_file = optarg;
       break;
 
     default: /* '?' */
-      err_print_usage("Error: invalid option");
+      err_print_usage("Error: invalid option\n");
     }
   }
 
@@ -140,7 +166,7 @@ int main(int argc, char *argv[]) {
       }
       free(line);
     } else {
-      err_print_usage("Error: Expected path/to/file.asm after options");
+      err_print_usage("Error: Expected path/to/file.asm after options\n");
     }
   } else {
     if (assemble_file(al, argv[optind]) == EXIT_FAILURE) {
