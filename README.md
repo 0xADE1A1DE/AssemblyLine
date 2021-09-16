@@ -1,8 +1,6 @@
 # Assemblyline
 
-A C library and binary for generating machine code of x86\_64 assembly language and executing on the fly without invoking another compiler, assembler or linker.
-
-
+A C library and binary for generating machine code of x86\_64 assembly language and executing on the fly without invoking another compiler, assembler or linker. <br><br> 
 ## How to use
 
 ***note: refer to [/src/instructions.c](https://github.com/0xADE1A1DE/AssemblyLine/tree/main/src/instructions.c) for a complete list of supported instructions***
@@ -10,7 +8,7 @@ A C library and binary for generating machine code of x86\_64 assembly language 
 1. `$ ./configure` or `$ CFLAGS='-g -O3' ./configure` to generate Makefiles.
 1. `$ make` to compile
 1. `$ make install prefix=$(pwd)` to install it locally or `$ sudo make install` to install globally
-1. `$ gcc -o executable your_program.c -lassemblyline` to compile a c program using assemblyline  
+1. `$ gcc -o executable your_program.c -lassemblyline` to compile a c program using assemblyline<br><br>   
 
 ## Example
 
@@ -88,7 +86,7 @@ A C library and binary for generating machine code of x86\_64 assembly language 
 
     asm_destroy_instance(al);
     ```
-
+    <br>
 ## Test files
 
 `$ make check` to run all test suites
@@ -96,7 +94,7 @@ A C library and binary for generating machine code of x86\_64 assembly language 
 * To run only one testsuite `TESTS=seto.asm make -e check`, then check the ./al_nasm_compare.sh /path/to/file.asmeto.log
 * Or run the `./al_nasm_compare.sh seto.asm`
 * Adding a new test: add the testfile e.g. `sub.asm` to the directory and add `sub.asm` to the `TESTS`-variable in `Makefile.am`
-then run `$ make check`. Finally, add `Makefile.am` and `sub.asm` to git.
+then run `$ make check`. Finally, add `Makefile.am` and `sub.asm` to git.<br><br> 
 
 
 ## Command-line tool: asmline
@@ -156,11 +154,11 @@ DESCRIPTION:
             Executes assembly code and prints out the contents of the 
             rax register (return value register).
     ```
-1. `-r` executes assembly program specified by `path/to/file.asm` and print out the return value of that program  
+1. `-r` executes assembly program specified by `path/to/file.asm` and print out the return value of that program<br><br>   
   
 ## Adding new instructions
 
-To add support for new instructions please refer to: [src/README.md](https://github.com/daviduwu9/AssemblyLine/blob/instructionsguide/src/README.md) 
+To add support for new instructions please refer to: [src/README.md](https://github.com/daviduwu9/AssemblyLine/blob/instructionsguide/src/README.md)<br><br>  
 
 ## Acknowledgements
 #### Developers:
