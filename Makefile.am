@@ -1,7 +1,7 @@
 SUBDIRS = src test tools
 # run 'make check' from projects' root to have libassemblyline being compiled on change
 # check_LTLIBRARIES = libassemblyline.la
-EXTRA_DIST = autogen.sh
+EXTRA_DIST =
 ACLOCAL_AMFLAGS = -I m4 --install
 
 # this ensures, that the lib is rebuild (if necessary) on make check
