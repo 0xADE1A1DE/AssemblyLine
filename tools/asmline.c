@@ -58,7 +58,6 @@ void err_print_usage(char *error_msg) {
 void print_version() {
 
   printf("asmline v1.0.3\n"
-         ""
          "Copyright 2021 University of Adelaide\n\n"
          "Licensed under the Apache License, Version 2.0 (the \"License\");\n"
          "You may obtain a copy of the License at\n\n"
