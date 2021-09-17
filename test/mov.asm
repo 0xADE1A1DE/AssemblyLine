@@ -1,6 +1,16 @@
 SECTION .text
 GLOBAL test
 test:
+mov rax, 0x2
+mov rax, -0x2
+mov rax, -0x1
+mov r8, -0x2
+mov r9, -0x2
+mov r10, -0x2
+mov r10b, -0x2
+mov al, -0x2
+mov al, -0x1
+mov al, 0x1
 mov [rsp + 0x03f0 ], rax
 mov byte [ rsp + 0xa0 ], r14b
 mov byte [ rsp + 0xa0 ], ah
