@@ -349,6 +349,7 @@ int main(int argc, char **argv) {
   // type cast to function pointer
   void (*curB)(uint64_t * out, uint64_t * in0, ...) =
       (void (*)(uint64_t *, uint64_t *, ...))(asm_get_code(asm_exe));
+      
   if (execute_test(curB)) {
     fprintf(stderr, "cur_B.asm did not produce expected results\n");
     return 1;
@@ -360,6 +361,7 @@ int main(int argc, char **argv) {
 
   void (*funcB)(uint64_t * out, uint64_t * in0, ...) =
       (void (*)(uint64_t *, uint64_t *, ...))(asm_get_code(asm_exe));
+
   if (execute_test(funcB)) {
     fprintf(stderr, "function_B.asm did not produce expected results\n");
     return 1;
@@ -369,9 +371,11 @@ int main(int argc, char **argv) {
   if (assemble_str(asm_exe, cur_B) == EXIT_FAILURE)
     return EXIT_FAILURE;
 
+
   // type cast to function pointer
   void (*curB_w_chunk)(uint64_t * out, uint64_t * in0, ...) =
       (void (*)(uint64_t *, uint64_t *, ...))(asm_get_code(asm_exe));
+
   if (execute_test(curB_w_chunk)) {
     fprintf(stderr,
             "cur_B.asm with chunk fitting did not produce expected results\n");
@@ -394,6 +398,7 @@ int main(int argc, char **argv) {
   // type cast to function pointer
   void (*curB_my)(uint64_t * out, uint64_t * in0, ...) =
       (void (*)(uint64_t *, uint64_t *, ...))(asm_get_code(asm_my));
+
   if (execute_test(curB_my)) {
     fprintf(stderr, "cur_B.asm did not produce expected results\n");
     return 1;
