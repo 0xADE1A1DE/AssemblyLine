@@ -26,31 +26,26 @@
 void err_print_usage(char *error_msg) {
   fprintf(
       stderr,
-      "%s\nUSAGE:\n\tasmline [-r] [-p] [-c CHUNK_SIZE>1] [-o "
-      "ELF_FILENAME_NO_EXT] path/to/file.asm\n\nDESCRIPTION:\n\tGenerates "
-      "machine code from a x64 assembly file. Machine code could be "
-      "executed directly without the need of an executable file format.\n "
-      "\tObtain command line instructions for generating a ELF binary file "
-      "from assembly code.\n\n"
-      "OPTIONS:\n\t"
-      "-r --return\n"
-      "\t\tExecutes assembly code and prints out the contents of the rax "
+      "%s\nUsage: asmline [-r] [-p] [-c CHUNK_SIZE>1] [-o "
+      "ELF_FILENAME_NO_EXT] path/to/file.asm\n\n"
+      "  -r, --return\n"
+      "\tExecutes assembly code and prints out the contents of the rax "
       "register (return register)\n\n"
-      "\t-p --print\n"
-      "\t\tWhen assembling path/to/file.asm the corresponding machine code "
+      "  -p, --print\n"
+      "\tWhen assembling path/to/file.asm the corresponding machine code "
       "will be printed to stdout.\n\n"
-      "\t-c --chunk CHUNK_SIZE>1\n"
-      "\t\tSets a given CHUNK_SIZE boundary in bytes. Nop padding will be used "
+      "  -c, --chunk CHUNK_SIZE>1\n"
+      "\tSets a given CHUNK_SIZE boundary in bytes. Nop padding will be used "
       "to ensure no instruction\n"
-      "\t\topcode will cross the specified CHUNK_SIZE "
+      "\topcode will cross the specified CHUNK_SIZE "
       "boundary.\n\n"
-      "\t-o --object FILENAME\n"
-      "\t\tGenerates a binary file from path/to/file.asm called "
+      "  -o, --object FILENAME\n"
+      "\tGenerates a binary file from path/to/file.asm called "
       "FILENAME.bin in the current directory.\n\n"
-      "\t-H --help\n"
-      "\t\tPrints usage information to stdout and exits.\n\n"
-      "\t-H --version\n"
-      "\t\tPrints version information to stdout and exits.\n",
+      "  -H, --help\n"
+      "\tPrints usage information to stdout and exits.\n\n"
+      "  -V, --version\n"
+      "\tPrints version information to stdout and exits.\n\n",
       error_msg);
   exit(EXIT_FAILURE);
 }
@@ -148,7 +143,7 @@ int main(int argc, char *argv[]) {
       break;
 
     default: /* '?' */
-      err_print_usage("Error: invalid option\n");
+      err_print_usage("");
     }
   }
 
