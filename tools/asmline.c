@@ -42,9 +42,9 @@ void err_print_usage(char *error_msg) {
       "  -o, --object FILENAME\n"
       "\tGenerates a binary file from path/to/file.asm called "
       "FILENAME.bin in the current directory.\n\n"
-      "  -H, --help\n"
+      "  -h, --help\n"
       "\tPrints usage information to stdout and exits.\n\n"
-      "  -V, --version\n"
+      "  -v, --version\n"
       "\tPrints version information to stdout and exits.\n\n",
       error_msg);
   exit(EXIT_FAILURE);
@@ -99,8 +99,8 @@ int main(int argc, char *argv[]) {
   char *write_file = NULL;
 
   static struct option long_options[] = {/* These options set a flag. */
-                                         {"version", no_argument, 0, 'V'},
-                                         {"help", no_argument, 0, 'H'},
+                                         {"version", no_argument, 0, 'v'},
+                                         {"help", no_argument, 0, 'h'},
                                          {"return", no_argument, 0, 'r'},
                                          {"print", no_argument, 0, 'p'},
                                          {"chunk", required_argument, 0, 'c'},
@@ -114,13 +114,13 @@ int main(int argc, char *argv[]) {
     err_print_usage("Error: invalid number of arguments\n");
 
   assemblyline_t al = asm_create_instance(NULL, 0);
-  while ((opt = getopt_long(argc, argv, "HVrpc:o:", long_options,
+  while ((opt = getopt_long(argc, argv, "hvrpc:o:", long_options,
                             &option_index)) != -1) {
     switch (opt) {
-    case 'V':
+    case 'v':
       print_version();
       break;
-    case 'H':
+    case 'h':
       err_print_usage("");
       break;
     case 'r':
