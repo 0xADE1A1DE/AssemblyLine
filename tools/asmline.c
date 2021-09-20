@@ -16,12 +16,17 @@
 
 /*command-tool for generating machine code from a x64 assembly file*/
 #include <assemblyline.h>
+#if HAVE_CONFIG_H
+#include <config.h> // from autotools
+#endif
 #include <getopt.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+
+const char *asm_version = PACKAGE_STRING;
 
 void err_print_usage(char *error_msg) {
   fprintf(
@@ -52,7 +57,7 @@ void err_print_usage(char *error_msg) {
 
 void print_version() {
 
-  printf("asmline v1.0.3\n"
+  printf("%s\n"
          "Copyright 2021 University of Adelaide\n\n"
          "Licensed under the Apache License, Version 2.0 (the \"License\");\n"
          "You may obtain a copy of the License at\n\n"
@@ -63,7 +68,8 @@ void print_version() {
          "implied.\n"
          "See the License for the specific language governing permissions and\n"
          "limitations under the License.\n\n"
-         "Written by David Wu and Joel Kuepper\n");
+         "Written by David Wu and Joel Kuepper\n",
+         asm_version);
   exit(EXIT_SUCCESS);
 }
 
