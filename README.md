@@ -102,7 +102,7 @@ then run `$ make check`. Finally, add `Makefile.am` and `sub.asm` to git.<br><br
 ***note: run `$ asmline` or `$ asmline --help` to view usage information***
 ```
 USAGE:
-	asmline [-r] [-p] [-c CHUNK_SIZE>1] [-o ELF_FILENAME_NO_EXT] path/to/file.asm
+	asmline [-r] [-p] [-c CHUNK_SIZE>1] [-o ELF_FILENAME_NO_EXT] [-h] [-v] path/to/file.asm
 
 DESCRIPTION:
 	Generates machine code from a file or stdin containing x64 assembly instructions. 
@@ -123,7 +123,7 @@ DESCRIPTION:
     ```bash
     $ objcopy --input-target=binary --globalize-symbol=FILENAME --rename-section .data=.text --output-target=elf64-x86-64 FILENAME.bin FILENAME.o
     # link the elf object file with a c program
-    $ gcc linker linker.c FILENAME.o
+    $ gcc -o linker linker.c FILENAME.o
     ```
 #### Print assembled machine code to stdout
 
