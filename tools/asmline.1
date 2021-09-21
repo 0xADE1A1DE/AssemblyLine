@@ -9,6 +9,8 @@ asmline \- assemblyline tool
 [\fB\-p\fR]
 [\fB\-c\fR \fICHUNK_SIZE>1\fR]
 [\fB\-o\fR \fIFILENAME\fR]
+[\fB\-h\fR]
+[\fB\-v\fR]
 path/to/file.asm
 
 .SH DESCRIPTION
@@ -36,7 +38,7 @@ no instruction opcode will cross the specified CHUNK_SIZE boundary.
 generates a binary file from path/to/file.asm called FILENAME.bin in the current directory.
 .TP
 .BR \-h ", " \-\-help
-executes assembly code and prints out the contents of the rax register (return register).
+Prints usage information to stdout and exits.
 .TP
 .BR \-v ", " \-\-version
-executes assembly code and prints out the contents of the rax register (return register).
+Prints version information to stdout and exits.
