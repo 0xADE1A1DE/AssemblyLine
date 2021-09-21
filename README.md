@@ -105,7 +105,7 @@ USAGE:
 	asmline [-r] [-p] [-c CHUNK_SIZE>1] [-o ELF_FILENAME_NO_EXT] path/to/file.asm
 
 DESCRIPTION:
-	Generates machine code from a file containing x64 assembly instructions. 
+	Generates machine code from a file or stdin containing x64 assembly instructions. 
         Machine code could be executed directly without the need for an executable file format. 
         Obtain command-line instructions for generating an ELF binary file from assembly code.
 ```
