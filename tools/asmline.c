@@ -32,7 +32,7 @@ void err_print_usage(char *error_msg) {
   fprintf(
       stderr,
       "%s\nUsage: asmline [-r] [-p] [-c CHUNK_SIZE>1] [-o "
-      "ELF_FILENAME_NO_EXT] path/to/file.asm\n\n"
+      "ELF_FILENAME_NO_EXT] [-h] [-v] path/to/file.asm\n\n"
       "  -r, --return\n"
       "\tExecutes assembly code and prints out the contents of the rax "
       "register (return register)\n\n"
