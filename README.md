@@ -233,10 +233,13 @@ struct INSTR_TABLE[] {
 ```
 
 ## Acknowledgements
-#### Developers:
-
-* David Wu (University of Adelaide)  
+#### Authors:
+* Chitchanok Chuengsatiansup (University of Adelaide)
+* Daniel Genkin (Georgia Tech)
 * Joel Kuepper (University of Adelaide)
+* Marku Wagner (University of Adelaide)
+* David Wu (University of Adelaide)  
+* Yuval Yarom (University of Adelaide)
 
 
 #### This project was supported by:  
