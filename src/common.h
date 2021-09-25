@@ -25,6 +25,10 @@
 #define MEM_BUFFER 6000
 // actual writable buffer size = MEM_BUFFER - BUFFER_TOLERANCE
 #define BUFFER_TOLERANCE 20
+// denotes an error during assembly
+#define ASM_ERROR -1
+// denotes an error during instruction look up
+#define INSTR_ERROR -2
 
 #define _GNU_SOURCE 1
 

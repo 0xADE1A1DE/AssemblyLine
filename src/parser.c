@@ -61,8 +61,11 @@ static int line_to_instr(struct instr *instr_data, char *filtered_asm_str) {
     instr_data->is_short = true;
   }
   // convert instruction string to enum representation
-  int key = str_to_instr_key(instr_data->instruction, opd_format);
-  if (instr_data->imm && INSTR_TABLE[key].type == CONTROL_FLOW) {
+  instr_data->key = str_to_instr_key(instr_data->instruction, opd_format);
+  FAIL_IF_VAR(instr_data->key == INSTR_ERROR,
+              "unsupported or illegal instruction: %s\n",
+              instr_data->instruction);
+  if (instr_data->imm && INSTR_TABLE[instr_data->key].type == CONTROL_FLOW) {
     if (IN_RANGE(instr_data->cons, 0xffffff80, 0xffffffff))
       instr_data->is_short = true;
     else if (IN_RANGE(instr_data->cons, 0, 0x7f) && !instr_data->is_long)
@@ -72,10 +75,8 @@ static int line_to_instr(struct instr *instr_data, char *filtered_asm_str) {
                   "cannot set a long jump to short\n");
   }
   // find the encoding for a short jump instruction if applicable
-  instr_data->key = key + instr_data->is_short;
-  FAIL_IF_VAR(instr_data->key == EOI,
-              "unsupported or illegal instruction: %s\n",
-              instr_data->instruction);
+  instr_data->key += instr_data->is_short;
+
   // convert register string to enum representation
   instr_data->opd[0] = str_to_reg(instr_data->op_cpy[0]);
   instr_data->opd_mem[0] = str_to_reg(instr_data->op_mem_cpy[0]);

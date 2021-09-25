@@ -37,6 +37,6 @@ int str_to_instr_key(char *instruction, operand_format opd_index);
  * takes a INSTR_TABLE[] index key @param key and returns the new INSTR_TABLE[]
  * index key
  */
-int to_special_instr_key(asm_instr key);
+int to_special_instr_key(int key);
 
 #endif

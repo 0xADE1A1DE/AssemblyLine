@@ -51,12 +51,13 @@ int str_to_instr_key(char *instruction, operand_format opd_index) {
             return i;
           i++;
         }
-        // operand format not found
-        return EOI;
+        // operand format is not found for instruction string
+        return INSTR_ERROR;
       }
     }
   }
-  return EOI;
+  // INSTR_TABLE entry is not found for instruction string
+  return INSTR_ERROR;
 }
 
 int to_special_instr_key(int key) {
