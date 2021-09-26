@@ -33,5 +33,6 @@ diff --ignore-trailing-space --side-by-side --left-column \
       # The idea is to translate all linebreaks into -
       tr -- '\n' '-' |
       # then delete the '--', and translate - back to \n
-      sed -e 's/--//g' -e 's/-/\n/g'
+      sed -e 's/--//g' -e 's/-/\n/g' |
+      sed -e '/[SECTION|\:|GLOBAL]/d'
   )
