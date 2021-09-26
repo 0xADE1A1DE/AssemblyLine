@@ -240,7 +240,7 @@ void encode_imm(struct instr *instruc) {
       return;
     }
   }
-  // 16 to 64 bit register and 8 bit cons combination
+  // 16 to 64 bit register and 8 bit immediate combination
   if (instruc->op_offset == 1 &&
       INSTR_TABLE[instruc->key].type != DATA_TRANSFER) {
     //-0x1 and 0x0 are always 8 bits except for mov
@@ -252,10 +252,10 @@ void encode_imm(struct instr *instruc) {
       instruc->op_offset = 1;
     // 8 bit negative immediate
     if (IN_RANGE(instruc->cons, NEG8BIT + 1, NEG64BIT)) {
-      instruc->cons &= 0xff;
+      instruc->cons &= MAX_UNSIGNED_8BIT;
       instruc->op_offset += 2;
     } else if (IN_RANGE(instruc->cons, NEG32BIT + 1, NEG64BIT))
-      instruc->cons &= 0xffffffff;
+      instruc->cons &= MAX_UNSIGNED_32BIT;
     // special condition for to mov instruction
   } else if (INSTR_TABLE[instruc->key].type == DATA_TRANSFER) {
     // only condition for mov with M operand encoding implemenation
@@ -264,7 +264,7 @@ void encode_imm(struct instr *instruc) {
         (instruc->opd[0] & reg64)) {
       SET_MOV_M(instruc->key);
       // dont zero pad imm
-      instruc->cons &= 0xffffffff;
+      instruc->cons &= MAX_UNSIGNED_32BIT;
       instruc->reduced_imm = true;
       return;
     }
@@ -277,7 +277,7 @@ void encode_imm(struct instr *instruc) {
   }
   // mask all bits except for the most significant byte
   if ((instruc->opd[0] & MODE_MASK) < reg32) {
-    instruc->cons &= 0xffff;
+    instruc->cons &= MAX_UNSIGNED_16BIT;
     instruc->reduced_imm = true;
     if(((instruc->opd[0] & MODE_MASK) == reg16 || 
        (instruc->opd[0] & MODE_MASK) == ext16) &&

@@ -39,6 +39,7 @@
 #define NEG8BIT 0xffffffffffffff00
 #define MAX_SIGNED_8BIT 0x7f
 #define MAX_UNSIGNED_8BIT 0xff
+#define MAX_UNSIGNED_16BIT 0xffff
 #define MAX_SIGNED_32BIT 0x7fffffff
 #define MAX_UNSIGNED_32BIT 0xffffffff
 // set mov I operand encoding to M
