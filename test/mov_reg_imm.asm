@@ -2,6 +2,16 @@ SECTION .text
 GLOBAL test
 test:
 mov rax, 0x2
+mov rax, 0x7f
+mov rax, 0x80
+mov rax, 0x80
+mov rax, 0xff
+mov rax, 0x7ff
+mov rax, 0x7fffffff
+mov rax, 0x8fffffff
+mov rax, 0xffffffff
+mov rax, 0x7fffffffff
+mov rax, 0xafffffffff
 mov rax, -0x2
 mov rax, -0x1
 mov r8, -0x2
