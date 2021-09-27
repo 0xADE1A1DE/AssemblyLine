@@ -1,12 +1,19 @@
+version 1.0.4-release (2021-09-27)
+	
+	- FIX bug where 'mov reg, imm' is interpreted as  movntqda
+	- updated documentation
+	- implemented register size optimization for mov instruction 
+	  to match nasm assembly style
+
+
 version 1.0.3-release (2021-09-16)
 
 	- FIX rdtsc
-
 	- ADD rdtscp,
 	- ADD ror (ri encoding only for now)
-
 	- code maintenance
 	- added library versioning
+
 
 version 1.0.2-release (2021-09-09)
 

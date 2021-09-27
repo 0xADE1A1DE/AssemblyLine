@@ -24,7 +24,6 @@ representation*/
 #include "instr_parser.h"
 #include "instructions.h"
 #include "reg_parser.h"
-//#include "supported_instructions.h"
 #include "tokenizer.h"
 #include <stdlib.h>
 #include <string.h>

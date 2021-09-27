@@ -45,4 +45,4 @@ distclean-local:
 # 3. Programs may need to be changed, recompiled, and relinked in order to use the new version. Bump current, set revision and age to 0.
 
 # in short, if only patch from configure.ac is bumped, bump the middle number below. If more is changed, read the above
-libassemblyline_la_LDFLAGS = -version-info 1:3:0
+libassemblyline_la_LDFLAGS = -version-info 1:4:0
