@@ -3,6 +3,8 @@ GLOBAL test
 test:
 add rax, rbx
 add al, 0x0
+add sp, 0x34ef
+add r8w, 0x1
 add rax, [ rbx ]
 add rax, [ rbx + 0x10 ]
 add rax, 0x0 

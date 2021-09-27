@@ -102,6 +102,7 @@ mov r15, 0xafffffffff
 mov r15, 0xfffffeeeeeeeeeee
 mov r15, 0xffffffffeeeeeeee
 mov r15, -0x2
+mov r15b, -0x2
 mov r15b, 0x2
 mov r15b, 0x7f
 mov r15b, 0x80
