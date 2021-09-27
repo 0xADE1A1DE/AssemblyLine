@@ -205,13 +205,16 @@ void encode_operands(struct instr *instruc) {
   }
 }
 static void nasm_register_size_optimize(struct instr *instruc){
+
   switch (instruc->opd[0] & MODE_MASK) {
   case reg64:
     instruc->opd[0] = (instruc->opd[0]& MODE_CLEAR) | reg32;
     break;
+
   case ext64:
     instruc->opd[0] = (instruc->opd[0]& MODE_CLEAR) | ext32;
     break;
+
   default:
     break;
   }
@@ -263,7 +266,7 @@ void encode_imm(struct instr *instruc) {
         IN_RANGE(instruc->cons, NEG32BIT + 1, NEG64BIT) &&
         (instruc->opd[0] & reg64)) {
       SET_MOV_M(instruc->key);
-      // dont zero pad imm
+      // do not zero pad immediate
       instruc->cons &= MAX_UNSIGNED_32BIT;
       instruc->reduced_imm = true;
       return;
