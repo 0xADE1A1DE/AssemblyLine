@@ -208,11 +208,11 @@ static void nasm_register_size_optimize(struct instr *instruc){
 
   switch (instruc->opd[0] & MODE_MASK) {
   case reg64:
-    instruc->opd[0] = (instruc->opd[0]& MODE_CLEAR) | reg32;
+    instruc->opd[0] = (instruc->opd[0] & MODE_CLEAR) | reg32;
     break;
 
   case ext64:
-    instruc->opd[0] = (instruc->opd[0]& MODE_CLEAR) | ext32;
+    instruc->opd[0] = (instruc->opd[0] & MODE_CLEAR) | ext32;
     break;
 
   default:
