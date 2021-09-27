@@ -84,7 +84,7 @@ static int assemble_imm(struct instr *single_instr, unsigned char ptr[]) {
   // check if zero padding is required
   if (single_instr_type != CONTROL_FLOW && single_instr_type != SHIFT)
     if (single_instr->op_offset != 3 && !single_instr->is_byte)
-      zero_pad = ((single_instr->opd[0] & MODE_MASK) > noext8) ? true : false;
+      zero_pad = ((single_instr->opd[0] & MODE_MASK) > noext8);
   // check if zero padding is required
   if (!single_instr->is_short &&
       INSTR_TABLE[single_instr->key].encode_operand > I)
@@ -92,14 +92,14 @@ static int assemble_imm(struct instr *single_instr, unsigned char ptr[]) {
   // zero pad constant to 4 bytes or 8 bytes
   if (!zero_pad)
     return ptr_pos;
-  if (bytes == 1 && (single_instr->opd[0] & MODE_MASK) == reg16)
-    bytes = 1;
-  else if (bytes == 1 && (single_instr->opd[0] & MODE_MASK) == ext16)
-    bytes = 1;
-  else if (bytes < 5)
+
+  bool is_reg16 = ((single_instr->opd[0] & MODE_MASK) == reg16);
+  bool is_ext16 = ((single_instr->opd[0] & MODE_MASK) == ext16);
+  if (bytes < 5 && !(bytes == 1 && (is_reg16 || is_ext16)))
     bytes = 4 - bytes;
   else if (bytes > 4 && bytes < 9)
     bytes = 8 - bytes;
+
   for (int k = 0; k < bytes; k++)
     ptr[ptr_pos++] = 0x0;
 
