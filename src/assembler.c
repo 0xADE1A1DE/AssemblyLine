@@ -61,15 +61,18 @@ static int assemble_imm(struct instr *single_instr, unsigned char ptr[]) {
 
   int ptr_pos = 0;
   unsigned int bytes = 0;
-  bool zero_pad = false;
   instr_type single_instr_type = INSTR_TABLE[single_instr->key].type;
   unsigned long saved_cons = single_instr->cons;
-  // check is there is a constant in the instruction
+  // check is there is a constant in the instruction and if not, return
+  // immediately
   if (!single_instr->imm)
     return ptr_pos;
+
+  // assemble the constant
   int bytes_written = assemble_const(saved_cons, ptr + ptr_pos);
   ptr_pos += bytes_written;
   bytes += bytes_written;
+
   // check if the zero byte is present?
   if (saved_cons == 0 ||
       (saved_cons > MAX_SIGNED_32BIT && saved_cons <= MAX_UNSIGNED_32BIT &&
@@ -81,21 +84,25 @@ static int assemble_imm(struct instr *single_instr, unsigned char ptr[]) {
   // no need to zero pad if the immediate operand has been reduced
   if (single_instr->reduced_imm)
     return ptr_pos;
-  // check if zero padding is required
-  if (single_instr_type != CONTROL_FLOW && single_instr_type != SHIFT)
-    if (single_instr->op_offset != 3 && !single_instr->is_byte)
-      zero_pad = ((single_instr->opd[0] & MODE_MASK) > noext8);
-  // check if zero padding is required
-  if (!single_instr->is_short &&
-      INSTR_TABLE[single_instr->key].encode_operand > I)
-    zero_pad = true;
-  // zero pad constant to 4 bytes or 8 bytes
+
+  int opd0_mode = single_instr->opd[0] & MODE_MASK;
+
+  // zero padding is required rarely.
+  bool zero_pad =
+      ((single_instr_type != CONTROL_FLOW &&
+        single_instr_type != SHIFT &&   // it must not be SHIFT/CONTROL_FLOW
+        single_instr->op_offset != 3 && // and cannot have op_offset 3
+        !single_instr->is_byte) &&      // and canot be a byte
+       opd0_mode > noext8) ||     // and op0 mode must be bigger than noext8
+      (!single_instr->is_short && // and  if its not short, it cannot be bigger
+       INSTR_TABLE[single_instr->key].encode_operand > I); // >I (i.e. O D S)
+
   if (!zero_pad)
     return ptr_pos;
 
-  bool is_reg16 = ((single_instr->opd[0] & MODE_MASK) == reg16);
-  bool is_ext16 = ((single_instr->opd[0] & MODE_MASK) == ext16);
-  if (bytes < 5 && !(bytes == 1 && (is_reg16 || is_ext16)))
+  // now calculate the required amount of zero-bytes to pad
+  bool opd0_is_16 = opd0_mode == reg16 || opd0_mode == ext16;
+  if (bytes < 5 && !(bytes == 1 && opd0_is_16))
     bytes = 4 - bytes;
   else if (bytes > 4 && bytes < 9)
     bytes = 8 - bytes;
