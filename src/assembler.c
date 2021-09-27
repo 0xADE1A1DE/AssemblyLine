@@ -90,18 +90,19 @@ static int assemble_imm(struct instr *single_instr, unsigned char ptr[]) {
       INSTR_TABLE[single_instr->key].encode_operand > I)
     zero_pad = true;
   // zero pad constant to 4 bytes or 8 bytes
-  if (zero_pad) {
-    if (bytes == 1 && (single_instr->opd[0] & MODE_MASK) == reg16)
-      bytes = 1;
-    else if (bytes == 1 && (single_instr->opd[0] & MODE_MASK) == ext16)
-      bytes = 1;
-    else if (bytes < 5)
-      bytes = 4 - bytes;
-    else if (bytes > 4 && bytes < 9)
-      bytes = 8 - bytes;
-    for (int k = 0; k < bytes; k++)
-      ptr[ptr_pos++] = 0x0;
-  }
+  if (!zero_pad)
+    return ptr_pos;
+  if (bytes == 1 && (single_instr->opd[0] & MODE_MASK) == reg16)
+    bytes = 1;
+  else if (bytes == 1 && (single_instr->opd[0] & MODE_MASK) == ext16)
+    bytes = 1;
+  else if (bytes < 5)
+    bytes = 4 - bytes;
+  else if (bytes > 4 && bytes < 9)
+    bytes = 8 - bytes;
+  for (int k = 0; k < bytes; k++)
+    ptr[ptr_pos++] = 0x0;
+
   return ptr_pos;
 }
 
