@@ -65,43 +65,42 @@ static int assemble_imm(struct instr *single_instr, unsigned char ptr[]) {
   instr_type single_instr_type = INSTR_TABLE[single_instr->key].type;
   unsigned long saved_cons = single_instr->cons;
   // check is there is a constant in the instruction
-  if (single_instr->imm) {
-    int bytes_written = assemble_const(saved_cons, ptr + ptr_pos);
-    ptr_pos += bytes_written;
-    bytes += bytes_written;
-
-    // check if the zero byte is present?
-    if (saved_cons == 0 ||
-        (saved_cons > MAX_SIGNED_32BIT && saved_cons <= MAX_UNSIGNED_32BIT &&
-         !single_instr->reduced_imm && single_instr_type != CONTROL_FLOW && 
-         single_instr_type != DATA_TRANSFER)) {
+  if (!single_instr->imm)
+    return ptr_pos;
+  int bytes_written = assemble_const(saved_cons, ptr + ptr_pos);
+  ptr_pos += bytes_written;
+  bytes += bytes_written;
+  // check if the zero byte is present?
+  if (saved_cons == 0 ||
+      (saved_cons > MAX_SIGNED_32BIT && saved_cons <= MAX_UNSIGNED_32BIT &&
+       !single_instr->reduced_imm && single_instr_type != CONTROL_FLOW &&
+       single_instr_type != DATA_TRANSFER)) {
+    ptr[ptr_pos++] = 0x0;
+    bytes++;
+  }
+  // no need to zero pad if the immediate operand has been reduced
+  if (single_instr->reduced_imm)
+    return ptr_pos;
+  // check if zero padding is required
+  if (single_instr_type != CONTROL_FLOW && single_instr_type != SHIFT)
+    if (single_instr->op_offset != 3 && !single_instr->is_byte)
+      zero_pad = ((single_instr->opd[0] & MODE_MASK) > noext8) ? true : false;
+  // check if zero padding is required
+  if (!single_instr->is_short &&
+      INSTR_TABLE[single_instr->key].encode_operand > I)
+    zero_pad = true;
+  // zero pad constant to 4 bytes or 8 bytes
+  if (zero_pad) {
+    if (bytes == 1 && (single_instr->opd[0] & MODE_MASK) == reg16)
+      bytes = 1;
+    else if (bytes == 1 && (single_instr->opd[0] & MODE_MASK) == ext16)
+      bytes = 1;
+    else if (bytes < 5)
+      bytes = 4 - bytes;
+    else if (bytes > 4 && bytes < 9)
+      bytes = 8 - bytes;
+    for (int k = 0; k < bytes; k++)
       ptr[ptr_pos++] = 0x0;
-      bytes++;
-    }
-    // no need to zero pad if the immediate operand has been reduced
-    if (single_instr->reduced_imm)
-      return ptr_pos;
-    // check if zero padding is required
-    if (single_instr_type != CONTROL_FLOW && single_instr_type != SHIFT)
-      if (single_instr->op_offset != 3 && !single_instr->is_byte)
-        zero_pad = ((single_instr->opd[0] & MODE_MASK) > noext8) ? true : false;
-    // check if zero padding is required
-    if (!single_instr->is_short &&
-        INSTR_TABLE[single_instr->key].encode_operand > I)
-      zero_pad = true;
-    // zero pad constant to 4 bytes or 8 bytes
-    if (zero_pad) {
-      if(bytes == 1 && (single_instr->opd[0] & MODE_MASK) == reg16)
-        bytes = 1;
-      else if (bytes == 1 && (single_instr->opd[0] & MODE_MASK) == ext16)
-        bytes = 1; 
-      else if (bytes < 5)
-        bytes = 4 - bytes;
-      else if (bytes > 4 && bytes < 9)
-        bytes = 8 - bytes;
-      for (int k = 0; k < bytes; k++)
-        ptr[ptr_pos++] = 0x0;
-    }
   }
   return ptr_pos;
 }
