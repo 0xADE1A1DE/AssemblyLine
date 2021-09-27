@@ -161,10 +161,13 @@ DESCRIPTION:
 To add support for new instructions please refer to: [src/README.md](https://github.com/daviduwu9/AssemblyLine/blob/main/src/README.md)<br><br>  
 
 ## Acknowledgements
-#### Developers:
-
-* David Wu (University of Adelaide)  
+#### Authors:
+* Chitchanok Chuengsatiansup (University of Adelaide)
+* Daniel Genkin (Georgia Tech)
 * Joel Kuepper (University of Adelaide)
+* Marku Wagner (University of Adelaide)
+* David Wu (University of Adelaide)  
+* Yuval Yarom (University of Adelaide)
 
 
 #### This project was supported by:  
