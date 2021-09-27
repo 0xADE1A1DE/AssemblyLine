@@ -42,10 +42,7 @@
 #define MAX_UNSIGNED_16BIT 0xffff
 #define MAX_SIGNED_32BIT 0x7fffffff
 #define MAX_UNSIGNED_32BIT 0xffffffff
-// set mov I operand encoding to M
-#define SET_MOV_M(key)                                                         \
-  if (INSTR_TABLE[key].name == mov && INSTR_TABLE[key].encode_operand == I)    \
-    key++;
+
 // set register length to 1 byte
 #define SET_BYTE ~(reg16 | reg32 | reg64)
 // used for setting prefix

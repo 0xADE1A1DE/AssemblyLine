@@ -265,7 +265,8 @@ void encode_imm(struct instr *instruc) {
     if (INSTR_TABLE[instruc->key].type == DATA_TRANSFER &&
         IN_RANGE(instruc->cons, NEG32BIT + 1, NEG64BIT) &&
         (instruc->opd[0] & reg64)) {
-      SET_MOV_M(instruc->key);
+      // set mov I operand encoding to M
+      instruc->key++;
       // do not zero pad immediate
       instruc->cons &= MAX_UNSIGNED_32BIT;
       instruc->reduced_imm = true;
