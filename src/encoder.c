@@ -204,7 +204,7 @@ void encode_operands(struct instr *instruc) {
     break;
   }
 }
-static void nasm_register_size_optimize(struct instr *instruc){
+static void nasm_register_size_optimize(struct instr *instruc) {
 
   switch (instruc->opd[0] & MODE_MASK) {
   case reg64:
@@ -283,10 +283,10 @@ void encode_imm(struct instr *instruc) {
   if ((instruc->opd[0] & MODE_MASK) < reg32) {
     instruc->cons &= MAX_UNSIGNED_16BIT;
     instruc->reduced_imm = true;
-    if(((instruc->opd[0] & MODE_MASK) == reg16 || 
-       (instruc->opd[0] & MODE_MASK) == ext16) &&
-       instruc->cons <= MAX_UNSIGNED_8BIT)
-      instruc->reduced_imm = false; 
+    if (((instruc->opd[0] & MODE_MASK) == reg16 ||
+         (instruc->opd[0] & MODE_MASK) == ext16) &&
+        instruc->cons <= MAX_UNSIGNED_8BIT)
+      instruc->reduced_imm = false;
   }
   if ((instruc->opd[0] & MODE_MASK) < reg16) {
     instruc->cons &= MAX_UNSIGNED_8BIT;
