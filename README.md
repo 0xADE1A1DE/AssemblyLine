@@ -1,18 +1,16 @@
-# Description
+# Assemblyline
 
-A C library and binary for generating machine code of x86\_64 assembly language and executing on the fly without invoking another compiler, assembler or linker.
-
-
-# How to use
+A C library and binary for generating machine code of x86\_64 assembly language and executing on the fly without invoking another compiler, assembler or linker. <br><br> 
+## How to use
 
 ***note: refer to [/src/instructions.c](https://github.com/0xADE1A1DE/AssemblyLine/tree/main/src/instructions.c) for a complete list of supported instructions***
 
 1. `$ ./configure` or `$ CFLAGS='-g -O3' ./configure` to generate Makefiles.
 1. `$ make` to compile
 1. `$ make install prefix=$(pwd)` to install it locally or `$ sudo make install` to install globally
-1. `$ gcc -o executable your_program.c -lassemblyline` to compile a c program using assemblyline  
+1. `$ gcc -o executable your_program.c -lassemblyline` to compile a c program using assemblyline<br><br>   
 
-# Example
+## Example
 
 ***note: refer to [/src/assemblyline.h](https://github.com/0xADE1A1DE/AssemblyLine/tree/main/src/assemblyline.h) for more information***
 
@@ -88,32 +86,32 @@ A C library and binary for generating machine code of x86\_64 assembly language 
 
     asm_destroy_instance(al);
     ```
-
-# Test files
+    <br>
+## Test files
 
 `$ make check` to run all test suites
 
-* To run only one testsuite `TESTS=seto.asm make -e check`, then check the ./al_nasm_compare.sh /path/to/file.asmeto.log
-* Or run the `./al_nasm_compare.sh seto.asm`
-* Adding a new test: add the testfile e.g. `sub.asm` to the directory and add `sub.asm` to the `TESTS`-variable in `Makefile.am`
-then run `$ make check`. Finally, add `Makefile.am` and `sub.asm` to git.
+* To run only one testsuite `TESTS=seto.asm make -e check`, then check `./test/seto.log`
+* Or run the `./al_nasm_compare.sh seto.asm` in the `test` directory
+* Adding a new test: add the testfile e.g. `sub.asm` to the directory and add `sub.asm` to the `TESTS`-variable in `./test/Makefile.am`
+then run `$ make clean check`. Finally, add `Makefile.am` and `sub.asm` to git.<br><br> 
 
 
-# Command-line tool: asmline
+## Command-line tool: asmline
 
 ***note: run `$ asmline` or `$ asmline --help` to view usage information***
 ```
 USAGE:
-	asmline [-r] [-p] [-c CHUNK_SIZE>1] [-o ELF_FILENAME_NO_EXT] path/to/file.asm
+	asmline [-r] [-p] [-c CHUNK_SIZE>1] [-o ELF_FILENAME_NO_EXT] [-h] [-v] path/to/file.asm
 
 DESCRIPTION:
-	Generates machine code from a file containing x64 assembly instructions. 
+	Generates machine code from a file or stdin containing x64 assembly instructions. 
         Machine code could be executed directly without the need for an executable file format. 
         Obtain command-line instructions for generating an ELF binary file from assembly code.
 ```
-## Features:
+### Features:
 
-### Create ELF file from assembly code
+#### Create ELF file from assembly code
 
 1. `$ asmline -o FILENAME path/to/file.asm` to output the generated machine code into a binary file (FILENAME.bin)
     ```
@@ -125,9 +123,9 @@ DESCRIPTION:
     ```bash
     $ objcopy --input-target=binary --globalize-symbol=FILENAME --rename-section .data=.text --output-target=elf64-x86-64 FILENAME.bin FILENAME.o
     # link the elf object file with a c program
-    $ gcc linker linker.c FILENAME.o
+    $ gcc -o linker linker.c FILENAME.o
     ```
-### Print assembled machine code to stdout
+#### Print assembled machine code to stdout
 
 1. `$ asmline -p path/to/file.asm` to write the generated machine code from `file.asm` to stdout
     ```
@@ -137,7 +135,7 @@ DESCRIPTION:
     ```
 1. The above call will output some machine code in the hexadecimal format given `path/to/file.asm`.
 
-### Chunk size fitting
+#### Chunk size fitting
 
 1. `$ asmline -c CHUNK_SIZE>1 path/to/file.asm` to appy chunk size fitting when assembling `path/to/file.asm`.
     ```
@@ -148,89 +146,19 @@ DESCRIPTION:
 1. A specific chunk size within a memory block could be specified (chunk sizes less must be greater than 1),
 1. Then a chunk size is given, assemblyline will ensure no instruction opcode crosses the chunk boundary by applying nop padding
 
-### Executing machine code directly from memory
+#### Executing machine code directly from memory
 
-1. `$ asmline --return path/to/file.asm` to directly execute `path/to/file.asm` given the following options:
+1. `$ asmline --return path/to/file.asm` to directly execute `path/to/file.asm` given the following options: 
     ```
     -r --return
             Executes assembly code and prints out the contents of the 
             rax register (return value register).
     ```
-1. `-r` executes assembly program specified by `path/to/file.asm` and print out the return value of that program  
+1. `-r` executes assembly program specified by `path/to/file.asm` and print out the return value of that program<br><br>   
   
-# How to add new instructions
+## Adding new instructions
 
-1. Get the instruction opcode layout and operand encoding format (please refer to the [intel manual](https://www.intel.com/content/dam/www/public/us/en/documents/manuals/64-ia-32-architectures-software-developer-instruction-set-reference-manual-325383.pdf)).
-1. Add the new instruction to the asm\_instr enumerator set found in the [/src/enums.h](https://github.com/0xADE1A1DE/AssemblyLine/tree/main/src/enums.h).
-1. Add a new entry to INSTR\_TABLE[] [/src/instructions.h](https://github.com/0xADE1A1DE/AssemblyLine/tree/main/src/enums.h) while maintaining alphabetical order  
-
-#### Instruction table format: 
-```c
-struct INSTR_TABLE[] {
-  
-  /* null-terminated string representation of an instruction ex: "mov"
-   * subsequent instructions of the same name with a different operand
-   * encoding will be placed contiguously with the first instance of the
-   * instuction and will have the '\0' string
-   */
-  char instr_name[MAX_INSTR_LEN];
-
-  // asm_instr enumerator for uniquely identifying a instruction
-  int name;
-
-  /* contains the valid operand formats for an instruction that maps
-   * to the same operand enccoding (at most 2 for a single operand encoding)
-   * ex: rr (instr reg,reg) && rm (instr reg, [mem]) -> RM
-   */
-  int opd_format[VALID_OPERAND_FORMATS];
-
-  /* operand encoding format as an enumerator (determines how instruction
-   * operands will be encoded) in assemblyline the 'I' character op/en will be
-   * ignored unless it is standalone ex: MI -> M , RMI -> RM , I -> I
-   */
-  operand_encoding encode_operand;
-
-  /* enumerator for defining the semantic type of an instruction
-   * where special encoding is required ( currently, only applicable for 
-   * SHIFT, DATA_TRANSFER, and CONTROLFLOW type instructions) 
-   * else set this to 'OTHER'
-   */
-  instr_type type;
-
-  /* 'i' index of opcode[i] when a byte changes in the opcode depending
-   * on the register size for the instruction
-   * (set this value to NA if not applicable to the instruction)
-   */
-  int op_offset_i;
-
-  /* 'i' index of opcode[i] when an offset is present for a REG value denoted as
-   * '+ rd' in the intel manual section 3.1.1.1 
-   * (set this value to NA if not applicable to the instruction)
-   */
-  int rd_offset_i;
-
-  /* used for instructions with a single register operand denoted as '/digit'
-   * in the intel manual section 3.1.1.1
-   * (set this value to NA if not applicable to the instruction)
-   */
-  int single_reg_r;
-
-  // number of bytes in the opcode[MAX_OPCODE_LEN] field
-  int instr_size;
-
-  /* displacement for the W0 prefix (following byte after the vector extension prefix VEX)
-   * check intel manual section 3.1.1.2
-   * (set this value to NA if not applicable to the instruction)
-   */
-  int w0_disp;
-
-  /* opcode layout for an instruction ex: {REX,0x0f,0xa9,REG}
-   * REX and REG are placeholders for the prefix and register values
-   * more can be found in enums.h op_encoding
-   */
-  unsigned int opcode[MAX_OPCODE_LEN];                 
-}
-```
+To add support for new instructions please refer to: [src/README.md](https://github.com/daviduwu9/AssemblyLine/blob/main/src/README.md)<br><br>  
 
 ## Acknowledgements
 #### Authors:

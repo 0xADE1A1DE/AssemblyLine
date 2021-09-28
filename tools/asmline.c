@@ -16,6 +16,9 @@
 
 /*command-tool for generating machine code from a x64 assembly file*/
 #include <assemblyline.h>
+#if HAVE_CONFIG_H
+#include <config.h> // from autotools
+#endif
 #include <getopt.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -23,32 +26,51 @@
 #include <string.h>
 #include <unistd.h>
 
+const char *asm_version = PACKAGE_STRING;
+
 void err_print_usage(char *error_msg) {
   fprintf(
       stderr,
-      "%s\n\nUSAGE:\n\tasmline [-r] [-p] [-c CHUNK_SIZE>1] [-o "
-      "ELF_FILENAME_NO_EXT] path/to/file.asm\n\nDESCRIPTION:\n\tGenerates "
-      "machine code from a x64 assembly file. Machine code could be "
-      "executed directly without the need of an executable file format.\n "
-      "\tObtain command line instructions for generating a ELF binary file "
-      "from assembly code.\n\n"
-      "OPTIONS:\n\t"
-      "-r --return\n"
-      "\t\tExecutes assembly code and prints out the contents of the rax "
+      "%s\nUsage: asmline [-r] [-p] [-c CHUNK_SIZE>1] [-o "
+      "ELF_FILENAME_NO_EXT] [-h] [-v] path/to/file.asm\n\n"
+      "  -r, --return\n"
+      "\tExecutes assembly code and prints out the contents of the rax "
       "register (return register)\n\n"
-      "\t-p --print\n"
-      "\t\tWhen assembling path/to/file.asm the corresponding machine code "
+      "  -p, --print\n"
+      "\tWhen assembling path/to/file.asm the corresponding machine code "
       "will be printed to stdout.\n\n"
-      "\t-c --chunk CHUNK_SIZE>1\n"
-      "\t\tSets a given CHUNK_SIZE boundary in bytes. Nop padding will be used "
+      "  -c, --chunk CHUNK_SIZE>1\n"
+      "\tSets a given CHUNK_SIZE boundary in bytes. Nop padding will be used "
       "to ensure no instruction\n"
-      "\t\topcode will cross the specified CHUNK_SIZE "
+      "\topcode will cross the specified CHUNK_SIZE "
       "boundary.\n\n"
-      "\t-o --object FILENAME\n"
-      "\t\tGenerates a binary file from path/to/file.asm called "
-      "FILENAME.bin in the current directory.\n",
+      "  -o, --object FILENAME\n"
+      "\tGenerates a binary file from path/to/file.asm called "
+      "FILENAME.bin in the current directory.\n\n"
+      "  -h, --help\n"
+      "\tPrints usage information to stdout and exits.\n\n"
+      "  -v, --version\n"
+      "\tPrints version information to stdout and exits.\n\n",
       error_msg);
   exit(EXIT_FAILURE);
+}
+
+void print_version() {
+
+  printf("%s\n"
+         "Copyright 2021 University of Adelaide\n\n"
+         "Licensed under the Apache License, Version 2.0 (the \"License\");\n"
+         "You may obtain a copy of the License at\n\n"
+         "\thttp://www.apache.org/licenses/LICENSE-2.0\n\n"
+         "Unless required by applicable law or agreed to in writing, software\n"
+         "distributed under the License is distributed on an \"AS IS\" BASIS,\n"
+         "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or "
+         "implied.\n"
+         "See the License for the specific language governing permissions and\n"
+         "limitations under the License.\n\n"
+         "Written by David Wu and Joel Kuepper\n",
+         asm_version);
+  exit(EXIT_SUCCESS);
 }
 
 int check_digit(char *optarg) {
@@ -83,6 +105,7 @@ int main(int argc, char *argv[]) {
   char *write_file = NULL;
 
   static struct option long_options[] = {/* These options set a flag. */
+                                         {"version", no_argument, 0, 'v'},
                                          {"help", no_argument, 0, 'h'},
                                          {"return", no_argument, 0, 'r'},
                                          {"print", no_argument, 0, 'p'},
@@ -94,12 +117,15 @@ int main(int argc, char *argv[]) {
   int option_index = 0;
 
   if (argc < 2 && isatty(fileno(stdin)))
-    err_print_usage("Error: invalid number of arguments");
+    err_print_usage("Error: invalid number of arguments\n");
 
   assemblyline_t al = asm_create_instance(NULL, 0);
-  while ((opt = getopt_long(argc, argv, "hrpc:o:", long_options,
+  while ((opt = getopt_long(argc, argv, "hvrpc:o:", long_options,
                             &option_index)) != -1) {
     switch (opt) {
+    case 'v':
+      print_version();
+      break;
     case 'h':
       err_print_usage("");
       break;
@@ -111,19 +137,19 @@ int main(int argc, char *argv[]) {
       break;
     case 'c':
       if (check_digit(optarg))
-        err_print_usage("Error: [-c CHUNK_SIZE>1] expects an integer");
+        err_print_usage("Error: [-c CHUNK_SIZE>1] expects an integer\n");
       chunk_size = atoi(optarg);
       asm_set_chunk_size(al, chunk_size);
       break;
     case 'o':
       if (strchr(optarg, '.'))
-        err_print_usage("elf filename cannot have an extension");
+        err_print_usage("elf filename cannot have an extension\n");
       create_bin = 1;
       write_file = optarg;
       break;
 
     default: /* '?' */
-      err_print_usage("Error: invalid option");
+      err_print_usage("");
     }
   }
 
@@ -140,7 +166,7 @@ int main(int argc, char *argv[]) {
       }
       free(line);
     } else {
-      err_print_usage("Error: Expected path/to/file.asm after options");
+      err_print_usage("Error: Expected path/to/file.asm after options\n");
     }
   } else {
     if (assemble_file(al, argv[optind]) == EXIT_FAILURE) {

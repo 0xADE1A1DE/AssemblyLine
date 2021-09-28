@@ -25,6 +25,10 @@
 #define MEM_BUFFER 6000
 // actual writable buffer size = MEM_BUFFER - BUFFER_TOLERANCE
 #define BUFFER_TOLERANCE 20
+// denotes an error during assembly
+#define ASM_ERROR -1
+// denotes an error during instruction look up
+#define INSTR_ERROR -2
 
 #define _GNU_SOURCE 1
 
@@ -39,6 +43,7 @@
 #define NEG8BIT 0xffffffffffffff00
 #define MAX_SIGNED_8BIT 0x7f
 #define MAX_UNSIGNED_8BIT 0xff
+#define MAX_UNSIGNED_16BIT 0xffff
 #define MAX_SIGNED_32BIT 0x7fffffff
 #define MAX_UNSIGNED_32BIT 0xffffffff
 
@@ -51,6 +56,7 @@
 // used for getting register type, length, and value
 #define REG_MASK 0b00000011111
 #define MODE_MASK 0b11110000000
+#define MODE_CLEAR 0b00001111111
 #define VALUE_MASK 0b00000000111
 
 // register string length

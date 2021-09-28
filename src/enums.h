@@ -84,8 +84,6 @@ typedef enum {
 
 // unique identifier for each instuction
 typedef enum {
-
-  ASM_ERROR = -1,
   EOI,
   LABEL,
   SKIP,

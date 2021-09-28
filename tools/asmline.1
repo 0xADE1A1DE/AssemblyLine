@@ -1,0 +1,44 @@
+.TH ASMLINE 1 2021-09-19 GNU
+
+.SH NAME
+asmline \- assemblyline tool 
+
+.SH SYNOPSIS
+.B asmline
+[\fB\-r\fR]
+[\fB\-p\fR]
+[\fB\-c\fR \fICHUNK_SIZE>1\fR]
+[\fB\-o\fR \fIFILENAME\fR]
+[\fB\-h\fR]
+[\fB\-v\fR]
+path/to/file.asm
+
+.SH DESCRIPTION
+.B asmline 
+Generates machine code from a file or stdin containing x64 assembly instructions. 
+.br
+Machine code could be executed directly without the need for an executable file format. 
+.br
+Obtain command-line instructions for generating an ELF binary file from assembly code.
+
+.SH OPTIONS
+.TP
+.BR \-r ", " \-\-return
+executes assembly code and prints out the contents of the rax register (return register).
+.TP
+.BR \-p ", " \-\-print
+when assembling path/to/file.asm the corresponding machine code will be printed to stdout.
+.TP
+.BR \-c ", " \-\-chunk " " \fICHUNK_SIZE>1
+sets a given CHUNK_SIZE boundary in bytes. Nop padding will be used to ensure 
+.br
+no instruction opcode will cross the specified CHUNK_SIZE boundary.
+.TP
+.BR \-o ", " \-\-object " " \fIFILENAME
+generates a binary file from path/to/file.asm called FILENAME.bin in the current directory.
+.TP
+.BR \-h ", " \-\-help
+prints usage information to stdout and exits.
+.TP
+.BR \-v ", " \-\-version
+prints version information to stdout and exits.
