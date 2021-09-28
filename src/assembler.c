@@ -92,7 +92,7 @@ static int assemble_imm(struct instr *single_instr, unsigned char ptr[]) {
       ((single_instr_type != CONTROL_FLOW &&
         single_instr_type != SHIFT &&   // it must not be SHIFT/CONTROL_FLOW
         single_instr->op_offset != 3 && // and cannot have op_offset 3
-        !single_instr->is_byte) &&      // and canot be a byte
+        !single_instr->is_byte) &&      // and cannot be a byte
        opd0_mode > noext8) ||     // and op0 mode must be bigger than noext8
       (!single_instr->is_short && // and  if its not short, it cannot be bigger
        INSTR_TABLE[single_instr->key].encode_operand > I); // >I (i.e. O D S)
