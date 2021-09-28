@@ -91,10 +91,10 @@ A C library and binary for generating machine code of x86\_64 assembly language 
 
 `$ make check` to run all test suites
 
-* To run only one testsuite `TESTS=seto.asm make -e check`, then check the ./al_nasm_compare.sh /path/to/file.asmeto.log
-* Or run the `./al_nasm_compare.sh seto.asm`
-* Adding a new test: add the testfile e.g. `sub.asm` to the directory and add `sub.asm` to the `TESTS`-variable in `Makefile.am`
-then run `$ make check`. Finally, add `Makefile.am` and `sub.asm` to git.<br><br> 
+* To run only one testsuite `TESTS=seto.asm make -e check`, then check `./test/seto.log`
+* Or run the `./al_nasm_compare.sh seto.asm` in the `test` directory
+* Adding a new test: add the testfile e.g. `sub.asm` to the directory and add `sub.asm` to the `TESTS`-variable in `./test/Makefile.am`
+then run `$ make clean check`. Finally, add `Makefile.am` and `sub.asm` to git.<br><br> 
 
 
 ## Command-line tool: asmline
