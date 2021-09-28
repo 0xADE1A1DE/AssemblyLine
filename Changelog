@@ -4,6 +4,8 @@ version 1.0.4-release (2021-09-27)
 	- updated documentation
 	- implemented register size optimization for mov instruction 
 	  to match nasm assembly style
+	- added man page
+	- added -v -h options to asmline
 
 
 version 1.0.3-release (2021-09-16)

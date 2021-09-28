@@ -20,6 +20,3 @@ AM_CFLAGS = -Wall -std=gnu99
 bin_PROGRAMS = asmline
 asmline_SOURCES = asmline.c
 dist_man1_MANS = asmline.1
-
-
-
