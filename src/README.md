@@ -20,7 +20,11 @@ struct INSTR_TABLE[] {
 
   /* contains the valid operand formats for an instruction that maps
    * to the same operand enccoding (at most 2 for a single operand encoding)
-   * ex: rr (instr reg,reg) && rm (instr reg, [mem]) -> RM
+   * ex: rr (instruction reg,reg) && rm (instruction reg, [mem]) both maps to RM
+   * when both operand formats are set to NA ex: {NA,NA}, this denotes
+   * that the instruction cannot be accessed during the parsing phase rather
+   * it could only be accessed during encoding by incrementing the INSTR_TABLE[key] 
+   * index using key++, therefore ordering is important for this type of entry
    */
   int opd_format[VALID_OPERAND_FORMATS];
 
