@@ -105,6 +105,13 @@ static void encode_two_opds(struct instr *instruc, int r, int m) {
         get_rex_prefix(instruc, instruc->opd[m], instruc->opd[r]);
     if (instruc->mem_disp && !instruc->mem_offset)
       set_zero_byte(instruc, m);
+
+    // TODO: replace with a prefix enum
+    if (INSTR_TABLE[instruc->key].opd_format[1] == rv)
+      instruc->prefix_hex = get_rex_prefix(instruc, instruc->opd[m], reg_none);
+    if (INSTR_TABLE[instruc->key].opd_format[1] == vr)
+      instruc->prefix_hex = get_rex_prefix(instruc, instruc->opd[m], reg_none);
+
     instruc->reg_hex =
         get_modRM32_64(instruc, instruc->opd[m], instruc->opd[r]);
     instruc->vex_prefix_hex =

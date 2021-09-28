@@ -40,6 +40,7 @@ TEST_ASM =\
 		  and.asm \
 		  bzhi.asm \
 		  clc.asm \
+		  gp_to_vector_register.asm \
 		  imul.asm \
 		  lea.asm \
 		  mov.asm \
@@ -53,7 +54,11 @@ TEST_ASM =\
 		  nop.asm \
 		  not.asm \
 		  or.asm \
+		  paddq.asm \
+		  pand.asm \
 		  prefetch.asm \
+		  psubq.asm \
+		  pxor.asm \
 		  rdtsc.asm \
 		  rdtscp.asm \
 		  ror.asm \

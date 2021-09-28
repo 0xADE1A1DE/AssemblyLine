@@ -20,6 +20,7 @@ mov rax, 0x7fffffffff
 mov rax, 0xafffffffff
 mov rax, 0xfffffeeeeeeeeeee
 mov rax, 0xffffffffeeeeeeee
+mov rax, 0xffffffff00000001
 mov rax, -0x2
 mov rax, -0x1
 mov rsi, 0x2

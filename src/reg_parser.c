@@ -109,8 +109,10 @@ char get_operand_type(char *operand) {
   // the starting character of each operand note the type
   if (operand[i] == '[')
     return 'm';
-  if (operand[i] >= 'a' && operand[i] <= 'z')
+  if (operand[i] >= 'a' && operand[i] <= 's')
     return 'r';
+  if (operand[i] >= 'x' && operand[i] <= 'z')
+    return 'v';
   if (operand[i] >= '0' && operand[i] <= '9')
     return 'i';
   if (operand[i] >= '-')
