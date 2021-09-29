@@ -29,6 +29,14 @@ mov rax, 0xfffffffef0000000
 mov rax, 0xffffffffeeeeeeee
 mov rax, 0xfffffeeeeeeeeeee
 mov rax, 0xf000000000000001
+mov rax, 0xffffffff00000001
+mov rax, 0x8fffffff00000001
+mov rax, 0x7fffffff00000001
+mov rax, 0xefffffff00000001
+mov rax, 0xfffffffff0000001
+mov rax, 0xffffffff80000001
+mov rax, 0xffffffffe0000001
+mov rax, 0xffffffff70000001
 mov rax, 0xffffffffffffffff
 mov rax, -0x1
 mov rax, -0x2
