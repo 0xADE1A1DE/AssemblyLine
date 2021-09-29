@@ -173,7 +173,6 @@ mov rcx, 0x2efaeeeee
 mov rsi, -0x2efdeeee
 mov rsi, -0x2efaeee
 mov rsi, 0x2efaeeeee
-
 mov qword [rax], -0x1
 mov qword [rax], 0x2
 mov qword [rax], 0x7f
