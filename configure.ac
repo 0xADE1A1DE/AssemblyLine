@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([assemblyline],[1.0.4],[yval@cs.adelaide.edu.au])
+AC_INIT([assemblyline],[1.0.5],[yval@cs.adelaide.edu.au])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_SRCDIR([src/assemblyline.c])
 AC_CONFIG_AUX_DIR([build-aux])
