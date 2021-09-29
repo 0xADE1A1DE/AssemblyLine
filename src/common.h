@@ -46,7 +46,8 @@
 #define MAX_UNSIGNED_16BIT 0xffff
 #define MAX_SIGNED_32BIT 0x7fffffff
 #define MAX_UNSIGNED_32BIT 0xffffffff
-#define NEG32_CHECK 0xf0000000
+#define NEG32BIT_CHECK 0xf0000000
+#define NEG32BIT_LOWER 0x70000000
 
 // set register length to 1 byte
 #define SET_BYTE ~(reg16 | reg32 | reg64)
