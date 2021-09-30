@@ -1,8 +1,25 @@
 SECTION .text
 GLOBAL test
 test:
+add rax, -0x1
 add rax, rbx
 add al, 0x0
+add rax, -0xfffee12
+add rax, 0xfffee12
+add rax, 0xff6ee12
+add rax, 0xf66ee12
+add rax, 0x666ee12
+add rax, 0x6666ee12
+add rax, -0xfffee12
+add rax, -0xff6ee12
+add rax, -0xf66ee12
+add rax, -0x666ee12
+add rax, -0x6666ee12
+add rax, 0xfffee12
+add rax, 0xff6ee12
+add rax, 0xf66ee12
+add rax, 0x666ee12
+add rax, 0x6666ee12
 add sp, 0x34ef
 add r8w, 0x1
 add rax, [ rbx ]
