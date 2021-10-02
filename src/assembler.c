@@ -42,7 +42,7 @@ const static uint8_t *FIXED_NOP_LENGTH[] = {
                 0x00}};
 
 /**
- * assembles the constant of a @param instruc and writes the opcode to
+ * assembles a constant from @param instruc and writes the opcode to
  * pointer location @param ptr
  */
 static int assemble_const(unsigned long constant, unsigned char ptr[]) {
