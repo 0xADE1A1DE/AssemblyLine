@@ -241,37 +241,39 @@ void encode_imm(struct instr *instruc) {
   asm_instr sp_instr = EOI;
   if (INSTR_TABLE[instruc->key].encode_operand == M) {
     if ((instruc->opd[0] == al && instruc->cons != NEG64BIT) ||
-        (instruc->opd[0] == (reg64 | al) &&
+        ((instruc->opd[0] & REG_MASK) == al &&
          IN_RANGE(instruc->cons, MAX_SIGNED_8BIT + 1, NEG64BIT - 1)))
       sp_instr = to_special_instr_key(instruc->key);
     // return if instruction has special encoding
-    if (sp_instr) {
+    if (sp_instr)
       instruc->key = sp_instr;
-      return;
-    }
   }
   // 16 to 64 bit register and 8 bit immediate combination
   if (instruc->op_offset == 1 &&
       INSTR_TABLE[instruc->key].type != DATA_TRANSFER) {
     //-0x1 and 0x0 are always 8 bits except for mov
     // 8 bit positive
-    if (instruc->cons < 0xe1 && instruc->cons >= 0)
+    if (IN_RANGE(instruc->cons, 0, 0xe0))
       instruc->op_offset += 2;
     // 8 bit positive immediate
     if (instruc->cons > MAX_SIGNED_8BIT)
       instruc->op_offset = 1;
     // 8 bit negative immediate
-    if (IN_RANGE(instruc->cons, NEG8BIT + 1, NEG64BIT)) {
+    if (IN_RANGE(instruc->cons, NEG8BIT + 1, NEG64BIT) &&
+        (instruc->cons & NEG8BIT_CHECK)) {
       instruc->cons &= MAX_UNSIGNED_8BIT;
       instruc->op_offset += 2;
-    } else if (IN_RANGE(instruc->cons, NEG32BIT + 1, NEG64BIT))
+    } else if (IN_RANGE(instruc->cons, NEG32BIT + 1, NEG64BIT)) {
       instruc->cons &= MAX_UNSIGNED_32BIT;
+      instruc->reduced_imm = true;
+    }
     // special condition for to mov instruction
   } else if (INSTR_TABLE[instruc->key].type == DATA_TRANSFER) {
     // only condition for mov with M operand encoding implemenation
+    // check if immediate operand is a negative 32 bit value
     if (INSTR_TABLE[instruc->key].type == DATA_TRANSFER &&
         IN_RANGE(instruc->cons, NEG32BIT + 1, NEG64BIT) &&
-        (instruc->opd[0] & reg64)) {
+        (instruc->cons & NEG32BIT_CHECK) && (instruc->opd[0] & reg64)) {
       // set mov I operand encoding to M
       instruc->key++;
       // do not zero pad immediate

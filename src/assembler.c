@@ -18,6 +18,7 @@
  opcodes into a location allocated in memory*/
 #include "assembler.h"
 #include "assemblyline.h"
+#include "common.h"
 #include "encoder.h"
 #include "instructions.h"
 #include "parser.h"
@@ -41,10 +42,11 @@ const static uint8_t *FIXED_NOP_LENGTH[] = {
                 0x00}};
 
 /**
- * assembles the constant of a @param single_instr and writes the opcode to
+ * assembles a constant from @param instruc and writes the opcode to
  * pointer location @param ptr
  */
 static int assemble_const(unsigned long constant, unsigned char ptr[]) {
+
   int ptr_pos = 0;
   while (constant > 0) {
     ptr[ptr_pos++] = constant & 0xff;
@@ -54,59 +56,52 @@ static int assemble_const(unsigned long constant, unsigned char ptr[]) {
 }
 
 /**
- * assembles the immediate operand of a @param single_instr and writes the
+ * assembles the immediate operand of a @param instruc and writes the
  * opcode to pointer location @param ptr
  */
-static int assemble_imm(struct instr *single_instr, unsigned char ptr[]) {
+static int assemble_imm(struct instr *instruc, unsigned char ptr[]) {
 
   int ptr_pos = 0;
-  unsigned int bytes = 0;
-  instr_type single_instr_type = INSTR_TABLE[single_instr->key].type;
-  unsigned long saved_cons = single_instr->cons;
+  unsigned long imm_operand = instruc->cons;
+  instr_type type = INSTR_TABLE[instruc->key].type;
   // check is there is a constant in the instruction and if not, return
-  // immediately
-  if (!single_instr->imm)
+  if (!instruc->imm)
     return ptr_pos;
-
   // assemble the constant
-  int bytes_written = assemble_const(saved_cons, ptr + ptr_pos);
-  ptr_pos += bytes_written;
-  bytes += bytes_written;
-
+  unsigned int bytes = assemble_const(imm_operand, ptr + ptr_pos);
+  ptr_pos += bytes;
   // check if the zero byte is present?
-  if (saved_cons == 0 ||
-      (saved_cons > MAX_SIGNED_32BIT && saved_cons <= MAX_UNSIGNED_32BIT &&
-       !single_instr->reduced_imm && single_instr_type != CONTROL_FLOW &&
-       single_instr_type != DATA_TRANSFER)) {
+  if (imm_operand == 0 ||
+      (IN_RANGE(imm_operand, NEG32BIT_CHECK, MAX_UNSIGNED_32BIT) &&
+       !instruc->reduced_imm && type != CONTROL_FLOW &&
+       type != DATA_TRANSFER)) {
     ptr[ptr_pos++] = 0x0;
     bytes++;
   }
   // no need to zero pad if the immediate operand has been reduced
-  if (single_instr->reduced_imm)
+  if (instruc->reduced_imm)
     return ptr_pos;
-
-  int opd0_mode = single_instr->opd[0] & MODE_MASK;
-
+  // get the register size for the first operand
+  int opd0_mode = instruc->opd[0] & MODE_MASK;
   // zero padding is required rarely.
   bool zero_pad =
-      ((single_instr_type != CONTROL_FLOW &&
-        single_instr_type != SHIFT &&   // it must not be SHIFT/CONTROL_FLOW
-        single_instr->op_offset != 3 && // and cannot have op_offset 3
-        !single_instr->is_byte) &&      // and canot be a byte
-       opd0_mode > noext8) ||     // and op0 mode must be bigger than noext8
-      (!single_instr->is_short && // and  if its not short, it cannot be bigger
-       INSTR_TABLE[single_instr->key].encode_operand > I); // >I (i.e. O D S)
-
+      ((type != CONTROL_FLOW &&
+        type != SHIFT &&           // it must not be SHIFT/CONTROL_FLOW
+        instruc->op_offset != 3 && // and cannot have op_offset 3
+        !instruc->is_byte) &&      // and cannot be a byte
+       opd0_mode > noext8) ||      // and op0 mode must be bigger than noext8
+      (!instruc->is_short &&       // and  if its not short, it cannot be bigger
+       INSTR_TABLE[instruc->key].encode_operand > I); // >I (i.e. O D S)
+  // return if zero padding is not required
   if (!zero_pad)
     return ptr_pos;
-
   // now calculate the required amount of zero-bytes to pad
   bool opd0_is_16 = opd0_mode == reg16 || opd0_mode == ext16;
   if (bytes < 5 && !(bytes == 1 && opd0_is_16))
     bytes = 4 - bytes;
   else if (bytes > 4 && bytes < 9)
     bytes = 8 - bytes;
-
+  // pad zero byte
   for (int k = 0; k < bytes; k++)
     ptr[ptr_pos++] = 0x0;
 
@@ -114,28 +109,25 @@ static int assemble_imm(struct instr *single_instr, unsigned char ptr[]) {
 }
 
 /**
- * assembles the memory displacement of a @param single_instr and writes the
+ * assembles the memory displacement of a @param instruc and writes the
  * opcode to pointer location @param ptr
  */
-static int assemble_mem(struct instr *single_instr, unsigned char ptr[]) {
+static int assemble_mem(struct instr *instruc, unsigned char ptr[]) {
 
   int ptr_pos = 0;
-  int mbytes = 0;
   // check if zero byte is present
-  if (single_instr->zero_byte)
+  if (instruc->zero_byte)
     ptr[ptr_pos++] = 0x0;
   // check if there is a memory reference
-  if (single_instr->mem_disp) {
-    if (single_instr->sib)
+  if (instruc->mem_disp) {
+    if (instruc->sib)
       ptr[ptr_pos++] = SIB;
-    if (single_instr->mod_disp == MOD8) {
-      ptr[ptr_pos++] = single_instr->mem_offset;
-    } else if (single_instr->mod_disp == MOD16) {
+    if (instruc->mod_disp == MOD8) {
+      ptr[ptr_pos++] = instruc->mem_offset;
+    } else if (instruc->mod_disp == MOD16) {
       // assemble memory displacement byte by byte using little endian format
-      int bytes_written =
-          assemble_const(single_instr->mem_offset, ptr + ptr_pos);
-      ptr_pos += bytes_written;
-      mbytes += bytes_written;
+      int mbytes = assemble_const(instruc->mem_offset, ptr + ptr_pos);
+      ptr_pos += mbytes;
       // zero pad memory displacement constant to 4 bytes
       mbytes = 4 - mbytes;
       for (int m = 0; m < mbytes; m++)
@@ -146,58 +138,58 @@ static int assemble_mem(struct instr *single_instr, unsigned char ptr[]) {
 }
 
 /**
- * assembles the prefix and opcode of a @param single_instr and writes the
+ * assembles the prefix and opcode of a @param instruc and writes the
  * opcode to pointer location @param ptr
  */
-static int assemble_instr(struct instr *single_instr, unsigned char ptr[]) {
+static int assemble_instr(struct instr *instruc, unsigned char ptr[]) {
 
   int ptr_pos = 0;
   int opcode_pos = 0;
   // 16 bit register prefix
-  if ((single_instr->opd[0] & BIT_MASK) == BIT_16)
+  if ((instruc->opd[0] & BIT_MASK) == BIT_16)
     ptr[ptr_pos++] = 0x66;
   // assemble all prefixes and instruction opcode
-  while (opcode_pos < INSTR_TABLE[single_instr->key].instr_size) {
-    switch (INSTR_TABLE[single_instr->key].opcode[opcode_pos]) {
+  while (opcode_pos < INSTR_TABLE[instruc->key].instr_size) {
+    switch (INSTR_TABLE[instruc->key].opcode[opcode_pos]) {
     case REX:
-      if (single_instr->prefix_hex != NO_PREFIX)
-        ptr[ptr_pos++] = single_instr->prefix_hex;
+      if (instruc->prefix_hex != NO_PREFIX)
+        ptr[ptr_pos++] = instruc->prefix_hex;
       break;
 
     case REG:
-      if (single_instr->reg_hex != NO_PREFIX)
-        ptr[ptr_pos++] = single_instr->reg_hex;
+      if (instruc->reg_hex != NO_PREFIX)
+        ptr[ptr_pos++] = instruc->reg_hex;
       break;
 
     case VEX:
-      if (single_instr->vex_prefix_hex != NO_PREFIX)
-        ptr[ptr_pos++] = single_instr->vex_prefix_hex;
+      if (instruc->vex_prefix_hex != NO_PREFIX)
+        ptr[ptr_pos++] = instruc->vex_prefix_hex;
       break;
 
     case EVEX:
-      if ((single_instr->opd[1] & BIT_MASK) == BIT_32)
+      if ((instruc->opd[1] & BIT_MASK) == BIT_32)
         ptr[ptr_pos++] = evex;
       break;
 
     case W0:
-      if (single_instr->w0_hex != NO_PREFIX)
-        ptr[ptr_pos++] = single_instr->w0_hex;
+      if (instruc->w0_hex != NO_PREFIX)
+        ptr[ptr_pos++] = instruc->w0_hex;
       break;
 
     default:
-      if (INSTR_TABLE[single_instr->key].opcode[opcode_pos] < REG) {
-        unsigned char opc = INSTR_TABLE[single_instr->key].opcode[opcode_pos];
-        if (opcode_pos == INSTR_TABLE[single_instr->key].rd_offset_i)
-          opc += single_instr->rd_offset;
-        if (opcode_pos == INSTR_TABLE[single_instr->key].op_offset_i)
-          opc += single_instr->op_offset;
+      if (INSTR_TABLE[instruc->key].opcode[opcode_pos] < REG) {
+        unsigned char opc = INSTR_TABLE[instruc->key].opcode[opcode_pos];
+        if (opcode_pos == INSTR_TABLE[instruc->key].rd_offset_i)
+          opc += instruc->rd_offset;
+        if (opcode_pos == INSTR_TABLE[instruc->key].op_offset_i)
+          opc += instruc->op_offset;
         ptr[ptr_pos++] = opc;
       }
     }
     opcode_pos++;
   }
-  if (single_instr->mem_hex != NO_PREFIX)
-    ptr[ptr_pos++] = single_instr->mem_hex;
+  if (instruc->mem_hex != NO_PREFIX)
+    ptr[ptr_pos++] = instruc->mem_hex;
   return ptr_pos;
 }
 
@@ -220,10 +212,10 @@ int nop_padding(uint8_t *buf, int nop_pad_len) {
 }
 
 /**
- * assembles a @param single_instr and write the opcode
+ * assembles a @param instruc and write the opcode
  * to pointer location @param ptr
  */
-int assemble_asm(struct instr *single_instr, uint8_t *dest) {
+int assemble_asm(struct instr *instruc, uint8_t *dest) {
 
   // dest index
   int ptr_pos = 0;
@@ -233,13 +225,13 @@ int assemble_asm(struct instr *single_instr, uint8_t *dest) {
   int imm_len = 0;
 
   // assemble instruction
-  instr_len = assemble_instr(single_instr, dest);
+  instr_len = assemble_instr(instruc, dest);
   ptr_pos += instr_len;
   // assemble memory displacemet
-  mem_len = assemble_mem(single_instr, dest + ptr_pos);
+  mem_len = assemble_mem(instruc, dest + ptr_pos);
   ptr_pos += mem_len;
   // assemble immediate
-  imm_len = assemble_imm(single_instr, dest + ptr_pos);
+  imm_len = assemble_imm(instruc, dest + ptr_pos);
   ptr_pos += imm_len;
 
   return ptr_pos;
