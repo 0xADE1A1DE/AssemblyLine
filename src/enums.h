@@ -168,6 +168,7 @@ typedef enum {
   pand,
   pmuldq,
   pop,
+  por,
   prefetcht0,
   prefetcht1,
   prefetcht2,
