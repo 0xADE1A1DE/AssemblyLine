@@ -57,6 +57,7 @@ TEST_ASM =\
 		  paddq.asm \
 		  pand.asm \
 		  pmuldq.asm \
+		  por.asm \
 		  prefetch.asm \
 		  psubq.asm \
 		  pxor.asm \
