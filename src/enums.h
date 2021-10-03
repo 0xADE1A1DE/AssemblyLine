@@ -132,6 +132,7 @@ typedef enum {
   cmovz,
   cmp,
   dec,
+  divpd,
   imul,
   inc,
   ja,
