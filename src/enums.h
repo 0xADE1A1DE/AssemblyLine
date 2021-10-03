@@ -33,6 +33,7 @@ typedef enum {
   EVEX_128,
   W0,
   MEM,
+  NP,
   NO_PREFIX = 399
 } op_encoding;
 
@@ -268,6 +269,15 @@ typedef enum {
   mm5 = 0b10101,
   mm6 = 0b10110,
   mm7 = 0b10111,
+
+  mm8 = 0b11000,
+  mm9 = 0b11001,
+  mm10 = 0b11010,
+  mm11 = 0b11011,
+  mm12 = 0b11100,
+  mm13 = 0b11101,
+  mm14 = 0b11110,
+  mm15 = 0b11111,
 
 } asm_reg;
 

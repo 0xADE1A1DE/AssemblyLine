@@ -176,6 +176,11 @@ static int assemble_instr(struct instr *instruc, unsigned char ptr[]) {
         ptr[ptr_pos++] = instruc->w0_hex;
       break;
 
+    case NP:
+      if ((instruc->opd[0] & BIT_MASK) == BIT_32)
+        ptr[ptr_pos++] = 0x67;
+      break;
+
     default:
       if (INSTR_TABLE[instruc->key].opcode[opcode_pos] < REG) {
         unsigned char opc = INSTR_TABLE[instruc->key].opcode[opcode_pos];
