@@ -68,6 +68,8 @@ const struct instr_table INSTR_TABLE[] = {
     {{'\0'},        cmp,         {NA, rm},   RM,  OTHER,          1,   NA,  NA,  3,  0, {REX, 0x3a, REG}},
     {{'\0'},        cmp,         {mi, ri},   M,   OTHER,          1,   NA,  7,   3,  0, {REX, 0x80, REG}},
     {{'\0'},        cmp,         {NA, NA},   I,   OTHER,          1,   NA,  NA,  2,  0, {REX, 0x3c}},
+    {"cvtdq2pd",    cvtdq2pd,    {NA, vv},   RM,  OTHER,          NA,  NA,  NA,  5,  0, {0xf3, REX, 0x0f, 0xe6, REG}},
+    {"cvtpd2dq",    cvtpd2dq,    {NA, vv},   RM,  OTHER,          NA,  NA,  NA,  5,  0, {0xf2, REX, 0x0f, 0xe6, REG}},
     {"dec",         dec,         {r,  m},    M,   OTHER,          1,   NA,  1,   3,  0, {REX, 0xfe, REG}},
     {"divpd",       divpd,       {NA, vv},   RM,  OTHER,          NA,  NA,  NA,  5,  0, {0x66, REX, 0x0f, 0x5e, REG}},
     {"imul",        imul,        {rri, rmi}, RM,  OTHER,          1,   NA,  NA,  3,  0, {REX, 0x68, REG}},
