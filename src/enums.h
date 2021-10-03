@@ -155,6 +155,7 @@ typedef enum {
   lfence,
   mfence,
   mov,
+  movd,
   movntdqa,
   movntq,
   movq,

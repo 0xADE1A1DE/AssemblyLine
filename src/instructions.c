@@ -116,6 +116,8 @@ const struct instr_table INSTR_TABLE[] = {
     {{'\0'},        mov,         {NA, rm},   RM,  DATA_TRANSFER,  1,   NA,  NA,  3,  0, {REX, 0x8a, REG}},
     {{'\0'},        mov,         {mi, ri},   I,   DATA_TRANSFER,  1,   1,   NA,  2,  0, {REX, 0xb0}},
     {{'\0'},        mov,         {NA, NA},   M,   DATA_TRANSFER,  1,   NA,  0,   3,  0, {REX, 0xc6, REG}},
+    {"movd",        movd,        {NA, vr},   RM,  DATA_TRANSFER,  NA,  NA,  NA,  5,  0, {0x66, REX, 0x0f, 0x6e, REG}},
+    {{'\0'},        movd,        {NA, rv},   MR,  DATA_TRANSFER,  NA,  NA,  NA,  5,  0, {0x66, REX, 0x0f, 0x7e, REG}},
     {"movntdqa",    movntdqa,    {NA, vm},   RM,  DATA_TRANSFER,  NA,  NA,  NA,  7,  0, {EVEX, 0x66, REX, 0x0f, 0x38, 0x2a, REG}},
     {"movntq",      movntq,      {NA, mr},   MR,  DATA_TRANSFER,  NA,  NA,  NA,  4,  0, {REX, 0x0f, 0xe7, REG}},
     {"movq",        movq,        {NA, vr},   RM,  DATA_TRANSFER,  NA,  NA,  NA,  5,  0, {0x66, REX, 0x0f, 0x6e, REG}},
