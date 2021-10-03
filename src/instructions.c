@@ -141,6 +141,7 @@ const struct instr_table INSTR_TABLE[] = {
     {{'\0'},        or,          {NA, rm},   RM,  OTHER,          1,   NA,  NA,  3,  0, {REX, 0x0a, REG}},
     {"paddq",       paddq,       {NA, vv},   RM,  OTHER,          NA,  NA,  NA,  5,  0, {0x66, REX, 0x0f, 0xd4, REG}},
     {"pand",        pand,        {NA, vv},   RM,  OTHER,          NA,  NA,  NA,  5,  0, {0x66, REX, 0x0f, 0xdb, REG}},
+    {"pmuldq",      pmuldq,      {NA, vv},   RM,  OTHER,          NA,  NA,  NA,  6,  0, {0x66, REX, 0x0f, 0x38, 0x28, REG}},
     {"pop",         pop,         {NA, r },   O,   DATA_TRANSFER,  NA,  1,   NA,  2,  0, {REX, 0x58}},
     {"prefetcht0",  prefetcht0,  {r, m},     M,   OTHER,          NA,  NA,  1,   4,  0, {REX,  0x0f, 0x18, REG}},
     {"prefetcht1",  prefetcht1,  {r, m},     M,   OTHER,          NA,  NA,  2,   4,  0, {REX,  0x0f, 0x18, REG}},

@@ -166,6 +166,7 @@ typedef enum {
   or,
   paddq,
   pand,
+  pmuldq,
   pop,
   prefetcht0,
   prefetcht1,
