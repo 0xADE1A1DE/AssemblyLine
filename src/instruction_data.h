@@ -44,7 +44,7 @@ struct assemblyline {
 struct instr {
   // connects instr to INSTR_TABLE[]
   asm_instr key;
-  // stores components assembly instruction into buffer
+  // stores components of assembly instruction into buffer
   char instruction[INSTRUCTION_CHAR_LEN];
   char *operand[NUM_OF_OPD];
   char op_cpy[NUM_OF_OPD][MAX_REG_LEN];
