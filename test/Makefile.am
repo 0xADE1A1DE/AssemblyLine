@@ -34,6 +34,7 @@ TEST_EXTENSIONS = .asm
 
 # add .asm-tests here
 TEST_ASM =\
+		  adc.asm \
 		  adcx.asm \
 		  add.asm \
 		  adox.asm \
@@ -59,6 +60,7 @@ TEST_ASM =\
 		  ror.asm \
 		  rorx.asm \
 		  sarx.asm \
+		  sbb.asm \
 		  setc.asm \
 		  seto.asm \
 		  shl.asm \
