@@ -40,7 +40,6 @@ TEST_ASM =\
 		  and.asm \
 		  bzhi.asm \
 		  clc.asm \
-		  gp_to_vector_register.asm \
 		  imul.asm \
 		  lea.asm \
 		  mov.asm \
@@ -74,6 +73,7 @@ TEST_ASM =\
 		  shrd.asm \
 		  shrx.asm \
 		  sub.asm \
+		  vector_divide.asm \
 		  xor.asm \
 		  zero_byte_rbp.asm
 
