@@ -74,6 +74,7 @@ TEST_ASM =\
 		  shrd.asm \
 		  shrx.asm \
 		  sub.asm \
+		  vector_add.asm \
 		  vector_divide.asm \
 		  xor.asm \
 		  zero_byte_rbp.asm
