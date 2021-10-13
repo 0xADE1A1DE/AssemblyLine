@@ -28,7 +28,7 @@ operand_format get_opd_format(char *opd_en) {
   int i = NA;
   // find the correct operand format enum given the corresponding string
   while (OPD_FORMAT_TABLE[++i].val != opd_error) {
-    if (strcmp(opd_en, OPD_FORMAT_TABLE[i].str) == 0)
+    if (!strcmp(opd_en, OPD_FORMAT_TABLE[i].str))
       return OPD_FORMAT_TABLE[i].val;
   }
   // operand format not found
@@ -49,7 +49,7 @@ int str_to_instr_key(char *instruction, operand_format opd_index) {
   while (INSTR_TABLE[++i].name != NA) {
     if (INSTR_TABLE[i].instr_name[0] != '\0') {
       // compare intruction strings
-      if (strcmp(instruction, INSTR_TABLE[i].instr_name) == 0) {
+      if (!strcmp(instruction, INSTR_TABLE[i].instr_name)) {
         asm_instr found_instr = INSTR_TABLE[i].name;
         while (INSTR_TABLE[i].name == found_instr) {
           // compare operand formats
