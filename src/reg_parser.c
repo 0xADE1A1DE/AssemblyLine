@@ -15,9 +15,9 @@
  */
 
 /*implements reg_parser.h*/
+#include "reg_parser.h"
 #include "common.h"
 #include <ctype.h>
-#include "reg_parser.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -89,8 +89,8 @@ void get_second_reg(char *mem, char *reg) {
     if (plus && IN_RANGE(mem[i], 'a', 'z')) {
       int j = i;
       int k = 0;
-      while (((IN_RANGE(mem[j], 'a', 'x')) ||
-              (IN_RANGE(mem[j], '0', '9')) && k < 5)
+      while (((IN_RANGE(mem[j], 'a', 'x')) || (IN_RANGE(mem[j], '0', '9'))) &&
+             k < 5)
         reg[k++] = mem[j++];
       return;
     }
@@ -136,21 +136,21 @@ asm_reg str_to_reg(char *reg) {
     return reg_none;
   unsigned int end = strlen(reg) - 1;
   // 64 bit register
-  if (reg[0] == 'r') {
-    if (reg[1] >= 'a' && reg[1] <= 'z')
+  if (tolower(reg[0]) == 'r') {
+    if (IN_RANGE(tolower(reg[1]), 'a', 'z'))
       return reg64 | find_reg(0, 4, reg);
-    if (INRANGE(tolower(reg[1]), '0', '9') && reg[end] == 'd')
+    if (IN_RANGE(tolower(reg[1]), '0', '9') && reg[end] == 'd')
       return ext32 | find_reg(8, 3, reg);
-    if (INRANGE(tolower(reg[1]), '0', '9') && reg[end] == 'w')
+    if (IN_RANGE(tolower(reg[1]), '0', '9') && reg[end] == 'w')
       return ext16 | find_reg(8, 2, reg);
-    if (INRANGE(tolower(reg[1]), '0', '9') && reg[end] == 'b')
+    if (IN_RANGE(tolower(reg[1]), '0', '9') && reg[end] == 'b')
       return ext8 | find_reg(8, 0, reg);
     else
       return ext64 | find_reg(8, 4, reg);
     // vector registers
   } else if (tolower(reg[0]) == 'm') {
     return mmx64 | find_reg(16, 4, reg);
-  } else if (to_lower(reg[0]) == 'x') {
+  } else if (tolower(reg[0]) == 'x') {
     return mmx64 | find_reg(16, 5, reg);
     // 64 bit register
   } else if (tolower(reg[0]) == 'e') {
