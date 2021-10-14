@@ -139,11 +139,11 @@ asm_reg str_to_reg(char *reg) {
   if (tolower(reg[0]) == 'r') {
     if (IN_RANGE(tolower(reg[1]), 'a', 'z'))
       return reg64 | find_reg(0, 4, reg);
-    if (IN_RANGE(tolower(reg[1]), '0', '9') && reg[end] == 'd')
+    if (IN_RANGE(reg[1], '0', '9') && reg[end] == 'd')
       return ext32 | find_reg(8, 3, reg);
-    if (IN_RANGE(tolower(reg[1]), '0', '9') && reg[end] == 'w')
+    if (IN_RANGE(reg[1], '0', '9') && reg[end] == 'w')
       return ext16 | find_reg(8, 2, reg);
-    if (IN_RANGE(tolower(reg[1]), '0', '9') && reg[end] == 'b')
+    if (IN_RANGE(reg[1], '0', '9') && reg[end] == 'b')
       return ext8 | find_reg(8, 0, reg);
     else
       return ext64 | find_reg(8, 4, reg);
