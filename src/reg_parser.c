@@ -86,7 +86,7 @@ void get_second_reg(char *mem, char *reg) {
   bool plus = false;
   // copies the register from mem to reg ex: "[rax+0x16]" -> "rax"
   for (i = 0; i < strlen(mem); i++) {
-    if (plus && IN_RANGE(mem[i], 'a', 'z')) {
+    if (plus && IN_RANGE(tolower(mem[i]), 'a', 'z')) {
       int j = i;
       int k = 0;
       while (((IN_RANGE(tolower(mem[j]), 'a', 'x')) ||
@@ -140,11 +140,11 @@ asm_reg str_to_reg(char *reg) {
   if (tolower(reg[0]) == 'r') {
     if (IN_RANGE(tolower(reg[1]), 'a', 'z'))
       return reg64 | find_reg(0, 4, reg);
-    if (IN_RANGE(reg[1], '0', '9') && reg[end] == 'd')
+    if (IN_RANGE(reg[1], '0', '9') && tolower(reg[end]) == 'd')
       return ext32 | find_reg(8, 3, reg);
-    if (IN_RANGE(reg[1], '0', '9') && reg[end] == 'w')
+    if (IN_RANGE(reg[1], '0', '9') && tolower(reg[end]) == 'w')
       return ext16 | find_reg(8, 2, reg);
-    if (IN_RANGE(reg[1], '0', '9') && reg[end] == 'b')
+    if (IN_RANGE(reg[1], '0', '9') && tolower(reg[end]) == 'b')
       return ext8 | find_reg(8, 0, reg);
     else
       return ext64 | find_reg(8, 4, reg);
@@ -161,7 +161,7 @@ asm_reg str_to_reg(char *reg) {
   else {
     if (tolower(reg[end]) == 'l')
       return reg8 | find_reg(0, 0, reg);
-    if (reg[end] == 'h')
+    if (tolower(reg[end]) == 'h')
       return noext8 | find_reg(4, 1, reg);
     return reg16 | find_reg(0, 2, reg);
   }
