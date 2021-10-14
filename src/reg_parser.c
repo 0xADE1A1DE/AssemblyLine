@@ -29,13 +29,13 @@ int find_add_mem(char *mem, bool *neg, int *base) {
       *neg = true;
     // memory displacement represented in hex
     if (mem[i] == '0' && (mem[i - 1] == '-' || mem[i - 1] == '+')) {
-      if (mem[i + 1] == 'x')
+      if (tolower(mem[i + 1]) == 'x')
         return i;
       // memory displacement represented in decimal
     } else if (IN_RANGE(mem[i], '1', '9') &&
                (mem[i - 1] == '-' || mem[i - 1] == '+')) {
       if (mem[i - 1] == '-' || mem[i - 1] == '+') {
-        if (mem[i + 1] != 'x') {
+        if (tolower(mem[i + 1]) != 'x') {
           *base = 10;
           return i;
         }
@@ -89,7 +89,8 @@ void get_second_reg(char *mem, char *reg) {
     if (plus && IN_RANGE(mem[i], 'a', 'z')) {
       int j = i;
       int k = 0;
-      while (((IN_RANGE(mem[j], 'a', 'x')) || (IN_RANGE(mem[j], '0', '9'))) &&
+      while (((IN_RANGE(tolower(mem[j]), 'a', 'x')) ||
+              (IN_RANGE(mem[j], '0', '9'))) &&
              k < 5)
         reg[k++] = mem[j++];
       return;
