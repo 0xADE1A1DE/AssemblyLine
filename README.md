@@ -158,7 +158,7 @@ DESCRIPTION:
   
 ## Adding new instructions
 
-To add support for new instructions please refer to: [src/README.md](https://github.com/0xADE1A1DE/AssemblyLine/tree/main/src)<br><br>  
+To add support for new instructions please refer to: [src/README.md](https://github.com/0xADE1A1DE/AssemblyLine/blob/main/src/README.md)<br><br>  
 
 ## Acknowledgements
 #### Authors:
