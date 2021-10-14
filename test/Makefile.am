@@ -48,6 +48,7 @@ TEST_ASM =\
 		  movntq.asm \
 		  movzx.asm \
 		  mov_reg_imm.asm \
+		  MOV_REG_IMM.asm \
 		  mulx.asm \
 		  negative_mem_disp.asm \
 		  new_instruction.asm \
