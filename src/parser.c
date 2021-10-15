@@ -25,6 +25,7 @@ representation*/
 #include "instructions.h"
 #include "reg_parser.h"
 #include "tokenizer.h"
+#include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/mman.h>
@@ -124,21 +125,21 @@ static int filter_assembly_str_fsa(const char unfiltered_str[],
     switch (filter_state) {
     case BEGIN:
       if (unfiltered_str[i] >= 'A' && unfiltered_str[i] <= 'z') {
-        filter_str[j++] = unfiltered_str[i];
+        filter_str[j++] = tolower(unfiltered_str[i]);
         filter_state = FIRST_CH;
       }
       break;
     case FIRST_CH:
       if (unfiltered_str[i] > '!')
-        filter_str[j++] = unfiltered_str[i];
+        filter_str[j++] = tolower(unfiltered_str[i]);
       else if (unfiltered_str[i] == ' ') {
-        filter_str[j++] = unfiltered_str[i];
+        filter_str[j++] = tolower(unfiltered_str[i]);
         filter_state = SPACE_FOUND;
       }
       break;
     case SPACE_FOUND:
       if (unfiltered_str[i] > '!')
-        filter_str[j++] = unfiltered_str[i];
+        filter_str[j++] = tolower(unfiltered_str[i]);
       break;
     }
     // last printable ascii character
@@ -167,8 +168,8 @@ static int str_to_instr(struct instr *instr_data, const char unfiltered_str[],
   // printf("filter = {%s}\n", filter);
   *read_len = ch_pos;
   // map filter_str to instr_data if not it is not a label
-  if (filter_str[0] != '\0' && strstr(filter_str, "SECTION") == NULL &&
-      strstr(filter_str, "GLOBAL") == NULL && strchr(filter_str, ':') == NULL)
+  if (filter_str[0] != '\0' && strstr(filter_str, "section") == NULL &&
+      strstr(filter_str, "global") == NULL && strchr(filter_str, ':') == NULL)
     return line_to_instr(instr_data, filter_str);
   // set to skip and return EXIT_SUCCESS
   instr_data->key = SKIP;

@@ -19,7 +19,6 @@
 #include "instr_parser.h"
 #include "instruction_data.h"
 #include "instructions.h"
-#include <ctype.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -28,7 +27,7 @@ operand_format get_opd_format(char *opd_en) {
   int i = NA;
   // find the correct operand format enum given the corresponding string
   while (OPD_FORMAT_TABLE[++i].val != opd_error) {
-    if (!strcmp(opd_en, OPD_FORMAT_TABLE[i].str))
+    if (!strcasecmp(opd_en, OPD_FORMAT_TABLE[i].str))
       return OPD_FORMAT_TABLE[i].val;
   }
   // operand format not found
@@ -37,12 +36,11 @@ operand_format get_opd_format(char *opd_en) {
 }
 
 int str_to_instr_key(char *instruction, operand_format opd_index) {
-	
+
   int i = 20000;
   // set index of INSTR_TABLE[] to the first letter of instruction
-  if(IN_RANGE(instruction[0],'A','Z') || 
-     IN_RANGE(instruction[0],'a','z'))
-    i = instr_table_index[tolower(instruction[0]) - 'a'] - 1;
+  if (IN_RANGE(instruction[0], 'a', 'z'))
+    i = instr_table_index[instruction[0] - 'a'] - 1;
   else
     return INSTR_ERROR;
   // search for instruction entry in INSTR_TABLE[]
