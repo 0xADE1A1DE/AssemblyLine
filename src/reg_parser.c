@@ -17,7 +17,6 @@
 /*implements reg_parser.h*/
 #include "reg_parser.h"
 #include "common.h"
-#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -29,13 +28,13 @@ int find_add_mem(char *mem, bool *neg, int *base) {
       *neg = true;
     // memory displacement represented in hex
     if (mem[i] == '0' && (mem[i - 1] == '-' || mem[i - 1] == '+')) {
-      if (tolower(mem[i + 1]) == 'x')
+      if (mem[i + 1] == 'x')
         return i;
       // memory displacement represented in decimal
     } else if (IN_RANGE(mem[i], '1', '9') &&
                (mem[i - 1] == '-' || mem[i - 1] == '+')) {
       if (mem[i - 1] == '-' || mem[i - 1] == '+') {
-        if (tolower(mem[i + 1]) != 'x') {
+        if (mem[i + 1] != 'x') {
           *base = 10;
           return i;
         }
@@ -67,13 +66,13 @@ void get_reg_str(char *opd_str, char *reg) {
   int j = 0;
   // copies the register from mem to reg ex: "rax ," -> "rax"
   for (int i = 0; i < strlen(opd_str); i++) {
-    if (j > 0 && IN_RANGE(tolower(opd_str[i]), 'a', 'z'))
+    if (j > 0 && IN_RANGE(opd_str[i], 'a', 'z'))
       reg[j++] = opd_str[i];
     else if (j > 0 && IN_RANGE(opd_str[i], '0', '9'))
       reg[j++] = opd_str[i];
     else if (j > 0)
       return;
-    if (j < 1 && IN_RANGE(tolower(opd_str[i]), 'a', 'z'))
+    if (j < 1 && IN_RANGE(opd_str[i], 'a', 'z'))
       reg[j++] = opd_str[i];
     if (j > 4)
       return;
@@ -86,11 +85,10 @@ void get_second_reg(char *mem, char *reg) {
   bool plus = false;
   // copies the register from mem to reg ex: "[rax+0x16]" -> "rax"
   for (i = 0; i < strlen(mem); i++) {
-    if (plus && IN_RANGE(tolower(mem[i]), 'a', 'z')) {
+    if (plus && IN_RANGE(mem[i], 'a', 'z')) {
       int j = i;
       int k = 0;
-      while (((IN_RANGE(tolower(mem[j]), 'a', 'x')) ||
-              (IN_RANGE(mem[j], '0', '9'))) &&
+      while (((IN_RANGE(mem[j], 'a', 'x')) || (IN_RANGE(mem[j], '0', '9'))) &&
              k < 5)
         reg[k++] = mem[j++];
       return;
@@ -111,7 +109,7 @@ char get_operand_type(char *operand) {
   // the starting character of each operand note the type
   if (operand[i] == '[')
     return 'm';
-  if (IN_RANGE(tolower(operand[i]), 'a', 'z'))
+  if (IN_RANGE(operand[i], 'a', 'z'))
     return 'r';
   if (IN_RANGE(operand[i], '0', '9'))
     return 'i';
@@ -124,7 +122,7 @@ char get_operand_type(char *operand) {
 asm_reg find_reg(int row, const int col, char *reg_str) {
   // match reg_str to REG_TABLE reg_conversion entry
   while (REG_TABLE[row].reg_conversion[col][0] != '\0') {
-    if (!strcasecmp(reg_str, REG_TABLE[row].reg_conversion[col]))
+    if (!strcmp(reg_str, REG_TABLE[row].reg_conversion[col]))
       return REG_TABLE[row].gen_reg;
     row++;
   }
@@ -137,31 +135,31 @@ asm_reg str_to_reg(char *reg) {
     return reg_none;
   unsigned int end = strlen(reg) - 1;
   // 64 bit register
-  if (tolower(reg[0]) == 'r') {
-    if (IN_RANGE(tolower(reg[1]), 'a', 'z'))
+  if (reg[0] == 'r') {
+    if (IN_RANGE(reg[1], 'a', 'z'))
       return reg64 | find_reg(0, 4, reg);
-    if (IN_RANGE(reg[1], '0', '9') && tolower(reg[end]) == 'd')
+    if (IN_RANGE(reg[1], '0', '9') && reg[end] == 'd')
       return ext32 | find_reg(8, 3, reg);
-    if (IN_RANGE(reg[1], '0', '9') && tolower(reg[end]) == 'w')
+    if (IN_RANGE(reg[1], '0', '9') && reg[end] == 'w')
       return ext16 | find_reg(8, 2, reg);
-    if (IN_RANGE(reg[1], '0', '9') && tolower(reg[end]) == 'b')
+    if (IN_RANGE(reg[1], '0', '9') && reg[end] == 'b')
       return ext8 | find_reg(8, 0, reg);
     else
       return ext64 | find_reg(8, 4, reg);
     // vector registers
-  } else if (tolower(reg[0]) == 'm') {
+  } else if (reg[0] == 'm') {
     return mmx64 | find_reg(16, 4, reg);
-  } else if (tolower(reg[0]) == 'x') {
+  } else if (reg[0] == 'x') {
     return mmx64 | find_reg(16, 5, reg);
     // 64 bit register
-  } else if (tolower(reg[0]) == 'e') {
+  } else if (reg[0] == 'e') {
     return reg32 | find_reg(0, 3, reg);
   }
   // 16-8 bit register
   else {
-    if (tolower(reg[end]) == 'l')
+    if (reg[end] == 'l')
       return reg8 | find_reg(0, 0, reg);
-    if (tolower(reg[end]) == 'h')
+    if (reg[end] == 'h')
       return noext8 | find_reg(4, 1, reg);
     return reg16 | find_reg(0, 2, reg);
   }
