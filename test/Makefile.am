@@ -76,6 +76,7 @@ TEST_ASM =\
 		  sub.asm \
 		  vector_add.asm \
 		  vector_float_divide.asm \
+		  vector_float_mul.asm \
 		  vector_mul.asm \
 		  vector_sub.asm \
 		  xor.asm \
