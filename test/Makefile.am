@@ -75,7 +75,7 @@ TEST_ASM =\
 		  shrx.asm \
 		  sub.asm \
 		  vector_add.asm \
-		  vector_divide.asm \
+		  vector_float_divide.asm \
 		  vector_mul.asm \
 		  vector_sub.asm \
 		  xor.asm \
