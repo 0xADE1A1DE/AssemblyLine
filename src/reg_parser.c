@@ -54,7 +54,7 @@ uint32_t process_neg_disp(uint32_t neg_num) {
 int get_opcode_offset(asm_reg reg_value) {
 
   unsigned int index = reg_value & MODE_MASK;
-  if (index >= reg16 && index <= ext64)
+  if (index >= reg16)
     return 1;
   else
     return none;
