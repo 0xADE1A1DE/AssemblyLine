@@ -41,6 +41,7 @@ TEST_ASM =\
 		  and.asm \
 		  bzhi.asm \
 		  clc.asm \
+		  high_low_xmm.asm \
 		  imul.asm \
 		  lea.asm \
 		  mov.asm \
