@@ -179,6 +179,7 @@ typedef enum {
   prefetcht2,
   prefetchnta,
   psubq,
+  punpcklqdq,
   push,
   pxor,
   rcr,
