@@ -143,7 +143,9 @@ static void encode_special_opd(struct instr *instruc, int m, int i) {
 
   switch (INSTR_TABLE[instruc->key].encode_operand) {
   case M:
+    // printf("here\n");
     instruc->prefix_hex = get_rex_prefix(instruc, instruc->opd[m], reg_none);
+    // printf("instruc->prefix_hex = %x\n", instruc->prefix_hex);
     if (instruc->mem_disp && !instruc->mem_offset)
       set_zero_byte(instruc, m);
     instruc->reg_hex = get_modRM32_64(instruc, instruc->opd[m],
@@ -260,7 +262,6 @@ void encode_imm(struct instr *instruc) {
       instruc->op_offset = 1;
     if ((instruc->opd[0] & MODE_MASK) == mmx64)
       instruc->reduced_imm = true;
-
     // 8 bit negative immediate
     if (IN_RANGE(instruc->cons, NEG8BIT + 1, NEG64BIT) &&
         (instruc->cons & NEG8BIT_CHECK)) {

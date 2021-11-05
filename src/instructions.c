@@ -152,6 +152,7 @@ const struct instr_table INSTR_TABLE[] = {
     {"prefetcht1",  prefetcht1,  {r, m},     M,   OTHER,          NA,  NA,  2,   4,  0, {REX,  0x0f, 0x18, REG}},
     {"prefetcht2",  prefetcht2,  {r, m},     M,   OTHER,          NA,  NA,  3,   4,  0, {REX,  0x0f, 0x18, REG}},
     {"prefetchnta", prefetchnta, {r, m},     M,   OTHER,          NA,  NA,  0,   4,  0, {REX,  0x0f, 0x18, REG}},
+    {"psrldq",      psrldq,      {NA, vi},   M,   OTHER,          NA,  NA,  3,   5,  0, {0x66, REX, 0x0f, 0x73, REG}},
     {"psubq",       psubq,       {NA, vv},   RM,  OTHER,          NA,  NA,  NA,  5,  0, {0x66, REX, 0x0f, 0xfb, REG}},
     {"pxor",        pxor,        {NA, vv},   RM,  OTHER,          NA,  NA,  NA,  5,  0, {0x66, REX, 0x0f, 0xef, REG}},
     {"punpcklqdq",  punpcklqdq,  {NA, vv},   RM,  OTHER,          NA,  NA,  NA,  5,  0, {0x66, REX, 0x0f, 0x6c, REG}},      

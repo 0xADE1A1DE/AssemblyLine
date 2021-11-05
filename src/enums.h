@@ -88,6 +88,7 @@ typedef enum {
   vr,
   rv,
   vv,
+  vi,
   vm,
   mv,
 } operand_format;
@@ -178,6 +179,7 @@ typedef enum {
   prefetcht1,
   prefetcht2,
   prefetchnta,
+  psrldq,
   psubq,
   punpcklqdq,
   push,
@@ -239,6 +241,7 @@ typedef enum {
   reg64 = 0b10000000000,
   ext64 = 0b10010000000,
   mmx64 = 0b10100000000,
+  xmmx64 = 0b10110000000,
 } bit_mode;
 
 // register representation (converted from string)
@@ -275,14 +278,14 @@ typedef enum {
   mm6 = 0b10110,
   mm7 = 0b10111,
 
-  xmm8 = 0b11000,
-  xmm9 = 0b11001,
-  xmm10 = 0b11010,
-  xmm11 = 0b11011,
-  xmm12 = 0b11100,
-  xmm13 = 0b11101,
-  xmm14 = 0b11110,
-  xmm15 = 0b11111,
+  mm8 = 0b11000,
+  mm9 = 0b11001,
+  mm10 = 0b11010,
+  mm11 = 0b11011,
+  mm12 = 0b11100,
+  mm13 = 0b11101,
+  mm14 = 0b11110,
+  mm15 = 0b11111,
 
 } asm_reg;
 
