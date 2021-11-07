@@ -88,9 +88,9 @@ static int assemble_imm(struct instr *instruc, unsigned char ptr[]) {
       ((type != CONTROL_FLOW &&
         type != SHIFT &&           // it must not be SHIFT/CONTROL_FLOW
         instruc->op_offset != 3 && // and cannot have op_offset 3
-        !instruc->is_byte) &&      // and cannot be a byte
+        !instruc->keyword.is_byte) &&      // and cannot be a byte
        opd0_mode > noext8) ||      // and op0 mode must be bigger than noext8
-      (!instruc->is_short &&       // and  if its not short, it cannot be bigger
+      (!instruc->keyword.is_short &&       // and  if its not short, it cannot be bigger
        INSTR_TABLE[instruc->key].encode_operand > I); // >I (i.e. O D S)
   // return if zero padding is not required
   if (!zero_pad)
@@ -152,18 +152,18 @@ static int assemble_instr(struct instr *instruc, unsigned char ptr[]) {
   while (opcode_pos < INSTR_TABLE[instruc->key].instr_size) {
     switch (INSTR_TABLE[instruc->key].opcode[opcode_pos]) {
     case REX:
-      if (instruc->prefix_hex != NO_PREFIX)
-        ptr[ptr_pos++] = instruc->prefix_hex;
+      if (instruc->hex.rex != NO_PREFIX)
+        ptr[ptr_pos++] = instruc->hex.rex;
       break;
 
     case REG:
-      if (instruc->reg_hex != NO_PREFIX)
-        ptr[ptr_pos++] = instruc->reg_hex;
+      if (instruc->hex.reg != NO_PREFIX)
+        ptr[ptr_pos++] = instruc->hex.reg;
       break;
 
     case VEX:
-      if (instruc->vex_prefix_hex != NO_PREFIX)
-        ptr[ptr_pos++] = instruc->vex_prefix_hex;
+      if (instruc->hex.vex != NO_PREFIX)
+        ptr[ptr_pos++] = instruc->hex.vex;
       break;
 
     case EVEX:
@@ -172,8 +172,8 @@ static int assemble_instr(struct instr *instruc, unsigned char ptr[]) {
       break;
 
     case W0:
-      if (instruc->w0_hex != NO_PREFIX)
-        ptr[ptr_pos++] = instruc->w0_hex;
+      if (instruc->hex.w0 != NO_PREFIX)
+        ptr[ptr_pos++] = instruc->hex.w0;
       break;
 
     default:
@@ -188,8 +188,8 @@ static int assemble_instr(struct instr *instruc, unsigned char ptr[]) {
     }
     opcode_pos++;
   }
-  if (instruc->mem_hex != NO_PREFIX)
-    ptr[ptr_pos++] = instruc->mem_hex;
+  if (instruc->hex.mem != NO_PREFIX)
+    ptr[ptr_pos++] = instruc->hex.mem;
   return ptr_pos;
 }
 

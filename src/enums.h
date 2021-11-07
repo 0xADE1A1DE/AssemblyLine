@@ -38,7 +38,7 @@ typedef enum {
 // only used for determining what prefix to use based on registers
 typedef enum {
 
-  rex = 0x40,
+  rex_ = 0x40,
   rex_w = 0x48,
   rex_b = 0x01,
   rex_r = 0x04,

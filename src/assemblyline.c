@@ -88,6 +88,7 @@ int asm_destroy_instance(assemblyline_t instance) {
 
 // checks the minimum buffer length requirement 20 bytes at least
 static int check_buffer_len(int buffer_len) {
+
   FAIL_IF_MSG(buffer_len < BUFFER_TOLERANCE,
               "insufficient buffer size: ensure length of buffer is at least "
               "20 bytes\n");

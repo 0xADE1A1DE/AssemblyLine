@@ -52,13 +52,13 @@ static int line_to_instr(struct instr *instr_data, char *filtered_asm_str) {
   // tokenize filtered instruction for mapping to instr internal structure
   FAIL_IF_MSG(instr_tok(instr_data, filtered_asm_str), "syntax error\n");
   // convert operand format from string to enum representation
-  operand_format opd_format = get_opd_format(instr_data->opd_type);
+  operand_format opd_format = get_opd_format(instr_data->opds.opd_type);
   FAIL_IF_VAR(opd_format == opd_error, "illegal operand format: %s\n",
-              instr_data->opd_type)
+              instr_data->opds.opd_type)
   // jcc [MEM] no register
-  if (opd_format == m && instr_data->op_cpy[0][0] == '\0') {
+  if (opd_format == m && instr_data->opds.opd_cpy[0][0] == '\0') {
     instr_data->mod_disp &= MOD16;
-    instr_data->is_short = true;
+    instr_data->keyword.is_short = true;
   }
   // convert instruction string to enum representation
   instr_data->key = str_to_instr_key(instr_data->instruction, opd_format);
@@ -67,28 +67,29 @@ static int line_to_instr(struct instr *instr_data, char *filtered_asm_str) {
               instr_data->instruction);
   if (instr_data->imm && INSTR_TABLE[instr_data->key].type == CONTROL_FLOW) {
     if (IN_RANGE(instr_data->cons, 0xffffff80, 0xffffffff))
-      instr_data->is_short = true;
-    else if (IN_RANGE(instr_data->cons, 0, 0x7f) && !instr_data->is_long)
-      instr_data->is_short = true;
+      instr_data->keyword.is_short = true;
+    else if (IN_RANGE(instr_data->cons, 0, 0x7f) &&
+             !instr_data->keyword.is_long)
+      instr_data->keyword.is_short = true;
     else
-      FAIL_IF_MSG(instr_data->cons > 0x7f && instr_data->is_short,
+      FAIL_IF_MSG(instr_data->cons > 0x7f && instr_data->keyword.is_short,
                   "cannot set a long jump to short\n");
   }
   // find the encoding for a short jump instruction if applicable
-  instr_data->key += instr_data->is_short;
+  instr_data->key += instr_data->keyword.is_short;
 
   // convert register string to enum representation
-  instr_data->opd[0] = str_to_reg(instr_data->op_cpy[0]);
-  instr_data->opd_mem[0] = str_to_reg(instr_data->op_mem_cpy[0]);
-  instr_data->opd[1] = str_to_reg(instr_data->op_cpy[1]);
-  instr_data->opd_mem[1] = str_to_reg(instr_data->op_mem_cpy[1]);
-  instr_data->opd[2] = str_to_reg(instr_data->op_cpy[2]);
+  instr_data->opd[0] = str_to_reg(instr_data->opds.opd_cpy[0]);
+  instr_data->opd_mem[0] = str_to_reg(instr_data->opds.opd_mem_cpy[0]);
+  instr_data->opd[1] = str_to_reg(instr_data->opds.opd_cpy[1]);
+  instr_data->opd_mem[1] = str_to_reg(instr_data->opds.opd_mem_cpy[1]);
+  instr_data->opd[2] = str_to_reg(instr_data->opds.opd_cpy[2]);
   // values will be determined during encoding
-  instr_data->reg_hex = NO_PREFIX;
-  instr_data->prefix_hex = NO_PREFIX;
-  instr_data->vex_prefix_hex = NO_PREFIX;
-  instr_data->w0_hex = NO_PREFIX;
-  instr_data->mem_hex = NO_PREFIX;
+  instr_data->hex.reg = NO_PREFIX;
+  instr_data->hex.rex = NO_PREFIX;
+  instr_data->hex.vex = NO_PREFIX;
+  instr_data->hex.w0 = NO_PREFIX;
+  instr_data->hex.mem = NO_PREFIX;
   // checks if the registers are valid
   FAIL_IF_VAR(check_registers(instr_data),
               "Invalid register for instruction: %s\n",
