@@ -35,7 +35,7 @@ operand_format get_opd_format(char *opd_en) {
   return opd_error;
 }
 
-int str_to_instr_key(char *instruction, operand_format opd_index) {
+int str_to_instr_key(char *instruction, operand_format opd_layout) {
 
   int i = 20000;
   // set index of INSTR_TABLE[] to the first letter of instruction
@@ -51,9 +51,9 @@ int str_to_instr_key(char *instruction, operand_format opd_index) {
         asm_instr found_instr = INSTR_TABLE[i].name;
         while (INSTR_TABLE[i].name == found_instr) {
           // compare operand formats
-          if (INSTR_TABLE[i].opd_format[0] == opd_index)
+          if (INSTR_TABLE[i].opd_format[0] == opd_layout)
             return i;
-          else if (INSTR_TABLE[i].opd_format[1] == opd_index)
+          else if (INSTR_TABLE[i].opd_format[1] == opd_layout)
             return i;
           i++;
         }

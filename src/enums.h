@@ -30,8 +30,10 @@ typedef enum {
   REX,
   VEX,
   EVEX,
+  EVEX_128,
   W0,
   MEM,
+  NP,
   NO_PREFIX = 399
 } op_encoding;
 
@@ -43,7 +45,9 @@ typedef enum {
   rex_b = 0x01,
   rex_r = 0x04,
   rex_x = 0x02,
-  evex = 0x67
+  evex = 0x67,
+  evex_128 = 0xc4 // +1 if operand is mmx, mmx
+//add evex encodings here
 } prefix_encoding;
 
 typedef enum { CHUNK_COUNT, CHUNK_FITTING, ASSEMBLE } ASM_MODE;
@@ -60,7 +64,8 @@ typedef enum {
   I,
   O,
   D,
-  S
+  S,
+  B
 } operand_encoding;
 
 // describes operand layout ex: ri = instruction register, constant
@@ -79,7 +84,13 @@ typedef enum {
   rri,
   rmi,
   rrm,
-  rmr
+  rmr,
+  vr,
+  rv,
+  vv,
+  vi,
+  vm,
+  mv,
 } operand_format;
 
 // unique identifier for each instuction
@@ -121,7 +132,10 @@ typedef enum {
   cmovs,
   cmovz,
   cmp,
+  cvtdq2pd,
+  cvtpd2dq,
   dec,
+  divpd,
   imul,
   inc,
   ja,
@@ -146,19 +160,30 @@ typedef enum {
   lfence,
   mfence,
   mov,
+  movd,
   movntdqa,
   movntq,
+  movq,
   movzx,
+  mulpd,
   mulx,
   nop,
   not,
   or,
+  paddq,
+  pand,
+  pmuldq,
   pop,
+  por,
   prefetcht0,
   prefetcht1,
   prefetcht2,
   prefetchnta,
+  psrldq,
+  psubq,
+  punpcklqdq,
   push,
+  pxor,
   rcr,
   rdtsc,
   rdtscp,
@@ -216,6 +241,7 @@ typedef enum {
   reg64 = 0b10000000000,
   ext64 = 0b10010000000,
   mmx64 = 0b10100000000,
+  xmmx64 = 0b10110000000,
 } bit_mode;
 
 // register representation (converted from string)
@@ -251,6 +277,15 @@ typedef enum {
   mm5 = 0b10101,
   mm6 = 0b10110,
   mm7 = 0b10111,
+
+  mm8 = 0b11000,
+  mm9 = 0b11001,
+  mm10 = 0b11010,
+  mm11 = 0b11011,
+  mm12 = 0b11100,
+  mm13 = 0b11101,
+  mm14 = 0b11110,
+  mm15 = 0b11111,
 
 } asm_reg;
 

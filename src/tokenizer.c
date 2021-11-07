@@ -143,6 +143,7 @@ static int check_operand_type(struct instr *instr_buffer, char *all_opd,
 
   // get register string from operand
   case 'r':
+  case 'v':
   case 'm':
     get_reg_str(all_opd, instr_buffer->opds.opd_cpy[opd_pos]);
     if (instr_buffer->opds.opd_type[opd_pos] == 'm')

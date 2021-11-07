@@ -21,17 +21,26 @@
 #include "registers.h"
 
 unsigned int get_rex_prefix(struct instr *all_instr, asm_reg m, asm_reg r) {
-  // check if register r is a vectorized
-  if ((r & MODE_MASK) == mmx64)
-    return (m & ext8) ? rex_ + rex_b : NO_PREFIX;
 
   unsigned int prefix_hex = NO_PREFIX;
+  // check if register r is a vectorized
+  if ((m & REG_MASK) > mm7 || (r & REG_MASK) > mm7) {
+    prefix_hex = rex_;
+    if ((r & REG_MASK) > mm7)
+      prefix_hex += rex_r;
+    if ((m & REG_MASK) > mm7)
+      prefix_hex += rex_b;
+    return prefix_hex;
+  } else if ((r & MODE_MASK) == mmx64 && (r & REG_MASK) <= mm7) {
+    return (m & ext8) ? rex + rex_b : NO_PREFIX;
+  } else if ((m & MODE_MASK) == mmx64 && (m & REG_MASK) <= mm7)
+    return NO_PREFIX;
   // keyword 'byte' is present
   if (all_instr->keyword.is_byte)
     m = m & SET_BYTE;
   else if (!(m & reg_none) && !(m & MODE_MASK) && m >= spl)
     prefix_hex = rex_;
-  // register r or m is part of the 8bit x64 extended set
+  // register r or m is part of the 8-bit x64 extended set
   if (!(r & reg_none) && !(r & MODE_MASK) && r >= spl)
     prefix_hex = rex_;
   else if ((r & ext8) || (m & ext8))

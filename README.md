@@ -96,7 +96,6 @@ A C library and binary for generating machine code of x86\_64 assembly language 
 * Adding a new test: add the testfile e.g. `sub.asm` to the directory and add `sub.asm` to the `TESTS`-variable in `./test/Makefile.am`
 then run `$ make clean check`. Finally, add `Makefile.am` and `sub.asm` to git.<br><br> 
 
-
 ## Command-line tool: asmline
 
 ***note: run `$ asmline` or `$ asmline --help` to view usage information***

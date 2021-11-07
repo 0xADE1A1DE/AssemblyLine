@@ -106,7 +106,12 @@ static void encode_two_opds(struct instr *instruc, int r, int m) {
         get_rex_prefix(instruc, instruc->opd[m], instruc->opd[r]);
     if (instruc->mem_disp && !instruc->mem_offset)
       set_zero_byte(instruc, m);
-    instruc->hex.reg =
+    // TODO: replace with a prefix enum
+    if (INSTR_TABLE[instruc->key].opd_format[1] == rv)
+      instruc->hex.reg = get_rex_prefix(instruc, instruc->opd[m], reg_none);
+    if (INSTR_TABLE[instruc->key].opd_format[1] == vr)
+      instruc->hex.reg = get_rex_prefix(instruc, instruc->opd[m], reg_none);
+    instruc->reg_hex =
         get_modRM32_64(instruc, instruc->opd[m], instruc->opd[r]);
     instruc->hex.vex =
         get_vex_prefix(instruc->opd[r], instruc->opd[m]) + 1;
@@ -252,6 +257,8 @@ void encode_imm(struct instr *instruc) {
     // 8 bit positive immediate
     if (instruc->cons > MAX_SIGNED_8BIT)
       instruc->op_offset = 1;
+    if ((instruc->opd[0] & MODE_MASK) == mmx64)
+      instruc->reduced_imm = true;
     // 8 bit negative immediate
     if (IN_RANGE(instruc->cons, NEG8BIT + 1, NEG64BIT) &&
         (instruc->cons & NEG8BIT_CHECK)) {

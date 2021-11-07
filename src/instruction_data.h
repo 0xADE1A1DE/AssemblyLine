@@ -66,7 +66,7 @@ struct operands {
 struct instr {
   // connects instr to INSTR_TABLE[]
   asm_instr key;
-  // stores components assembly instruction into buffer
+  // stores components of assembly instruction into buffer
   char instruction[INSTRUCTION_CHAR_LEN];
   // stores operands represented as strings
   struct operands opds;

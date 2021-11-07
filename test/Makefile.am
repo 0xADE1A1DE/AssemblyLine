@@ -26,9 +26,10 @@ ASM_LOG_COMPILER = ./al_nasm_compare.sh
 # add .c -tests here
 TEST_C= check_chunk_counting \
 		invalid \
+		jump \
 		memory_reallocation \
-		run \
-		jump
+		run 
+		
 
 TEST_EXTENSIONS = .asm
 
@@ -41,6 +42,7 @@ TEST_ASM =\
 		  and.asm \
 		  bzhi.asm \
 		  clc.asm \
+		  high_low_xmm.asm \
 		  imul.asm \
 		  lea.asm \
 		  mov.asm \
@@ -55,7 +57,13 @@ TEST_ASM =\
 		  nop.asm \
 		  not.asm \
 		  or.asm \
+		  paddq.asm \
+		  pand.asm \
+		  pmuldq.asm \
+		  por.asm \
 		  prefetch.asm \
+		  psubq.asm \
+		  pxor.asm \
 		  rdtsc.asm \
 		  rdtscp.asm \
 		  ror.asm \
@@ -70,6 +78,11 @@ TEST_ASM =\
 		  shrd.asm \
 		  shrx.asm \
 		  sub.asm \
+		  vector_add.asm \
+		  vector_float_divide.asm \
+		  vector_float_mul.asm \
+		  vector_mul.asm \
+		  vector_sub.asm \
 		  xor.asm \
 		  zero_byte_rbp.asm
 
