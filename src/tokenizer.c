@@ -65,7 +65,7 @@ static void mem_tok(struct instr *instr_buffer, char *mem, int opd_pos) {
   int base = 16;
   // find the index position of the memory displacement string
   int index = find_add_mem(mem, &neg, &base);
-  get_second_reg(mem, instr_buffer->op_mem_cpy[opd_pos]);
+  get_second_reg(mem, instr_buffer->opds.opd_mem_cpy[opd_pos]);
   instr_buffer->mem_offset = 0;
   // convert string to unsigned long for memory displacement representation
   if (index != NA) {
@@ -132,7 +132,7 @@ static void check_for_keyword(struct instr *instr_buffer, char *all_opd,
 static int check_operand_type(struct instr *instr_buffer, char *all_opd,
                               int opd_pos) {
   char *saved_opd;
-  switch (instr_buffer->opd_type[opd_pos]) {
+  switch (instr_buffer->opds.opd_type[opd_pos]) {
   // convert immediate to unsigned long
   case 'i':
     imm_tok(instr_buffer, all_opd);
@@ -144,8 +144,8 @@ static int check_operand_type(struct instr *instr_buffer, char *all_opd,
   // get register string from operand
   case 'r':
   case 'm':
-    get_reg_str(all_opd, instr_buffer->op_cpy[opd_pos]);
-    if (instr_buffer->opd_type[opd_pos] == 'm')
+    get_reg_str(all_opd, instr_buffer->opds.opd_cpy[opd_pos]);
+    if (instr_buffer->opds.opd_type[opd_pos] == 'm')
       mem_tok(instr_buffer, all_opd, opd_pos);
     return EXIT_SUCCESS;
   // operand type is not found
@@ -162,12 +162,12 @@ static int operand_tok(struct instr *instr_buffer, char *opds, int opd_pos) {
 
   char *saved_opd;
   FAIL_IF(opds[0] == ',');
-  char *all_opd = instr_buffer->operand[opd_pos];
+  char *all_opd = instr_buffer->opds.operand[opd_pos];
   // get the 1st operand
   all_opd = strtok_r(opds, ",", &saved_opd);
   check_for_keyword(instr_buffer, all_opd, opd_pos);
   // get the operand type can be 'i', 'r', or 'm'
-  instr_buffer->opd_type[opd_pos] = get_operand_type(all_opd);
+  instr_buffer->opds.opd_type[opd_pos] = get_operand_type(all_opd);
   FAIL_IF(check_operand_type(instr_buffer, all_opd, opd_pos));
   // get next operand
   char *next_operands = strtok_r(NULL, "", &saved_opd);
