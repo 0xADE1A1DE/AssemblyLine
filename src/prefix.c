@@ -32,7 +32,7 @@ unsigned int get_rex_prefix(struct instr *all_instr, asm_reg m, asm_reg r) {
       prefix_hex += rex_b;
     return prefix_hex;
   } else if ((r & MODE_MASK) == mmx64 && (r & REG_MASK) <= mm7) {
-    return (m & ext8) ? rex + rex_b : NO_PREFIX;
+    return (m & ext8) ? rex_ + rex_b : NO_PREFIX;
   } else if ((m & MODE_MASK) == mmx64 && (m & REG_MASK) <= mm7)
     return NO_PREFIX;
   // keyword 'byte' is present
