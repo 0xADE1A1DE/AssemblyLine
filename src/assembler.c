@@ -88,9 +88,9 @@ static int assemble_imm(struct instr *instruc, unsigned char ptr[]) {
       ((type != CONTROL_FLOW &&
         type != SHIFT &&           // it must not be SHIFT/CONTROL_FLOW
         instruc->op_offset != 3 && // and cannot have op_offset 3
-        !instruc->is_byte) &&      // and cannot be a byte
+        !instruc->keyword.is_byte) &&      // and cannot be a byte
        opd0_mode > noext8) ||      // and op0 mode must be bigger than noext8
-      (!instruc->is_short &&       // and  if its not short, it cannot be bigger
+      (!instruc->keyword.is_short &&       // and  if its not short, it cannot be bigger
        INSTR_TABLE[instruc->key].encode_operand > I); // >I (i.e. O D S)
   // return if zero padding is not required
   if (!zero_pad)

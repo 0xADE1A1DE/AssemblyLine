@@ -27,7 +27,7 @@ unsigned int get_rex_prefix(struct instr *all_instr, asm_reg m, asm_reg r) {
 
   unsigned int prefix_hex = NO_PREFIX;
   // keyword 'byte' is present
-  if (all_instr->is_byte)
+  if (all_instr->keyword.is_byte)
     m = m & SET_BYTE;
   else if (!(m & reg_none) && !(m & MODE_MASK) && m >= spl)
     prefix_hex = rex_;

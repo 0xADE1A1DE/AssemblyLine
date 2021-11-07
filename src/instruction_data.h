@@ -50,7 +50,7 @@ struct prefix {
 };
 
 // stores keywords used in assemblyline
-struct keyword {
+struct keywords {
   bool is_short;
   bool is_long;
   bool is_byte;
@@ -70,9 +70,7 @@ struct instr {
   asm_reg opd[NUM_OF_OPD];
   asm_reg opd_mem[NUM_OF_OPD];
   // keywords for assemblyline
-  bool is_short;
-  bool is_long;
-  bool is_byte;
+  struct keywords keyword;
   // constants and memory displacement
   bool imm;
   bool reduced_imm;
