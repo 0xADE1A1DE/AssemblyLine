@@ -152,18 +152,18 @@ static int assemble_instr(struct instr *instruc, unsigned char ptr[]) {
   while (opcode_pos < INSTR_TABLE[instruc->key].instr_size) {
     switch (INSTR_TABLE[instruc->key].opcode[opcode_pos]) {
     case REX:
-      if (instruc->prefix_hex != NO_PREFIX)
-        ptr[ptr_pos++] = instruc->prefix_hex;
+      if (instruc->hex.rex != NO_PREFIX)
+        ptr[ptr_pos++] = instruc->hex.rex;
       break;
 
     case REG:
-      if (instruc->reg_hex != NO_PREFIX)
-        ptr[ptr_pos++] = instruc->reg_hex;
+      if (instruc->hex.reg != NO_PREFIX)
+        ptr[ptr_pos++] = instruc->hex.reg;
       break;
 
     case VEX:
-      if (instruc->vex_prefix_hex != NO_PREFIX)
-        ptr[ptr_pos++] = instruc->vex_prefix_hex;
+      if (instruc->hex.vex != NO_PREFIX)
+        ptr[ptr_pos++] = instruc->hex.vex;
       break;
 
     case EVEX:
@@ -172,8 +172,8 @@ static int assemble_instr(struct instr *instruc, unsigned char ptr[]) {
       break;
 
     case W0:
-      if (instruc->w0_hex != NO_PREFIX)
-        ptr[ptr_pos++] = instruc->w0_hex;
+      if (instruc->hex.w0 != NO_PREFIX)
+        ptr[ptr_pos++] = instruc->hex.w0;
       break;
 
     default:
@@ -188,8 +188,8 @@ static int assemble_instr(struct instr *instruc, unsigned char ptr[]) {
     }
     opcode_pos++;
   }
-  if (instruc->mem_hex != NO_PREFIX)
-    ptr[ptr_pos++] = instruc->mem_hex;
+  if (instruc->hex.mem != NO_PREFIX)
+    ptr[ptr_pos++] = instruc->hex.mem;
   return ptr_pos;
 }
 

@@ -40,6 +40,22 @@ struct assemblyline {
   bool finalized;
 };
 
+// prefix and and register byte values
+struct prefix {
+  unsigned int reg;
+  unsigned int rex;
+  unsigned int vex;
+  unsigned int w0;
+  unsigned int mem;
+};
+
+// stores keywords used in assemblyline
+struct keyword {
+  bool is_short;
+  bool is_long;
+  bool is_byte;
+};
+
 // internal representation of an assembly instruction
 struct instr {
   // connects instr to INSTR_TABLE[]
@@ -69,12 +85,8 @@ struct instr {
   // value of op_en and size of mem_disp
   int mod_disp;
   // uses operand_encoding to get value
-  // operand and prefix
-  unsigned int reg_hex;
-  unsigned int prefix_hex;
-  unsigned int vex_prefix_hex;
-  unsigned int w0_hex;
-  unsigned int mem_hex;
+  // operand and prefix values
+  struct prefix hex;
   // offset for opcode determined by register size
   int op_offset;
   int rd_offset;

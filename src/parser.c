@@ -84,11 +84,11 @@ static int line_to_instr(struct instr *instr_data, char *filtered_asm_str) {
   instr_data->opd_mem[1] = str_to_reg(instr_data->op_mem_cpy[1]);
   instr_data->opd[2] = str_to_reg(instr_data->op_cpy[2]);
   // values will be determined during encoding
-  instr_data->reg_hex = NO_PREFIX;
-  instr_data->prefix_hex = NO_PREFIX;
-  instr_data->vex_prefix_hex = NO_PREFIX;
-  instr_data->w0_hex = NO_PREFIX;
-  instr_data->mem_hex = NO_PREFIX;
+  instr_data->hex.reg = NO_PREFIX;
+  instr_data->hex.rex = NO_PREFIX;
+  instr_data->hex.vex = NO_PREFIX;
+  instr_data->hex.w0 = NO_PREFIX;
+  instr_data->hex.mem = NO_PREFIX;
   // checks if the registers are valid
   FAIL_IF_VAR(check_registers(instr_data),
               "Invalid register for instruction: %s\n",
