@@ -2,6 +2,7 @@ SECTION .text
 GLOBAL test
 test:
 mov [rsp + 0x03f0 ], rax
+; mov [rsp + 0x03f0 ], rax
 mov byte [ rsp + 0xa0 ], r14b
 mov byte [ rsp + 0xa0 ], ah
 mov byte [ rsp + 0xa0 ], al

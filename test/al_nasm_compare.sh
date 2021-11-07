@@ -25,8 +25,13 @@ diff --ignore-trailing-space --side-by-side --left-column \
     # this massive regex matches the entire line and emits the instruction in lowecase
     e3='s/^[[:space:]]*[[:digit:]]\+ [[:xdigit:]]\+ \([[:xdigit:]-]\+\)[[:space:]]\+[^$]\+/\L\1/g'
 
+    # delete all empty spaces
+    e4='/^\s\+[0-9]\+\s\+/d'
+
+    # delete all commented lines
+    e5='/^\s\+[0-9]\+\s\+;.*/d'
     nasm -f elf64 "${1}" -l /dev/stdout |
-      sed -e "${e1}" -e "${e2}" -e "${e3}" |
+      sed -e "${e1}" -e "${e2}" -e "${e3}" -e "${e4}" -e "${e5}" |
       # then we are left with
       #66660f1f8400000000-
       #00

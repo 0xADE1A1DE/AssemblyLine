@@ -40,23 +40,41 @@ struct assemblyline {
   bool finalized;
 };
 
+// prefix and and register byte values
+struct prefix {
+  unsigned int reg;
+  unsigned int rex;
+  unsigned int vex;
+  unsigned int w0;
+  unsigned int mem;
+};
+
+// stores keywords used in assemblyline
+struct keywords {
+  bool is_short;
+  bool is_long;
+  bool is_byte;
+};
+
+struct operands {
+  char *operand[NUM_OF_OPD];
+  char opd_cpy[NUM_OF_OPD][MAX_REG_LEN];
+  char opd_mem_cpy[NUM_OF_OPD][MAX_REG_LEN];
+  char opd_type[OPD_FORMAT_LEN];
+};
 // internal representation of an assembly instruction
 struct instr {
   // connects instr to INSTR_TABLE[]
   asm_instr key;
   // stores components of assembly instruction into buffer
   char instruction[INSTRUCTION_CHAR_LEN];
-  char *operand[NUM_OF_OPD];
-  char op_cpy[NUM_OF_OPD][MAX_REG_LEN];
-  char op_mem_cpy[NUM_OF_OPD][MAX_REG_LEN];
-  char opd_type[OPD_FORMAT_LEN];
+  // stores operands represented as strings
+  struct operands opds;
   // operand registers represented as asm_reg enum
   asm_reg opd[NUM_OF_OPD];
   asm_reg opd_mem[NUM_OF_OPD];
   // keywords for assemblyline
-  bool is_short;
-  bool is_long;
-  bool is_byte;
+  struct keywords keyword;
   // constants and memory displacement
   bool imm;
   bool reduced_imm;
@@ -69,12 +87,8 @@ struct instr {
   // value of op_en and size of mem_disp
   int mod_disp;
   // uses operand_encoding to get value
-  // operand and prefix
-  unsigned int reg_hex;
-  unsigned int prefix_hex;
-  unsigned int vex_prefix_hex;
-  unsigned int w0_hex;
-  unsigned int mem_hex;
+  // operand and prefix values
+  struct prefix hex;
   // offset for opcode determined by register size
   int op_offset;
   int rd_offset;

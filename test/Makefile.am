@@ -35,6 +35,7 @@ TEST_EXTENSIONS = .asm
 
 # add .asm-tests here
 TEST_ASM =\
+		  adc.asm \
 		  adcx.asm \
 		  add.asm \
 		  adox.asm \
@@ -49,6 +50,7 @@ TEST_ASM =\
 		  movntq.asm \
 		  movzx.asm \
 		  mov_reg_imm.asm \
+		  MOV_REG_IMM.asm \
 		  mulx.asm \
 		  negative_mem_disp.asm \
 		  new_instruction.asm \
@@ -67,6 +69,7 @@ TEST_ASM =\
 		  ror.asm \
 		  rorx.asm \
 		  sarx.asm \
+		  sbb.asm \
 		  setc.asm \
 		  seto.asm \
 		  shl.asm \
