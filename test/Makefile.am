@@ -58,6 +58,7 @@ TEST_ASM =\
 		  nop.asm \
 		  not.asm \
 		  or.asm \
+		  paddb.asm \
 		  paddd.asm \
 		  paddq.asm \
 		  pand.asm \
