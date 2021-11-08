@@ -241,7 +241,6 @@ typedef enum {
   reg64 = 0b10000000000,
   ext64 = 0b10010000000,
   mmx64 = 0b10100000000,
-  xmmx64 = 0b10110000000,
 } bit_mode;
 
 // register representation (converted from string)

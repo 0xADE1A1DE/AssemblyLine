@@ -67,7 +67,7 @@
 #define NUM_OF_REGISTERS 7
 
 // used in instruction_data.h
-#define MAX_REG_LEN 5
+#define MAX_REG_LEN 6
 #define NUM_OF_OPD 3
 #define OPD_FORMAT_LEN 4
 #define INSTRUCTION_CHAR_LEN 15

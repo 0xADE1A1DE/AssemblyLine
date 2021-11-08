@@ -77,7 +77,6 @@ static int line_to_instr(struct instr *instr_data, char *filtered_asm_str) {
   }
   // find the encoding for a short jump instruction if applicable
   instr_data->key += instr_data->keyword.is_short;
-
   // convert register string to enum representation
   instr_data->opd[0] = str_to_reg(instr_data->opds.opd_cpy[0]);
   instr_data->opd_mem[0] = str_to_reg(instr_data->opds.opd_mem_cpy[0]);
