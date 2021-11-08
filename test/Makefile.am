@@ -61,6 +61,7 @@ TEST_ASM =\
 		  paddb.asm \
 		  paddd.asm \
 		  paddq.asm \
+		  paddw.asm \
 		  pand.asm \
 		  pmuldq.asm \
 		  por.asm \
