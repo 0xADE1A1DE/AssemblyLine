@@ -67,6 +67,7 @@ TEST_ASM =\
 		  por.asm \
 		  prefetch.asm \
 		  psubb.asm \
+		  psubd.asm \
 		  psubq.asm \
 		  psubw.asm \
 		  pxor.asm \
