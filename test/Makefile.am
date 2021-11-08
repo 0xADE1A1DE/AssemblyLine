@@ -48,6 +48,7 @@ TEST_ASM =\
 		  mov.asm \
 		  movntdqa.asm \
 		  movntq.asm \
+		  movq.asm \
 		  movzx.asm \
 		  mov_reg_imm.asm \
 		  MOV_REG_IMM.asm \
@@ -57,6 +58,7 @@ TEST_ASM =\
 		  nop.asm \
 		  not.asm \
 		  or.asm \
+		  paddd.asm \
 		  paddq.asm \
 		  pand.asm \
 		  pmuldq.asm \
