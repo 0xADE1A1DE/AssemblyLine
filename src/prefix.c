@@ -40,7 +40,7 @@ unsigned int get_rex_prefix(struct instr *all_instr, asm_reg m, asm_reg r) {
     m = m & SET_BYTE;
   else if (!(m & reg_none) && !(m & MODE_MASK) && m >= spl)
     prefix_hex = rex_;
-  // register r or m is part of the 8-bit x64 extended set
+  // register r or m is part of the 8 bit x64 extended set
   if (!(r & reg_none) && !(r & MODE_MASK) && r >= spl)
     prefix_hex = rex_;
   else if ((r & ext8) || (m & ext8))

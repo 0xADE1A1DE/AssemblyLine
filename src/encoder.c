@@ -106,11 +106,13 @@ static void encode_two_opds(struct instr *instruc, int r, int m) {
         get_rex_prefix(instruc, instruc->opd[m], instruc->opd[r]);
     if (instruc->mem_disp && !instruc->mem_offset)
       set_zero_byte(instruc, m);
+
     // TODO: replace with a prefix enum
     if (INSTR_TABLE[instruc->key].opd_format[1] == rv)
-      instruc->hex.reg = get_rex_prefix(instruc, instruc->opd[m], reg_none);
+      instruc->hex.rex = get_rex_prefix(instruc, instruc->opd[m], reg_none);
     if (INSTR_TABLE[instruc->key].opd_format[1] == vr)
-      instruc->hex.reg = get_rex_prefix(instruc, instruc->opd[m], reg_none);
+      instruc->hex.rex = get_rex_prefix(instruc, instruc->opd[m], reg_none);
+
     instruc->hex.reg =
         get_modRM32_64(instruc, instruc->opd[m], instruc->opd[r]);
     instruc->hex.vex = get_vex_prefix(instruc->opd[r], instruc->opd[m]) + 1;
@@ -141,7 +143,9 @@ static void encode_special_opd(struct instr *instruc, int m, int i) {
 
   switch (INSTR_TABLE[instruc->key].encode_operand) {
   case M:
+    // printf("here\n");
     instruc->hex.rex = get_rex_prefix(instruc, instruc->opd[m], reg_none);
+    // printf("instruc->hex.rex = %x\n", instruc->hex.rex);
     if (instruc->mem_disp && !instruc->mem_offset)
       set_zero_byte(instruc, m);
     instruc->hex.reg = get_modRM32_64(instruc, instruc->opd[m],
