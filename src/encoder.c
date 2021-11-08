@@ -250,6 +250,9 @@ void encode_imm(struct instr *instruc) {
     if (sp_instr)
       instruc->key = sp_instr;
   }
+  // vector shift instructions
+  if ((instruc->opd[0] & MODE_MASK) == mmx64)
+    instruc->reduced_imm = true;
   // 16 to 64 bit register and 8 bit immediate combination
   if (instruc->op_offset == 1 &&
       INSTR_TABLE[instruc->key].type != DATA_TRANSFER) {
@@ -260,8 +263,6 @@ void encode_imm(struct instr *instruc) {
     // 8 bit positive immediate
     if (instruc->cons > MAX_SIGNED_8BIT)
       instruc->op_offset = 1;
-    if ((instruc->opd[0] & MODE_MASK) == mmx64)
-      instruc->reduced_imm = true;
     // 8 bit negative immediate
     if (IN_RANGE(instruc->cons, NEG8BIT + 1, NEG64BIT) &&
         (instruc->cons & NEG8BIT_CHECK)) {
