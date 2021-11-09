@@ -176,6 +176,7 @@ typedef enum {
   paddw,
   pand,
   pmuldq,
+  pmulld,
   pop,
   por,
   prefetcht0,
