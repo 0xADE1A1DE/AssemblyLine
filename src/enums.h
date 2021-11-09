@@ -176,6 +176,7 @@ typedef enum {
   paddw,
   pand,
   pmulhw,
+  pmulhuw,
   pmuldq,
   pmulld,
   pmullw,

@@ -151,6 +151,7 @@ const struct instr_table INSTR_TABLE[] = {
     {"paddw",       paddw,       {NA, vv},   RM,  OTHER,          NA,  NA,  NA,  5,  0, {0x66, REX, 0x0f, 0xfd, REG}},
     {"pand",        pand,        {NA, vv},   RM,  OTHER,          NA,  NA,  NA,  5,  0, {0x66, REX, 0x0f, 0xdb, REG}},
     {"pmulhw",      pmulhw,      {NA, vv},   RM,  OTHER,          NA,  NA,  NA,  5,  0, {0x66, REX, 0x0f, 0xe5, REG}},
+    {"pmulhuw",     pmulhuw,     {NA, vv},   RM,  OTHER,          NA,  NA,  NA,  5,  0, {0x66, REX, 0x0f, 0xe4, REG}},
     {"pmulld",      pmulld,      {NA, vv},   RM,  OTHER,          NA,  NA,  NA,  6,  0, {0x66, REX, 0x0f, 0x38, 0x40, REG}},
     {"pmuldq",      pmuldq,      {NA, vv},   RM,  OTHER,          NA,  NA,  NA,  6,  0, {0x66, REX, 0x0f, 0x38, 0x28, REG}},
     {"pmullw",      pmullw,      {NA, vv},   RM,  OTHER,          NA,  NA,  NA,  5,  0, {0x66, REX, 0x0f, 0xd5, REG}},
