@@ -66,6 +66,7 @@ TEST_ASM =\
 		  pmuldq.asm \
 		  pmulld.asm \
 		  pmullq.asm \
+		  pmullw.asm \
 		  por.asm \
 		  prefetch.asm \
 		  psubb.asm \
