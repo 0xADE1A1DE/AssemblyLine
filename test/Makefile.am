@@ -65,6 +65,7 @@ TEST_ASM =\
 		  pand.asm \
 		  pmuldq.asm \
 		  pmulld.asm \
+		  pmullq.asm \
 		  por.asm \
 		  prefetch.asm \
 		  psubb.asm \
