@@ -65,6 +65,7 @@ TEST_ASM =\
 		  pand.asm \
 		  pmuldq.asm \
 		  pmulhw.asm \
+		  pmulhuw.asm \
 		  pmulld.asm \
 		  pmullq.asm \
 		  pmullw.asm \
