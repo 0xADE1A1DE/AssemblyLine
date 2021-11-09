@@ -178,6 +178,7 @@ typedef enum {
   pmuldq,
   pmulld,
   pmullw,
+  pmuludq,
   pop,
   por,
   prefetcht0,
