@@ -62,6 +62,23 @@ struct operands {
   char opd_mem_cpy[NUM_OF_OPD][MAX_REG_LEN];
   char opd_type[OPD_FORMAT_LEN];
 };
+
+struct operand {
+  // pointer to operand in instruction string
+  char *ptr;
+  // stores the string representation of register
+  char str[MAX_REG_LEN];
+  // enum representation of register
+  asm_reg reg;
+  // stores the 2nd register in a memory reference
+  char mem[MAX_REG_LEN];
+  // enum representation of 2nd register in
+  // a memory reference
+  asm_reg reg_mem;
+  // operand typecould be: r,m, or i
+  char type;
+};
+
 // internal representation of an assembly instruction
 struct instr {
   // connects instr to INSTR_TABLE[]
