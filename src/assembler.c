@@ -82,15 +82,16 @@ static int assemble_imm(struct instr *instruc, unsigned char ptr[]) {
   if (instruc->reduced_imm)
     return ptr_pos;
   // get the register size for the first operand
-  int opd0_mode = instruc->opd[0] & MODE_MASK;
+  int opd0_mode = instruc->opd[0].reg & MODE_MASK;
   // zero padding is required rarely.
   bool zero_pad =
       ((type != CONTROL_FLOW &&
-        type != SHIFT &&           // it must not be SHIFT/CONTROL_FLOW
-        instruc->op_offset != 3 && // and cannot have op_offset 3
-        !instruc->keyword.is_byte) &&      // and cannot be a byte
-       opd0_mode > noext8) ||      // and op0 mode must be bigger than noext8
-      (!instruc->keyword.is_short &&       // and  if its not short, it cannot be bigger
+        type != SHIFT &&              // it must not be SHIFT/CONTROL_FLOW
+        instruc->op_offset != 3 &&    // and cannot have op_offset 3
+        !instruc->keyword.is_byte) && // and cannot be a byte
+       opd0_mode > noext8) ||         // and op0 mode must be bigger than noext8
+      (!instruc->keyword
+            .is_short && // and  if its not short, it cannot be bigger
        INSTR_TABLE[instruc->key].encode_operand > I); // >I (i.e. O D S)
   // return if zero padding is not required
   if (!zero_pad)
@@ -146,7 +147,7 @@ static int assemble_instr(struct instr *instruc, unsigned char ptr[]) {
   int ptr_pos = 0;
   int opcode_pos = 0;
   // 16 bit register prefix
-  if ((instruc->opd[0] & BIT_MASK) == BIT_16)
+  if ((instruc->opd[0].reg & BIT_MASK) == BIT_16)
     ptr[ptr_pos++] = 0x66;
   // assemble all prefixes and instruction opcode
   while (opcode_pos < INSTR_TABLE[instruc->key].instr_size) {
@@ -167,7 +168,7 @@ static int assemble_instr(struct instr *instruc, unsigned char ptr[]) {
       break;
 
     case EVEX:
-      if ((instruc->opd[1] & BIT_MASK) == BIT_32)
+      if ((instruc->opd[1].reg & BIT_MASK) == BIT_32)
         ptr[ptr_pos++] = evex;
       break;
 

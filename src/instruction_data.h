@@ -56,13 +56,6 @@ struct keywords {
   bool is_byte;
 };
 
-struct operands {
-  char *operand[NUM_OF_OPD];
-  char opd_cpy[NUM_OF_OPD][MAX_REG_LEN];
-  char opd_mem_cpy[NUM_OF_OPD][MAX_REG_LEN];
-  char opd_type[OPD_FORMAT_LEN];
-};
-
 struct operand {
   // pointer to operand in instruction string
   char *ptr;
@@ -86,10 +79,7 @@ struct instr {
   // stores components assembly instruction into buffer
   char instruction[INSTRUCTION_CHAR_LEN];
   // stores operands represented as strings
-  struct operands opds;
-  // operand registers represented as asm_reg enum
-  asm_reg opd[NUM_OF_OPD];
-  asm_reg opd_mem[NUM_OF_OPD];
+  struct operand opd[NUM_OF_OPD];
   // keywords for assemblyline
   struct keywords keyword;
   // constants and memory displacement

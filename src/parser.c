@@ -35,11 +35,11 @@ representation*/
  */
 static int check_registers(struct instr *check_instr) {
 
-  FAIL_IF((check_instr->opd[0] & reg_error) == reg_error);
-  FAIL_IF((check_instr->opd_mem[0] & reg_error) == reg_error);
-  FAIL_IF((check_instr->opd[1] & reg_error) == reg_error);
-  FAIL_IF((check_instr->opd_mem[1] & reg_error) == reg_error);
-  FAIL_IF((check_instr->opd[2] & reg_error) == reg_error);
+  FAIL_IF((check_instr->opd[0].reg & reg_error) == reg_error);
+  FAIL_IF((check_instr->opd[0].reg_mem & reg_error) == reg_error);
+  FAIL_IF((check_instr->opd[1].reg & reg_error) == reg_error);
+  FAIL_IF((check_instr->opd[1].reg_mem & reg_error) == reg_error);
+  FAIL_IF((check_instr->opd[2].reg & reg_error) == reg_error);
   return EXIT_SUCCESS;
 }
 
@@ -52,11 +52,14 @@ static int line_to_instr(struct instr *instr_data, char *filtered_asm_str) {
   // tokenize filtered instruction for mapping to instr internal structure
   FAIL_IF_MSG(instr_tok(instr_data, filtered_asm_str), "syntax error\n");
   // convert operand format from string to enum representation
-  operand_format opd_format = get_opd_format(instr_data->opds.opd_type);
-  FAIL_IF_VAR(opd_format == opd_error, "illegal operand format: %s\n",
-              instr_data->opds.opd_type)
+  char opd_type[4];
+  opd_type[0] = instr_data->opd[0].type;
+  opd_type[1] = instr_data->opd[1].type;
+  opd_type[2] = instr_data->opd[2].type;
+  operand_format opd_format = get_opd_format(opd_type);
+  FAIL_IF_VAR(opd_format == opd_error, "illegal operand format: %s\n", opd_type)
   // jcc [MEM] no register
-  if (opd_format == m && instr_data->opds.opd_cpy[0][0] == '\0') {
+  if (opd_format == m && instr_data->opd[0].str[0] == '\0') {
     instr_data->mod_disp &= MOD16;
     instr_data->keyword.is_short = true;
   }
@@ -77,13 +80,12 @@ static int line_to_instr(struct instr *instr_data, char *filtered_asm_str) {
   }
   // find the encoding for a short jump instruction if applicable
   instr_data->key += instr_data->keyword.is_short;
-
   // convert register string to enum representation
-  instr_data->opd[0] = str_to_reg(instr_data->opds.opd_cpy[0]);
-  instr_data->opd_mem[0] = str_to_reg(instr_data->opds.opd_mem_cpy[0]);
-  instr_data->opd[1] = str_to_reg(instr_data->opds.opd_cpy[1]);
-  instr_data->opd_mem[1] = str_to_reg(instr_data->opds.opd_mem_cpy[1]);
-  instr_data->opd[2] = str_to_reg(instr_data->opds.opd_cpy[2]);
+  instr_data->opd[0].reg = str_to_reg(instr_data->opd[0].str);
+  instr_data->opd[0].reg_mem = str_to_reg(instr_data->opd[0].mem);
+  instr_data->opd[1].reg = str_to_reg(instr_data->opd[1].str);
+  instr_data->opd[1].reg_mem = str_to_reg(instr_data->opd[1].mem);
+  instr_data->opd[2].reg = str_to_reg(instr_data->opd[2].str);
   // values will be determined during encoding
   instr_data->hex.reg = NO_PREFIX;
   instr_data->hex.rex = NO_PREFIX;
@@ -99,7 +101,7 @@ static int line_to_instr(struct instr *instr_data, char *filtered_asm_str) {
       IN_RANGE(instr_data->cons, NEG32BIT + 1, NEG64BIT))
     instr_data->cons &= 0xffffffff;
   // encode for the reg_hex value and op_offset for instruction
-  if (instr_data->opd[0] != reg_none) {
+  if (instr_data->opd[0].reg != reg_none) {
     // gets all offsets
     encode_offset(instr_data);
     // cleans up immediate

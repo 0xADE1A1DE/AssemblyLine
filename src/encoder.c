@@ -48,12 +48,13 @@ static void auto_set_byte(struct instr *instruc) {
 
 void encode_offset(struct instr *instruc) {
   // check if register is no prefix
-  if ((instruc->opd[0] & MODE_MASK) == noext8 ||
-      (instruc->opd[1] & MODE_MASK) == noext8)
+  if ((instruc->opd[0].reg & MODE_MASK) == noext8 ||
+      (instruc->opd[1].reg & MODE_MASK) == noext8)
     return;
   // set opcode offset
-  if (INSTR_TABLE[instruc->key].type != CONTROL_FLOW && !instruc->keyword.is_byte)
-    instruc->op_offset = get_opcode_offset(instruc->opd[0]);
+  if (INSTR_TABLE[instruc->key].type != CONTROL_FLOW &&
+      !instruc->keyword.is_byte)
+    instruc->op_offset = get_opcode_offset(instruc->opd[0].reg);
 }
 
 /**
@@ -69,9 +70,9 @@ static uint8_t get_modRM32_64(struct instr *instruc, int m, int r) {
  * the @param m register position
  */
 static void set_zero_byte(struct instr *instruc, int m) {
-  unsigned int reg_opd = instruc->opd[m] & MODE_MASK;
+  unsigned int reg_opd = instruc->opd[m].reg & MODE_MASK;
   if (reg_opd > ext16 && reg_opd < mmx64 &&
-      (instruc->opd[m] & VALUE_MASK) == bpl) {
+      (instruc->opd[m].reg & VALUE_MASK) == bpl) {
     instruc->mod_disp = MOD8;
     instruc->mem_disp = false;
     instruc->zero_byte = true;
@@ -84,14 +85,14 @@ static void set_zero_byte(struct instr *instruc, int m) {
  */
 static void encode_three_opds(struct instr *instruc, int r, int m, int v) {
 
-  instruc->hex.vex =
-      get_vex_prefix(instruc->opd[r], instruc->opd[m]);
-  instruc->hex.w0 = get_w0_prefix(instruc->opd[v]);
+  instruc->hex.vex = get_vex_prefix(instruc->opd[r].reg, instruc->opd[m].reg);
+  instruc->hex.w0 = get_w0_prefix(instruc->opd[v].reg);
   instruc->hex.w0 -= INSTR_TABLE[instruc->key].w0_disp;
   if (instruc->mem_disp && !instruc->mem_offset)
     set_zero_byte(instruc, m);
-  instruc->hex.reg = get_modRM32_64(instruc, instruc->opd[m], instruc->opd[r]);
-  if (instruc->mem_disp && (instruc->opd[m] & VALUE_MASK) == spl)
+  instruc->hex.reg =
+      get_modRM32_64(instruc, instruc->opd[m].reg, instruc->opd[r].reg);
+  if (instruc->mem_disp && (instruc->opd[m].reg & VALUE_MASK) == spl)
     instruc->sib = true;
 }
 
@@ -101,26 +102,26 @@ static void encode_three_opds(struct instr *instruc, int r, int m, int v) {
  */
 static void encode_two_opds(struct instr *instruc, int r, int m) {
   // check if a second register exist in memory reference ex: [rax+rcx]
-  if (instruc->opd_mem[m] == reg_none) {
+  if (instruc->opd[m].reg_mem == reg_none) {
     instruc->hex.rex =
-        get_rex_prefix(instruc, instruc->opd[m], instruc->opd[r]);
+        get_rex_prefix(instruc, instruc->opd[m].reg, instruc->opd[r].reg);
     if (instruc->mem_disp && !instruc->mem_offset)
       set_zero_byte(instruc, m);
     instruc->hex.reg =
-        get_modRM32_64(instruc, instruc->opd[m], instruc->opd[r]);
+        get_modRM32_64(instruc, instruc->opd[m].reg, instruc->opd[r].reg);
     instruc->hex.vex =
-        get_vex_prefix(instruc->opd[r], instruc->opd[m]) + 1;
-    if (instruc->mem_disp && (instruc->opd[m] & VALUE_MASK) == spl)
+        get_vex_prefix(instruc->opd[r].reg, instruc->opd[m].reg) + 1;
+    if (instruc->mem_disp && (instruc->opd[m].reg & VALUE_MASK) == spl)
       instruc->sib = true;
   } else {
-    instruc->hex.rex =
-        get_mem_prefix(instruc->opd[r], instruc->opd[m], instruc->opd_mem[m]);
-    instruc->hex.reg = rex_r + (((instruc->opd[r] & VALUE_MASK)) * 0x8);
+    instruc->hex.rex = get_mem_prefix(instruc->opd[r].reg, instruc->opd[m].reg,
+                                      instruc->opd[m].reg_mem);
+    instruc->hex.reg = rex_r + (((instruc->opd[r].reg & VALUE_MASK)) * 0x8);
     instruc->hex.mem =
-        get_modRM32_64(instruc, instruc->opd[m], instruc->opd_mem[m]);
-    unsigned int bitMRm = instruc->opd[m] & MODE_MASK;
+        get_modRM32_64(instruc, instruc->opd[m].reg, instruc->opd[m].reg_mem);
+    unsigned int bitMRm = instruc->opd[m].reg & MODE_MASK;
     if (bitMRm > ext16 && bitMRm < mmx64 &&
-        (instruc->opd[m] & VALUE_MASK) == bpl) {
+        (instruc->opd[m].reg & VALUE_MASK) == bpl) {
       instruc->zero_byte = true;
       instruc->hex.reg += rex_;
     }
@@ -137,26 +138,26 @@ static void encode_special_opd(struct instr *instruc, int m, int i) {
 
   switch (INSTR_TABLE[instruc->key].encode_operand) {
   case M:
-    instruc->hex.rex = get_rex_prefix(instruc, instruc->opd[m], reg_none);
+    instruc->hex.rex = get_rex_prefix(instruc, instruc->opd[m].reg, reg_none);
     if (instruc->mem_disp && !instruc->mem_offset)
       set_zero_byte(instruc, m);
-    instruc->hex.reg = get_modRM32_64(instruc, instruc->opd[m],
+    instruc->hex.reg = get_modRM32_64(instruc, instruc->opd[m].reg,
                                       INSTR_TABLE[instruc->key].single_reg_r);
-    if (instruc->mem_disp && (instruc->opd[m] & VALUE_MASK) == spl)
+    if (instruc->mem_disp && (instruc->opd[m].reg & VALUE_MASK) == spl)
       instruc->sib = true;
     break;
 
   case O:
-    if ((MODE_MASK & instruc->opd[m]) == ext64)
+    if ((MODE_MASK & instruc->opd[m].reg) == ext64)
       instruc->hex.rex = rex_ + rex_b;
-    instruc->rd_offset = (instruc->opd[m] & VALUE_MASK);
-    instruc->hex.reg = get_modRM32_64(instruc, instruc->opd[m],
+    instruc->rd_offset = (instruc->opd[m].reg & VALUE_MASK);
+    instruc->hex.reg = get_modRM32_64(instruc, instruc->opd[m].reg,
                                       INSTR_TABLE[instruc->key].single_reg_r);
     break;
 
   case I:
     instruc->hex.rex =
-        get_rex_prefix(instruc, instruc->opd[m], instruc->opd[i]);
+        get_rex_prefix(instruc, instruc->opd[m].reg, instruc->opd[i].reg);
     break;
 
   default:
@@ -169,13 +170,14 @@ void encode_operands(struct instr *instruc) {
   // xchg instruction with RM operand encoding using rax or al register
   if (INSTR_TABLE[instruc->key].name == xchg &&
       INSTR_TABLE[instruc->key].encode_operand == RM) {
-    if ((reg64 & instruc->opd[0]) && (REG_MASK & instruc->opd[0]) == al) {
+    if ((reg64 & instruc->opd[0].reg) &&
+        (REG_MASK & instruc->opd[0].reg) == al) {
       instruc->key++;
-      instruc->rd_offset = instruc->opd[1] & VALUE_MASK;
-    } else if ((reg64 & instruc->opd[1]) &&
-               (REG_MASK & instruc->opd[1]) == al) {
+      instruc->rd_offset = instruc->opd[1].reg & VALUE_MASK;
+    } else if ((reg64 & instruc->opd[1].reg) &&
+               (REG_MASK & instruc->opd[1].reg) == al) {
       instruc->key++;
-      instruc->rd_offset = instruc->opd[0] & VALUE_MASK;
+      instruc->rd_offset = instruc->opd[0].reg & VALUE_MASK;
     }
   }
   // set 'byte' keyword
@@ -207,13 +209,13 @@ void encode_operands(struct instr *instruc) {
 }
 static void nasm_register_size_optimize(struct instr *instruc) {
 
-  switch (instruc->opd[0] & MODE_MASK) {
+  switch (instruc->opd[0].reg & MODE_MASK) {
   case reg64:
-    instruc->opd[0] = (instruc->opd[0] & MODE_CLEAR) | reg32;
+    instruc->opd[0].reg = (instruc->opd[0].reg & MODE_CLEAR) | reg32;
     break;
 
   case ext64:
-    instruc->opd[0] = (instruc->opd[0] & MODE_CLEAR) | ext32;
+    instruc->opd[0].reg = (instruc->opd[0].reg & MODE_CLEAR) | ext32;
     break;
 
   default:
@@ -234,8 +236,8 @@ void encode_imm(struct instr *instruc) {
   // return register rax for imm instructions sub, sbb, add, adc
   asm_instr sp_instr = EOI;
   if (INSTR_TABLE[instruc->key].encode_operand == M) {
-    if ((instruc->opd[0] == al && instruc->cons != NEG64BIT) ||
-        ((instruc->opd[0] & REG_MASK) == al &&
+    if ((instruc->opd[0].reg == al && instruc->cons != NEG64BIT) ||
+        ((instruc->opd[0].reg & REG_MASK) == al &&
          IN_RANGE(instruc->cons, MAX_SIGNED_8BIT + 1, NEG64BIT - 1)))
       sp_instr = to_special_instr_key(instruc->key);
     // return if instruction has special encoding
@@ -267,7 +269,7 @@ void encode_imm(struct instr *instruc) {
     // check if immediate operand is a negative 32 bit value
     if (INSTR_TABLE[instruc->key].type == DATA_TRANSFER &&
         IN_RANGE(instruc->cons, NEG32BIT + 1, NEG64BIT) &&
-        (instruc->cons & NEG32BIT_CHECK) && (instruc->opd[0] & reg64)) {
+        (instruc->cons & NEG32BIT_CHECK) && (instruc->opd[0].reg & reg64)) {
       // set mov I operand encoding to M
       instruc->key++;
       // do not zero pad immediate
@@ -277,21 +279,21 @@ void encode_imm(struct instr *instruc) {
     }
     if (instruc->cons <= MAX_UNSIGNED_32BIT)
       nasm_register_size_optimize(instruc);
-    if ((instruc->opd[0] & MODE_MASK) > noext8)
+    if ((instruc->opd[0].reg & MODE_MASK) > noext8)
       instruc->op_offset = 8;
 
-    instruc->rd_offset = instruc->opd[0] & VALUE_MASK;
+    instruc->rd_offset = instruc->opd[0].reg & VALUE_MASK;
   }
   // mask all bits except for the most significant byte
-  if ((instruc->opd[0] & MODE_MASK) < reg32) {
+  if ((instruc->opd[0].reg & MODE_MASK) < reg32) {
     instruc->cons &= MAX_UNSIGNED_16BIT;
     instruc->reduced_imm = true;
-    if (((instruc->opd[0] & MODE_MASK) == reg16 ||
-         (instruc->opd[0] & MODE_MASK) == ext16) &&
+    if (((instruc->opd[0].reg & MODE_MASK) == reg16 ||
+         (instruc->opd[0].reg & MODE_MASK) == ext16) &&
         instruc->cons <= MAX_UNSIGNED_8BIT)
       instruc->reduced_imm = false;
   }
-  if ((instruc->opd[0] & MODE_MASK) < reg16) {
+  if ((instruc->opd[0].reg & MODE_MASK) < reg16) {
     instruc->cons &= MAX_UNSIGNED_8BIT;
     instruc->reduced_imm = true;
   }
