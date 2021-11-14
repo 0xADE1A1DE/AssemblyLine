@@ -76,13 +76,14 @@ struct instr {
   // bitmap for keywords
   uint8_t keyword;
   // constants and memory displacement
+  unsigned long cons;
   bool imm;
   bool reduced_imm;
-  unsigned long cons;
+
+  uint32_t mem_offset;
   bool zero_byte;
   bool mem_disp;
   bool sib;
-  uint32_t mem_offset;
   // displacement for modRM64_m variable based on
   // value of op_en and size of mem_disp
   int mod_disp;
