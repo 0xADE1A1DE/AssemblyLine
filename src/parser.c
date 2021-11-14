@@ -61,7 +61,7 @@ static int line_to_instr(struct instr *instr_data, char *filtered_asm_str) {
   // jcc [MEM] no register
   if (opd_format == m && instr_data->opd[0].str[0] == '\0') {
     instr_data->mod_disp &= MOD16;
-    instr_data->keyword.is_short = true;
+    instr_data->keyword |= SHORT;
   }
   // convert instruction string to enum representation
   instr_data->key = str_to_instr_key(instr_data->instruction, opd_format);
@@ -70,16 +70,16 @@ static int line_to_instr(struct instr *instr_data, char *filtered_asm_str) {
               instr_data->instruction);
   if (instr_data->imm && INSTR_TABLE[instr_data->key].type == CONTROL_FLOW) {
     if (IN_RANGE(instr_data->cons, 0xffffff80, 0xffffffff))
-      instr_data->keyword.is_short = true;
+      instr_data->keyword |= SHORT;
     else if (IN_RANGE(instr_data->cons, 0, 0x7f) &&
-             !instr_data->keyword.is_long)
-      instr_data->keyword.is_short = true;
+             !(instr_data->keyword & LONG))
+      instr_data->keyword |= SHORT;
     else
-      FAIL_IF_MSG(instr_data->cons > 0x7f && instr_data->keyword.is_short,
+      FAIL_IF_MSG(instr_data->cons > 0x7f && (instr_data->keyword & SHORT),
                   "cannot set a long jump to short\n");
   }
   // find the encoding for a short jump instruction if applicable
-  instr_data->key += instr_data->keyword.is_short;
+  instr_data->key += instr_data->keyword & SHORT;
   // convert register string to enum representation
   instr_data->opd[0].reg = str_to_reg(instr_data->opd[0].str);
   instr_data->opd[0].reg_mem = str_to_reg(instr_data->opd[0].mem);

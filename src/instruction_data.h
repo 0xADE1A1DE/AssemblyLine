@@ -49,13 +49,6 @@ struct prefix {
   unsigned int mem;
 };
 
-// stores keywords used in assemblyline
-struct keywords {
-  bool is_short;
-  bool is_long;
-  bool is_byte;
-};
-
 struct operand {
   // pointer to operand in instruction string
   char *ptr;
@@ -80,8 +73,8 @@ struct instr {
   char instruction[INSTRUCTION_CHAR_LEN];
   // stores operands represented as strings
   struct operand opd[NUM_OF_OPD];
-  // keywords for assemblyline
-  struct keywords keyword;
+  // bitmap for keywords
+  uint8_t keyword;
   // constants and memory displacement
   bool imm;
   bool reduced_imm;

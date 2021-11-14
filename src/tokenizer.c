@@ -111,15 +111,15 @@ static void check_for_keyword(struct instr *instr_buffer, char *all_opd,
   }
   // check if the byte, long, or short keyword exist
   if (find_byte != NULL) {
-    instr_buffer->keyword.is_byte = true;
+    instr_buffer->keyword |= BYTE;
     clearstring(all_opd, BYTE_LEN);
   } else if (find_short != NULL) {
-    instr_buffer->keyword.is_short = true;
-    instr_buffer->keyword.is_long = false;
+    instr_buffer->keyword |= SHORT;
+    instr_buffer->keyword &= !LONG;
     clearstring(all_opd, SHORT_LEN);
   } else if (find_long != NULL) {
-    instr_buffer->keyword.is_long = true;
-    instr_buffer->keyword.is_short = false;
+    instr_buffer->keyword |= LONG;
+    instr_buffer->keyword &= !SHORT;
     clearstring(all_opd, LONG_LEN);
   }
 }
