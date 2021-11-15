@@ -17,24 +17,51 @@
 /*implements functions for determining the prefix opcode for an assembly
  * instruction*/
 #include "prefix.h"
+#include "common.h"
 #include "instructions.h"
 #include "registers.h"
 
-unsigned int get_rex_prefix(struct instr *all_instr, asm_reg m, asm_reg r) {
+unsigned int get_vector_rex_prefix(struct instr *all_instr, asm_reg m,
+                                   asm_reg r) {
 
-  unsigned int prefix_hex = NO_PREFIX;
-  // check if register r is a vectorized
+  unsigned int prefix_hex = rex_;
+  if (IN_RANGE((m & MODE_MASK), reg64, ext64)) {
+    prefix_hex = rex_w;
+  }
   if ((m & REG_MASK) > mm7 || (r & REG_MASK) > mm7) {
-    prefix_hex = rex_;
-    if ((r & REG_MASK) > mm7)
+    if ((r & REG_MASK) > mm7) {
       prefix_hex += rex_r;
-    if ((m & REG_MASK) > mm7)
+    }
+    if ((m & REG_MASK) > mm7) {
+      prefix_hex += rex_b;
+    }
+    if (m & ext8)
       prefix_hex += rex_b;
     return prefix_hex;
-  } else if ((r & MODE_MASK) == mmx64 && (r & REG_MASK) <= mm7) {
-    return (m & ext8) ? rex_ + rex_b : NO_PREFIX;
-  } else if ((m & MODE_MASK) == mmx64 && (m & REG_MASK) <= mm7)
-    return NO_PREFIX;
+  } else if (IN_RANGE((r & REG_MASK), mm0, mm7)) {
+    if (INSTR_TABLE[all_instr->key].type == VECTOR_MEM)
+      return (m & ext8) ? rex_ + rex_b : NO_PREFIX;
+    if ((m & MODE_MASK) == mmx64 || m == reg_none)
+      return NO_PREFIX;
+    if (m & ext8)
+      prefix_hex += rex_b;
+    return prefix_hex;
+  } else if (IN_RANGE((m & REG_MASK), mm0, mm7)) {
+    if ((r & MODE_MASK) == mmx64 || r == reg_none)
+      return NO_PREFIX;
+    if (r & ext8)
+      prefix_hex += rex_b;
+    return prefix_hex;
+  }
+}
+unsigned int get_rex_prefix(struct instr *all_instr, asm_reg m, asm_reg r) {
+  // printf("there\n");
+  unsigned int prefix_hex = NO_PREFIX;
+  // check if register r is a vectorized
+  if ((m & MODE_MASK) == mmx64 || (r & MODE_MASK) == mmx64)
+    return get_vector_rex_prefix(all_instr, m, r);
+
+  // printf("here\n");
   // keyword 'byte' is present
   if (all_instr->keyword.is_byte)
     m = m & SET_BYTE;
