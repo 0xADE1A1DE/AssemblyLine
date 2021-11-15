@@ -92,6 +92,7 @@ TEST_ASM =\
 		  shrx.asm \
 		  sub.asm \
 		  vector_add.asm \
+		  vector_add_mem.asm \
 		  vector_float_divide.asm \
 		  vector_float_mul.asm \
 		  vector_mul.asm \
