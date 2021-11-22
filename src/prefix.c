@@ -28,7 +28,7 @@ unsigned int get_vector_rex_prefix(struct instr *all_instr, asm_reg m,
   if (IN_RANGE((m & MODE_MASK), reg64, ext64) &&
       INSTR_TABLE[all_instr->key].type != VECTOR_MEM)
     prefix_hex = rex_w;
-
+  // check size
   if ((m & REG_MASK) > mm7 || (r & REG_MASK) > mm7) {
     if ((r & REG_MASK) > mm7)
       prefix_hex += rex_r;
@@ -36,12 +36,15 @@ unsigned int get_vector_rex_prefix(struct instr *all_instr, asm_reg m,
       prefix_hex += rex_b;
     return prefix_hex;
   } else {
+    // M encoding refers to a memory displacement
     if (INSTR_TABLE[all_instr->key].type == VECTOR_MEM)
       return (m & ext8) ? rex_ + rex_b : NO_PREFIX;
-    if ((m & MODE_MASK) == mmx64 && (m & MODE_MASK) == mmx64)
+    if ((m & MODE_MASK) == mmx64)
       return NO_PREFIX;
+    // only a single operand
     if (m == reg_none || r == reg_none)
       return NO_PREFIX;
+    // an operand is part of the x64 extended set
     if (m & ext8 || r & ext8)
       prefix_hex += rex_b;
   }
@@ -67,7 +70,7 @@ unsigned int get_rex_prefix(struct instr *all_instr, asm_reg m, asm_reg r) {
   // register r or m is 64 bits wide
   if ((m & reg64) || (r & reg64))
     prefix_hex = rex_w;
-  // register is r or m is part of the x64 extended set
+  // r or m operand is part of the x64 extended set
   if (r & ext8)
     prefix_hex += rex_r;
   if (m & ext8)
