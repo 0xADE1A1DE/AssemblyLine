@@ -236,7 +236,6 @@ typedef enum {
    */
   CONTROL_FLOW,
   VECTOR,
-  VECTOR_MEM,
   // instructions that do not require special encodings
   OTHER
 } instr_type;

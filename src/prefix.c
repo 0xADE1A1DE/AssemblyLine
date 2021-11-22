@@ -25,8 +25,7 @@ unsigned int get_vector_rex_prefix(struct instr *all_instr, asm_reg m,
                                    asm_reg r) {
 
   unsigned int prefix_hex = rex_;
-  if (IN_RANGE((m & MODE_MASK), reg64, ext64) &&
-      INSTR_TABLE[all_instr->key].type != VECTOR_MEM)
+  if (IN_RANGE((m & MODE_MASK), reg64, ext64) && !all_instr->mem_disp)
     prefix_hex = rex_w;
   // check register size
   if ((m & REG_MASK) > mm7 || (r & REG_MASK) > mm7) {
@@ -37,7 +36,7 @@ unsigned int get_vector_rex_prefix(struct instr *all_instr, asm_reg m,
     return prefix_hex;
   } else {
     // M encoding refers to a memory displacement
-    if (INSTR_TABLE[all_instr->key].type == VECTOR_MEM)
+    if (all_instr->mem_disp)
       return (m & ext8) ? rex_ + rex_b : NO_PREFIX;
     if ((m & MODE_MASK) == mmx64)
       return NO_PREFIX;
