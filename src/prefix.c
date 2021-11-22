@@ -28,7 +28,7 @@ unsigned int get_vector_rex_prefix(struct instr *all_instr, asm_reg m,
   if (IN_RANGE((m & MODE_MASK), reg64, ext64) &&
       INSTR_TABLE[all_instr->key].type != VECTOR_MEM)
     prefix_hex = rex_w;
-  // check size
+  // check register size
   if ((m & REG_MASK) > mm7 || (r & REG_MASK) > mm7) {
     if ((r & REG_MASK) > mm7)
       prefix_hex += rex_r;
