@@ -53,6 +53,23 @@ movq xmm2, r13
 movq xmm2, r14
 movq xmm2, r15
 
+movq xmm2, [rax+0xee]
+movq xmm2, [rcx+0xdd]
+movq xmm2, [rdx+0x8efde]
+movq xmm2, [rbx+0x4cd]
+movq xmm2, [rsp+0xaa]
+movq xmm2, [rbp+0xff]
+movq xmm2, [rsi+0xfddd]
+movq xmm2, [rdi+0xabcd]
+movq xmm2, [r8+0x9a9a9]
+movq xmm2, [r9+0x456]
+movq xmm2, [r10+0x123]
+movq xmm2, [r11+0x89dd]
+movq xmm2, [r12+0x9a34]
+movq xmm2, [r13+0xffff]
+movq xmm2, [r14+0x4edf]
+movq xmm2, [r15+0xfe]
+
 movq xmm3, rax
 movq xmm3, rcx
 movq xmm3, rdx
@@ -206,6 +223,23 @@ movq xmm11, r12
 movq xmm11, r13
 movq xmm11, r14
 movq xmm11, r15
+
+movq xmm11, [rax+0xee]
+movq xmm11, [rcx+0xdd]
+movq xmm11, [rdx+0x8efde]
+movq xmm11, [rbx+0x4cd]
+movq xmm11, [rsp+0xaa]
+movq xmm11, [rbp+0xff]
+movq xmm11, [rsi+0xfddd]
+movq xmm11, [rdi+0xabcd]
+movq xmm11, [r8+0x9a9a9]
+movq xmm11, [r9+0x456]
+movq xmm11, [r10+0x123]
+movq xmm11, [r11+0x89dd]
+movq xmm11, [r12+0x9a34]
+movq xmm11, [r13+0xffff]
+movq xmm11, [r14+0x4edf]
+movq xmm11, [r15+0xfe]
 
 movq xmm12, rax
 movq xmm12, rcx
