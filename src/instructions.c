@@ -148,7 +148,7 @@ const struct instr_table INSTR_TABLE[] = {
     {{'\0'},        or,          {NA, rm},   RM,  OTHER,          1,   NA,  NA,  3,  0, {REX, 0x0a, REG}},
     {"paddb",       paddb,       {NA, vv},   RM,  VECTOR,         NA,  NA,  NA,  5,  0, {0x66, REX, 0x0f, 0xfc, REG}},
     {"paddd",       paddd,       {NA, vv},   RM,  VECTOR,         NA,  NA,  NA,  5,  0, {0x66, REX, 0x0f, 0xfe, REG}},
-    {"paddq",       paddq,       {NA, vv},   RM,  VECTOR,         NA,  NA,  NA,  5,  0, {0x66, REX, 0x0f, 0xd4, REG}},
+    {"paddq",       paddq,       {vm, vv},   RM,  VECTOR,         NA,  NA,  NA,  5,  0, {0x66, REX, 0x0f, 0xd4, REG}},
     {"paddw",       paddw,       {NA, vv},   RM,  VECTOR,         NA,  NA,  NA,  5,  0, {0x66, REX, 0x0f, 0xfd, REG}},
     {"pand",        pand,        {NA, vv},   RM,  VECTOR,         NA,  NA,  NA,  5,  0, {0x66, REX, 0x0f, 0xdb, REG}},
     {"pmulhw",      pmulhw,      {NA, vv},   RM,  VECTOR,         NA,  NA,  NA,  5,  0, {0x66, REX, 0x0f, 0xe5, REG}},
