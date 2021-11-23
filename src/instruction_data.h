@@ -50,7 +50,6 @@ struct prefix {
   unsigned int mem;
 };
 
-
 struct operand {
   // pointer to operand in instruction string
   char *ptr;
@@ -83,7 +82,7 @@ struct instr {
   // stores operands represented as strings
   struct operand opd[NUM_OF_OPD];
   // bitmap for keywords
-  uint8_t keyword;
+  struct keywords keyword;
   // constants and memory displacement
   bool imm : 1;
   bool reduced_imm : 1;

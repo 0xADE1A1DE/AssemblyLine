@@ -38,7 +38,7 @@ static void auto_set_byte(struct instr *instruc) {
     case prefetcht2:
     case prefetchnta:
     case clflush:
-      instruc->keyword |= BYTE;
+      instruc->keyword.is_byte = true;
       instruc->op_offset = 0;
     default:
       return;
@@ -53,7 +53,7 @@ void encode_offset(struct instr *instruc) {
     return;
   // set opcode offset
   if (INSTR_TABLE[instruc->key].type != CONTROL_FLOW &&
-      !(instruc->keyword & BYTE))
+      !instruc->keyword.is_byte)
     instruc->op_offset = get_opcode_offset(instruc->opd[0].reg);
 }
 
