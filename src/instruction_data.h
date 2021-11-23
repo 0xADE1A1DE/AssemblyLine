@@ -24,6 +24,7 @@
 #include "instructions.h"
 #include <inttypes.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include <stdio.h>
 
 // contains the memory context for assembling an asm program
@@ -49,6 +50,7 @@ struct prefix {
   unsigned int mem;
 };
 
+
 struct operand {
   // pointer to operand in instruction string
   char *ptr;
@@ -65,6 +67,13 @@ struct operand {
   char type;
 };
 
+// stores keywords used in assemblyline
+struct keywords {
+  bool is_short : 1;
+  bool is_long : 1;
+  bool is_byte : 1;
+};
+
 // internal representation of an assembly instruction
 struct instr {
   // connects instr to INSTR_TABLE[]
@@ -76,14 +85,13 @@ struct instr {
   // bitmap for keywords
   uint8_t keyword;
   // constants and memory displacement
+  bool imm : 1;
+  bool reduced_imm : 1;
   unsigned long cons;
-  bool imm;
-  bool reduced_imm;
-
+  bool zero_byte : 1;
+  bool mem_disp : 1;
+  bool sib : 1;
   uint32_t mem_offset;
-  bool zero_byte;
-  bool mem_disp;
-  bool sib;
   // displacement for modRM64_m variable based on
   // value of op_en and size of mem_disp
   int mod_disp;
