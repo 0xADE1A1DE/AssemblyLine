@@ -103,6 +103,23 @@ paddq xmm5, xmm13
 paddq xmm5, xmm14
 paddq xmm5, xmm15
 
+paddq xmm5, [rax+0xee]
+paddq xmm5, [rcx+0xdd]
+paddq xmm5, [rdx+0x8efde]
+paddq xmm5, [rbx+0x4cd]
+paddq xmm5, [rsp+0xaa]
+paddq xmm5, [rbp+0xff]
+paddq xmm5, [rsi+0xfddd]
+paddq xmm5, [rdi+0xabcd]
+paddq xmm5, [r8+0x9a9a9]
+paddq xmm5, [r9+0x456]
+paddq xmm5, [r10+0x123]
+paddq xmm5, [r11+0x89dd]
+paddq xmm5, [r12+0x9a34]
+paddq xmm5, [r13+0xffff]
+paddq xmm5, [r14+0x4edf]
+paddq xmm5, [r15+0xfe]
+
 paddq xmm6, xmm0
 paddq xmm6, xmm1
 paddq xmm6, xmm2
@@ -204,6 +221,23 @@ paddq xmm11, xmm12
 paddq xmm11, xmm13
 paddq xmm11, xmm14
 paddq xmm11, xmm15
+
+paddq xmm11, [rax+0xee]
+paddq xmm11, [rcx+0xdd]
+paddq xmm11, [rdx+0x8efde]
+paddq xmm11, [rbx+0x4cd]
+paddq xmm11, [rsp+0xaa]
+paddq xmm11, [rbp+0xff]
+paddq xmm11, [rsi+0xfddd]
+paddq xmm11, [rdi+0xabcd]
+paddq xmm11, [r8+0x9a9a9]
+paddq xmm11, [r9+0x456]
+paddq xmm11, [r10+0x123]
+paddq xmm11, [r11+0x89dd]
+paddq xmm11, [r12+0x9a34]
+paddq xmm11, [r13+0xffff]
+paddq xmm11, [r14+0x4edf]
+paddq xmm11, [r15+0xfe]
 
 paddq xmm12, xmm0
 paddq xmm12, xmm1
