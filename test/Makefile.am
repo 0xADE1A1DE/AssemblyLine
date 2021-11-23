@@ -46,6 +46,7 @@ TEST_ASM =\
 		  imul.asm \
 		  lea.asm \
 		  mov.asm \
+		  movd.asm \
 		  movntdqa.asm \
 		  movntq.asm \
 		  movq.asm \
