@@ -50,6 +50,23 @@ struct prefix {
   unsigned int mem;
 };
 
+
+struct operand {
+  // pointer to operand in instruction string
+  char *ptr;
+  // stores the string representation of register
+  char str[MAX_REG_LEN];
+  // enum representation of register
+  asm_reg reg;
+  // stores the 2nd register in a memory reference
+  char mem[MAX_REG_LEN];
+  // enum representation of 2nd register in
+  // a memory reference
+  asm_reg reg_mem;
+  // operand typecould be: r,m, or i
+  char type;
+};
+
 // stores keywords used in assemblyline
 struct keywords {
   bool is_short : 1;
@@ -57,12 +74,6 @@ struct keywords {
   bool is_byte : 1;
 };
 
-struct operands {
-  char *operand[NUM_OF_OPD];
-  char opd_cpy[NUM_OF_OPD][MAX_REG_LEN];
-  char opd_mem_cpy[NUM_OF_OPD][MAX_REG_LEN];
-  char opd_type[OPD_FORMAT_LEN];
-};
 // internal representation of an assembly instruction
 struct instr {
   // connects instr to INSTR_TABLE[]
@@ -70,12 +81,9 @@ struct instr {
   // stores components assembly instruction into buffer
   char instruction[INSTRUCTION_CHAR_LEN];
   // stores operands represented as strings
-  struct operands opds;
-  // operand registers represented as asm_reg enum
-  asm_reg opd[NUM_OF_OPD];
-  asm_reg opd_mem[NUM_OF_OPD];
-  // keywords for assemblyline
-  struct keywords keyword;
+  struct operand opd[NUM_OF_OPD];
+  // bitmap for keywords
+  uint8_t keyword;
   // constants and memory displacement
   bool imm : 1;
   bool reduced_imm : 1;
