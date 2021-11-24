@@ -174,19 +174,9 @@ static int assemble_instr(struct instr *instruc, unsigned char ptr[]) {
         ptr[ptr_pos++] = instruc->hex.vex;
       break;
 
-    case EVEX:
-      if ((instruc->opd[1] & BIT_MASK) == BIT_32)
-        ptr[ptr_pos++] = evex;
-      break;
-
     case W0:
       if (instruc->hex.w0 != NO_PREFIX)
         ptr[ptr_pos++] = instruc->hex.w0;
-      break;
-
-    case NP:
-      if ((instruc->opd[0] & BIT_MASK) == BIT_32)
-        ptr[ptr_pos++] = 0x67;
       break;
 
     default:

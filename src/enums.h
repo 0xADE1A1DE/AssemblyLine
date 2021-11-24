@@ -29,11 +29,8 @@ typedef enum {
   REG = 256,
   REX,
   VEX,
-  EVEX,
-  EVEX_128,
   W0,
   MEM,
-  NP,
   NO_PREFIX = 399
 } op_encoding;
 
