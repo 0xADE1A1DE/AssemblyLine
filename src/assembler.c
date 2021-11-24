@@ -117,8 +117,10 @@ static int assemble_mem(struct instr *instruc, unsigned char ptr[]) {
 
   int ptr_pos = 0;
   // check if zero byte is present
-  if (instruc->zero_byte)
+  if (instruc->zero_byte) {
     ptr[ptr_pos++] = 0x0;
+    return ptr_pos;
+  }
   // check if there is a memory reference
   if (instruc->mem_disp) {
     if (instruc->sib)
@@ -146,6 +148,11 @@ static int assemble_instr(struct instr *instruc, unsigned char ptr[]) {
 
   int ptr_pos = 0;
   int opcode_pos = 0;
+
+  if (INSTR_TABLE[instruc->key].type == VECTOR && instruc->mem_disp)
+    if ((instruc->opd[0] & BIT_MASK) == BIT_32 ||
+        (instruc->opd[1] & BIT_MASK) == BIT_32)
+      ptr[ptr_pos++] = 0x67;
   // 16 bit register prefix
   if ((instruc->opd[0] & BIT_MASK) == BIT_16)
     ptr[ptr_pos++] = 0x66;
