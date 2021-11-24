@@ -151,7 +151,8 @@ static int assemble_instr(struct instr *instruc, unsigned char ptr[]) {
 
   if (INSTR_TABLE[instruc->key].type == VECTOR && instruc->mem_disp)
     if ((instruc->opd[0] & BIT_MASK) == BIT_32 ||
-        (instruc->opd[1] & BIT_MASK) == BIT_32)
+        (instruc->opd[1] & BIT_MASK) == BIT_32 ||
+        (instruc->opd[2] & BIT_MASK) == BIT_32)
       ptr[ptr_pos++] = 0x67;
   // 16 bit register prefix
   if ((instruc->opd[0] & BIT_MASK) == BIT_16)

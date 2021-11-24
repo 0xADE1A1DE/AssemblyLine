@@ -130,7 +130,7 @@ const struct instr_table INSTR_TABLE[] = {
     {{'\0'},        movq,        {NA, rv},   MR,  VECTOR,         NA,  NA,  NA,  5,  0, {0x66, REX, 0x0f, 0x7e, REG}},
     {"movzx",       movzx,       {rr, rm},   RM,  OTHER,          NA,  NA,  NA,  4,  0, {REX, 0x0f, 0xb6, REG}},
     {"mulpd",       mulpd,       {NA, vv},   RM,  VECTOR,         NA,  NA,  NA,  5,  0, {0x66, REX, 0x0f, 0x59, REG}},
-    {"mulx",        mulx,        {rrr, rrm}, RVM, OTHER,          NA,  NA,  NA,  5,  0, {0xc4, VEX, W0, 0xf6, REG}},
+    {"mulx",        mulx,        {rrr, rrm}, RVM, VECTOR,         NA,  NA,  NA,  5,  0, {0xc4, VEX, W0, 0xf6, REG}},
     {"nop",         nop,         {n,  n},    NA,  OTHER,          NA,  NA,  NA,  1,  0, {0x90}},
     {"nop2",        nop,         {n,  n},    NA,  OTHER,          NA,  NA,  NA,  2,  0, {0x66, 0x90}},
     {"nop3",        nop,         {n,  n},    NA,  OTHER,          NA,  NA,  NA,  3,  0, {0x0f, 0x1f, 0x00}},
