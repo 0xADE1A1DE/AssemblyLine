@@ -18,6 +18,8 @@ movd xmm0, r12d
 movd xmm0, r13d
 movd xmm0, r14d
 movd xmm0, r15d
+movd ebx, xmm0
+movd r14d, xmm0
 
 movd xmm1, eax
 movd xmm1, ecx
@@ -35,6 +37,8 @@ movd xmm1, r12d
 movd xmm1, r13d
 movd xmm1, r14d
 movd xmm1, r15d
+movd ebx, xmm1
+movd r14d, xmm1
 
 movd xmm2, eax
 movd xmm2, ecx
@@ -52,6 +56,8 @@ movd xmm2, r12d
 movd xmm2, r13d
 movd xmm2, r14d
 movd xmm2, r15d
+movd ebx, xmm2
+movd r14d, xmm2
 
 movd xmm3, eax
 movd xmm3, ecx
@@ -69,6 +75,8 @@ movd xmm3, r12d
 movd xmm3, r13d
 movd xmm3, r14d
 movd xmm3, r15d
+movd ebx, xmm3
+movd r14d, xmm3
 
 movd xmm4, eax
 movd xmm4, ecx
@@ -86,6 +94,8 @@ movd xmm4, r12d
 movd xmm4, r13d
 movd xmm4, r14d
 movd xmm4, r15d
+movd ebx, xmm4
+movd r14d, xmm4
 
 movd xmm5, eax
 movd xmm5, ecx
@@ -103,6 +113,8 @@ movd xmm5, r12d
 movd xmm5, r13d
 movd xmm5, r14d
 movd xmm5, r15d
+movd ebx, xmm5
+movd r14d, xmm5
 
 movd xmm5, [eax+0xee]
 movd xmm5, [ecx+0xdd]
@@ -120,7 +132,8 @@ movd xmm5, [r12d+0x9a34]
 movd xmm5, [r13d+0xffff]
 movd xmm5, [r14d+0x4edf]
 movd xmm5, [r15d+0xfe]
-
+movd ebx, xmm5
+movd r14d, xmm5
 
 movd xmm6, eax
 movd xmm6, ecx
@@ -138,6 +151,8 @@ movd xmm6, r12d
 movd xmm6, r13d
 movd xmm6, r14d
 movd xmm6, r15d
+movd ebx, xmm6
+movd r14d, xmm6
 
 movd xmm7, eax
 movd xmm7, ecx
@@ -155,6 +170,9 @@ movd xmm7, r12d
 movd xmm7, r13d
 movd xmm7, r14d
 movd xmm7, r15d
+movd ebx, xmm7
+movd r14d, xmm7
+
 
 movd xmm8, eax
 movd xmm8, ecx
@@ -172,6 +190,8 @@ movd xmm8, r12d
 movd xmm8, r13d
 movd xmm8, r14d
 movd xmm8, r15d
+movd ebx, xmm8
+movd r14d, xmm8
 
 movd xmm9, eax
 movd xmm9, ecx
@@ -189,7 +209,8 @@ movd xmm9, r12d
 movd xmm9, r13d
 movd xmm9, r14d
 movd xmm9, r15d
-
+movd ebx, xmm9
+movd r14d, xmm9
 
 movd xmm10, eax
 movd xmm10, ecx
@@ -207,6 +228,9 @@ movd xmm10, r12d
 movd xmm10, r13d
 movd xmm10, r14d
 movd xmm10, r15d
+movd ebx, xmm10
+movd r14d, xmm10
+
 
 movd xmm11, eax
 movd xmm11, ecx
@@ -224,6 +248,8 @@ movd xmm11, r12d
 movd xmm11, r13d
 movd xmm11, r14d
 movd xmm11, r15d
+movd ebx, xmm11
+movd r14d, xmm11
 
 movd xmm11, [eax+0xee]
 movd xmm11, [ecx+0xdd]
@@ -241,6 +267,8 @@ movd xmm11, [r12d+0x9a34]
 movd xmm11, [r13d+0xffff]
 movd xmm11, [r14d+0x4edf]
 movd xmm11, [r15d+0xfe]
+movd [ebx+0x4cd], xmm11
+movd [r14d+0x4edf], xmm11
 
 movd xmm12, eax
 movd xmm12, ecx
@@ -258,6 +286,8 @@ movd xmm12, r12d
 movd xmm12, r13d
 movd xmm12, r14d
 movd xmm12, r15d
+movd ebx, xmm12
+movd r14d, xmm12
 
 movd xmm13, eax
 movd xmm13, ecx
@@ -275,6 +305,8 @@ movd xmm13, r12d
 movd xmm13, r13d
 movd xmm13, r14d
 movd xmm13, r15d
+movd ebx, xmm13
+movd r14d, xmm13
 
 movd xmm14, eax
 movd xmm14, ecx
@@ -292,6 +324,8 @@ movd xmm14, r12d
 movd xmm14, r13d
 movd xmm14, r14d
 movd xmm14, r15d
+movd ebx, xmm14
+movd r14d, xmm14
 
 movd xmm15, eax
 movd xmm15, ecx
@@ -309,4 +343,6 @@ movd xmm15, r12d
 movd xmm15, r13d
 movd xmm15, r14d
 movd xmm15, r15d
+movd ebx, xmm15
+movd r14d, xmm15
 
