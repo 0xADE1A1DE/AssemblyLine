@@ -149,6 +149,7 @@ static int assemble_instr(struct instr *instruc, unsigned char ptr[]) {
   int ptr_pos = 0;
   int opcode_pos = 0;
 
+  // 67h - address size overwrite prefix
   if (INSTR_TABLE[instruc->key].type == VECTOR && instruc->mem_disp)
     if ((instruc->opd[0] & BIT_MASK) == BIT_32 ||
         (instruc->opd[1] & BIT_MASK) == BIT_32 ||
