@@ -93,6 +93,7 @@ TEST_ASM =\
 		  shrd.asm \
 		  shrx.asm \
 		  sub.asm \
+		  vaddpd.asm \
 		  vector_add.asm \
 		  vector_add_mem.asm \
 		  vector_float_divide.asm \
