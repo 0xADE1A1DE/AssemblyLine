@@ -28,6 +28,7 @@ TEST_C= check_chunk_counting \
 		invalid \
 		jump \
 		memory_reallocation \
+		vector_operations \
 		run 
 		
 
