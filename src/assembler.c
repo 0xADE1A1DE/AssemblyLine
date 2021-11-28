@@ -140,6 +140,12 @@ static int assemble_mem(struct instr *instruc, unsigned char ptr[]) {
   return ptr_pos;
 }
 
+static int assemble_vex(unsigned int vex[], unsigned char ptr[], int size) {
+  for (int i = 0; i < size; i++)
+    ptr[i] = vex[i];
+  return size;
+}
+
 /**
  * assembles the prefix and opcode of a @param instruc and writes the
  * opcode to pointer location @param ptr
@@ -180,7 +186,15 @@ static int assemble_instr(struct instr *instruc, unsigned char ptr[]) {
       if (instruc->hex.w0 != NO_PREFIX)
         ptr[ptr_pos++] = instruc->hex.w0;
       break;
-
+      // VEX_WIG
+    case VEX_WIG:
+      // 2 byte vex prefix
+      if (instruc->hex.is_C5H)
+        ptr_pos += assemble_vex(instruc->hex.vex_R, ptr + ptr_pos, 2);
+      // 3 byte vex prefix
+      else
+        ptr_pos += assemble_vex(instruc->hex.vex_RXB, ptr + ptr_pos, 3);
+      break;
     default:
       if (INSTR_TABLE[instruc->key].opcode[opcode_pos] < REG) {
         unsigned char opc = INSTR_TABLE[instruc->key].opcode[opcode_pos];

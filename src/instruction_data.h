@@ -45,6 +45,12 @@ struct prefix {
   unsigned int reg;
   unsigned int rex;
   unsigned int vex;
+  bool is_C5H : 1;
+  // 3 byte vex prefix
+  unsigned int vex_RXB[3];
+  // 2 byte vex prefix
+  unsigned int vex_R[2];
+
   unsigned int w0;
   unsigned int mem;
 };

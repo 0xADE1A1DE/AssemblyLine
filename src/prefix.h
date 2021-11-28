@@ -38,7 +38,7 @@ unsigned int get_mem_prefix(asm_reg s, asm_reg m, asm_reg r);
 /**
  * takes in 2 operands @param r, and @param m, and returns the vex prefix value
  */
-unsigned int get_vex_prefix(asm_reg r, asm_reg m);
+unsigned int get_vex_prefix(struct instr *all_instr, asm_reg r, asm_reg m);
 
 /**
  * takes in 1 operands @param v, and returns the w0 prefix value

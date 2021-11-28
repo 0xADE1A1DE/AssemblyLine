@@ -55,6 +55,11 @@
 #define R_VEX 0b10000000
 #define M_VEX 0b00100000
 
+#define C5H 0b11000101
+#define C4H 0b11000100
+#define R_WvvvvLpp 0b01111111
+#define RXB 0b10000000
+
 // used for getting register type, length, and value
 #define REG_MASK 0b00000011111
 #define MODE_MASK 0b11110000000
@@ -62,7 +67,7 @@
 #define VALUE_MASK 0b00000000111
 
 // register string length
-#define REGISTER_LEN 5
+#define REGISTER_LEN 6
 // all generic registers have at most 7 variations
 #define NUM_OF_REGISTERS 7
 

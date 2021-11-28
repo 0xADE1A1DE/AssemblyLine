@@ -29,6 +29,7 @@ typedef enum {
   REG = 256,
   REX,
   VEX,
+  VEX_WIG,
   W0,
   MEM,
   NO_PREFIX = 399
@@ -211,6 +212,7 @@ typedef enum {
   shrx,
   sub,
   test,
+  vmovupd,
   xabort,
   xbegin,
   xchg,
@@ -233,6 +235,7 @@ typedef enum {
    */
   CONTROL_FLOW,
   VECTOR,
+  VECTOR_AVX,
   // instructions that do not require special encodings
   OTHER
 } instr_type;

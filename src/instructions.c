@@ -201,6 +201,14 @@ const struct instr_table INSTR_TABLE[] = {
     {{'\0'},        sub,         {mi, ri},   M,   OTHER,          1,   NA,  5,   3,  0, {REX, 0x80, REG}},
     {{'\0'},        sub,         {NA, NA},   I,   OTHER,          1,   NA,  NA,  2,  0, {REX, 0x2c}},
     {"test",        test,        {rr, mr},   MR,  OTHER,          1,   NA,  NA,  3,  0, {REX, 0x84, REG}},
+
+
+
+    {"vmovupd",     vmovupd,     {vm, vv},   RM,  VECTOR_AVX,     NA,  NA,  NA,  3,  0, {VEX_WIG, 0x10, REG}},
+    {{'\0'},        vmovupd,     {mv, NA},   MR,  VECTOR_AVX,     NA,  NA,  NA,  3,  0, {VEX_WIG, 0x11, REG}},
+
+
+
     {"xabort",      xabort,      {n,  n},    I,   CONTROL_FLOW,   NA,  NA,  NA,  2,  0, {0xc6, 0xf8}},
     {"xbegin",      xbegin,      {n,  n},    NA,  CONTROL_FLOW,   NA,  NA,  NA,  2,  0, {0xc7, 0xf8}},
     {"xchg",        xchg,        {rr, rm},   RM,  DATA_TRANSFER,  1,   NA,  NA,  3,  0, {REX, 0x86, REG}},

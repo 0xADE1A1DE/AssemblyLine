@@ -84,7 +84,7 @@ static void set_zero_byte(struct instr *instruc, int m) {
  */
 static void encode_three_opds(struct instr *instruc, int r, int m, int v) {
 
-  instruc->hex.vex = get_vex_prefix(instruc->opd[r], instruc->opd[m]);
+  instruc->hex.vex = get_vex_prefix(instruc, instruc->opd[r], instruc->opd[m]);
   instruc->hex.w0 = get_w0_prefix(instruc->opd[v]);
   instruc->hex.w0 -= INSTR_TABLE[instruc->key].w0_disp;
   if (instruc->mem_disp && !instruc->mem_offset)
@@ -107,7 +107,13 @@ static void encode_two_opds(struct instr *instruc, int r, int m) {
       set_zero_byte(instruc, m);
     instruc->hex.reg =
         get_modRM32_64(instruc, instruc->opd[m], instruc->opd[r]);
-    instruc->hex.vex = get_vex_prefix(instruc->opd[r], instruc->opd[m]) + 1;
+    if (INSTR_TABLE[instruc->key].type == VECTOR_AVX)
+      instruc->hex.vex =
+          get_vex_prefix(instruc, instruc->opd[r], instruc->opd[m]);
+    else
+      // used for rorx instruction TODO: change this
+      instruc->hex.vex =
+          get_vex_prefix(instruc, instruc->opd[r], instruc->opd[m]) + 1;
     if (instruc->mem_disp && (instruc->opd[m] & VALUE_MASK) == spl)
       instruc->sib = true;
   } else {

@@ -87,6 +87,12 @@ static int line_to_instr(struct instr *instr_data, char *filtered_asm_str) {
   instr_data->hex.reg = NO_PREFIX;
   instr_data->hex.rex = NO_PREFIX;
   instr_data->hex.vex = NO_PREFIX;
+  instr_data->hex.is_C5H = true;
+  instr_data->hex.vex_R[0] = C5H;
+  instr_data->hex.vex_R[1] = 0xfd;
+  instr_data->hex.vex_RXB[0] = C4H;
+  instr_data->hex.vex_RXB[1] = rex_ + rex_b;
+  instr_data->hex.vex_RXB[2] = 0xfd;
   instr_data->hex.w0 = NO_PREFIX;
   instr_data->hex.mem = NO_PREFIX;
   // checks if the registers are valid

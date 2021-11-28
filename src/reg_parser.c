@@ -128,6 +128,7 @@ asm_reg find_reg(int row, const int col, char *reg_str) {
       return REG_TABLE[row].gen_reg;
     row++;
   }
+  fprintf(stderr, "assembyline: %s register not found\n", reg_str);
   return reg_error;
 }
 
@@ -153,6 +154,8 @@ asm_reg str_to_reg(char *reg) {
     return mmx64 | find_reg(16, 4, reg);
   } else if (reg[0] == 'x') {
     return mmx64 | find_reg(16, 5, reg);
+  } else if (reg[0] == 'y') {
+    return mmx64 | find_reg(16, 6, reg);
     // 64 bit register
   } else if (reg[0] == 'e') {
     return reg32 | find_reg(0, 3, reg);
