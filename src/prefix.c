@@ -97,27 +97,15 @@ unsigned int get_vex_prefix(struct instr *all_instr, asm_reg r, asm_reg m) {
   unsigned int vex_prefix_hex = rex_ + rex_x;
   // registers r or m are vectorized
   if ((r & MODE_MASK) == mmx64 || (m & MODE_MASK) == mmx64) {
-    if ((m & REG_MASK) > mm7 && (r & MODE_MASK) == mmx64) {
+    if (((m & REG_MASK) > mm7 && (r & MODE_MASK) == mmx64) || (m & ext8)) {
       // C4H 3 byte prefix
       all_instr->hex.is_C5H = false;
-      all_instr->hex.vex_R[1] &= R_WvvvvLpp;
       all_instr->hex.vex_RXB[2] &= R_WvvvvLpp;
-      if ((r & REG_MASK) < mm8) {
+      if ((r & REG_MASK) < mm8)
         // set middle byte [1] if CH4 to 0xc1
         all_instr->hex.vex_RXB[1] |= RXB;
-      }
-    } else if (m & ext8) {
-      // C4H 3 byte prefix
-      all_instr->hex.is_C5H = false;
-      all_instr->hex.vex_R[1] &= R_WvvvvLpp;
-      all_instr->hex.vex_RXB[2] &= R_WvvvvLpp;
-      if ((r & REG_MASK) < mm8) {
-        // set middle byte [1] if CH4 to 0xc1
-        all_instr->hex.vex_RXB[1] |= RXB;
-      }
     } else if ((r & REG_MASK) > mm7) {
       all_instr->hex.vex_R[1] &= R_WvvvvLpp;
-      all_instr->hex.vex_RXB[2] &= R_WvvvvLpp;
     }
   }
   // registers r or m are part of the standard x86 set
