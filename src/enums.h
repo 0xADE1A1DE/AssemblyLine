@@ -26,13 +26,13 @@ typedef enum {
 
   none = 0,
   SIB = 0x24,
-  REG = 256,
-  REX,
-  VEX,
-  VEX_WIG,
-  W0,
-  MEM,
-  NO_PREFIX = 399
+  //uned in opcode layout
+  REG = 0b100000000000000,
+  REX = 0b1000000000000000,
+  VEX = 0b10000000000000000,
+  VEX_WIG = 0b100000000000000000,
+  W0 = 0b1000000000000000000,
+  NO_PREFIX = 0b10000000000000000000
 } op_encoding;
 
 // only used for determining what prefix to use based on registers
@@ -89,6 +89,7 @@ typedef enum {
   vi,
   vm,
   mv,
+  vvv,
 } operand_format;
 
 // unique identifier for each instuction
@@ -212,6 +213,7 @@ typedef enum {
   shrx,
   sub,
   test,
+  vaddpd,
   vmovupd,
   xabort,
   xbegin,

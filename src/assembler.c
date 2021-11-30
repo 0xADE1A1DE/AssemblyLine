@@ -166,7 +166,7 @@ static int assemble_instr(struct instr *instruc, unsigned char ptr[]) {
     ptr[ptr_pos++] = 0x66;
   // assemble all prefixes and instruction opcode
   while (opcode_pos < INSTR_TABLE[instruc->key].instr_size) {
-    switch (INSTR_TABLE[instruc->key].opcode[opcode_pos]) {
+    switch (INSTR_TABLE[instruc->key].opcode[opcode_pos] & GET_EN) {
     case REX:
       if (instruc->hex.rex != NO_PREFIX)
         ptr[ptr_pos++] = instruc->hex.rex;

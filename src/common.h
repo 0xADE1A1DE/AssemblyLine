@@ -101,6 +101,8 @@
 #define SECOND_OPERAND 1
 #define THIRD_OPERAND 2
 
+#define GET_EN 0b11111100000000000000
+
 // fail condition preprocessor
 #define FAIL_IF(EXP)                                                           \
   if (EXP) {                                                                   \
