@@ -28,13 +28,14 @@ const static struct {
   operand_format val;
   const char str[OPERAND_FORMAT_LEN];
   
-} OPD_FORMAT_TABLE[] = {{n,   {'\0'}},  {n,   "i"},   {m,         "m"},
-                        {r,   "r"},     {mr,  "mr"},  {rm,        "rm"},
-                        {rr,  "rr"},    {ri,  "ri"},  {mi,        "mi"},
-                        {rrr, "rrr"},   {rri, "rri"}, {rmi,       "rmi"},
-                        {rrm, "rrm"},   {rmr, "rmr"}, {vr,        "vr"},
-                        {rv, "rv"},     {vv,  "vv"},  {vi,        "vi"}, 
-                        {vm, "vm"},     {mv, "mv"},   {opd_error, "error"}};
+} OPD_FORMAT_TABLE[] = {{n,   {'\0'}},  {n,   "i"},   {m,   "m"},
+                        {r,   "r"},     {mr,  "mr"},  {rm,  "rm"},
+                        {rr,  "rr"},    {ri,  "ri"},  {mi,  "mi"},
+                        {rrr, "rrr"},   {rri, "rri"}, {rmi, "rmi"},
+                        {rrm, "rrm"},   {rmr, "rmr"}, {vr,  "vr"},
+                        {rv, "rv"},     {vv,  "vv"},  {vi,  "vi"}, 
+                        {vm, "vm"},     {mv, "mv"},   {vvv, "vvv"},
+                        {opd_error, "error"}};
 
 // defines opcode layout of each supported instruction
 struct instr_table{
