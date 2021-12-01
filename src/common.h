@@ -65,13 +65,20 @@
 #define X0F 0b00001000000000
 #define X0F38 0b00010000000000
 #define X0F3A 0b00011000000000
+// just a place holder for reference
+#define W 0x0
+#define W0 0b000000000
+#define W1 0b100000000
+// CONSIDER: W1|WIG should represent changing between W1 and W0 depending on the
+//           register size (this denotes 3-byte prefix) ex:bzhi and bextr
+// CONSIDER: W1|WIG could also be replaced with key++
 
 // pp constant
 #define X66 0b010
 #define XF3 0b100
 #define XF2 0b110
 
-// vvvv constants to specify which register to encode
+// vvvv to specify which register to encode
 #define NDS 0b01000000
 #define NDD 0b00100000
 #define DDS 0b00010000

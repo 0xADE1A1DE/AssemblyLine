@@ -182,7 +182,7 @@ static int assemble_instr(struct instr *instruc, unsigned char ptr[]) {
         ptr[ptr_pos++] = instruc->hex.vex;
       break;
 
-    case W0:
+    case W0_:
       if (instruc->hex.w0 != NO_PREFIX)
         ptr[ptr_pos++] = instruc->hex.w0;
       break;
