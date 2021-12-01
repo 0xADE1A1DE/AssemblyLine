@@ -103,7 +103,7 @@ unsigned int get_vex_prefix(struct instr *all_instr, asm_reg r, asm_reg m) {
       all_instr->hex.vex_RXB[2] &= R_WvvvvLpp;
       if ((r & REG_MASK) < mm8)
         // set middle byte [1] to 0xc1
-        all_instr->hex.vex_RXB[1] |= RXB;
+        all_instr->hex.vex_RXB[1] |= RXB_;
     } else if ((r & REG_MASK) > mm7) {
       all_instr->hex.is_C5H = true;
       all_instr->hex.vex_R[1] &= R_WvvvvLpp;

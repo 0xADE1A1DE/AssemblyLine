@@ -92,7 +92,9 @@
 #define C5H 0b11000101
 #define C4H 0b11000100
 #define R_WvvvvLpp 0b01111111
-#define RXB 0b10000000
+
+// old implementation
+#define RXB_ 0b10000000
 
 // used for getting register type, length, and value
 #define REG_MASK 0b00000011111
