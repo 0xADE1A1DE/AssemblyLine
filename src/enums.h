@@ -103,6 +103,7 @@ typedef enum {
   adox,
   and,
   bzhi,
+  bextr,
   call,
   clc,
   clflush,
