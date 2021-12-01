@@ -52,6 +52,7 @@
 // set register length to 1 byte
 #define SET_BYTE ~(reg16 | reg32 | reg64)
 // used for setting prefix
+#define VEX(vvvv, L, pp, mmmmm, WIG) VEX | mmmmm | W | vvvv | L | pp | WIG
 #define R_VEX 0b10000000
 #define M_VEX 0b00100000
 
