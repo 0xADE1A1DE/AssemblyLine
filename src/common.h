@@ -60,6 +60,7 @@
 
 // mmmmm constants (VEX must be 3-byte)
 // RXB bits in front of mmmm corresponds to !(rex_r), !(rex_x), and !(rex_b)
+#define RXB 0b11100000000000000
 // NOTE: RXB could potentially be obtained from get_rex_prefix() function
 #define X0F 0b00001000000000
 #define X0F38 0b00010000000000
