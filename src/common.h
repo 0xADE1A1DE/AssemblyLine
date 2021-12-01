@@ -52,8 +52,36 @@
 // set register length to 1 byte
 #define SET_BYTE ~(reg16 | reg32 | reg64)
 // used for setting prefix
-// VEX settings
+// VEX settings (Will be shifted right one bit to remove WIG)
+// use none if not present
 #define VEX(vvvv, L, pp, mmmmm, WIG) VEX | mmmmm | W | vvvv | L | pp | WIG
+#define NONE 0x0
+
+// mmmmm constants (VEX must be 3-byte)
+#define X0F 0b00001000000000
+#define X0F38 0b00010000000000
+#define X0F3A 0b00011000000000
+
+// pp constant
+#define X66 0b010
+#define XF3 0b100
+#define XF2 0b110
+
+// vvvv constants
+#define NDS 0b01000000
+#define NDD 0b00100000
+#define DDS 0b00010000
+// no register specifier
+#define NNN 0b11110000
+
+// WIG constant
+#define WIG 0b1
+
+// L constant
+#define LZ 0x0
+#define B128 0x0
+#define B256 0x1000
+
 #define R_VEX 0b10000000
 #define M_VEX 0b00100000
 
