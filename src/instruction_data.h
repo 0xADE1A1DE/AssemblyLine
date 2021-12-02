@@ -45,6 +45,8 @@ struct prefix {
   unsigned int reg;
   unsigned int rex;
   unsigned int vex;
+
+  // CONSIDER: keep this to switch between C4H and C5H
   bool is_C5H : 1;
   // 3 byte vex prefix
   unsigned int vex_RXB[3];

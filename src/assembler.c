@@ -178,8 +178,14 @@ static int assemble_instr(struct instr *instruc, unsigned char ptr[]) {
       break;
 
     case VEX:
-      if (instruc->hex.vex != NO_PREFIX)
-        ptr[ptr_pos++] = instruc->hex.vex;
+      // ignore old implementation for NEW_VECTOR
+      if (INSTR_TABLE[instruc->key].type != NEW_VECTOR) {
+        if (instruc->hex.vex != NO_PREFIX)
+          ptr[ptr_pos++] = instruc->hex.vex;
+      } else {
+        // place new implementation here
+      }
+
       break;
 
     case W0_:

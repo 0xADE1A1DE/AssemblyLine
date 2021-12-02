@@ -237,8 +237,13 @@ typedef enum {
    * differently due to no having an associated register
    */
   CONTROL_FLOW,
+  // SSE and vector extension instructions 
   VECTOR,
+  // AVX 256 instruction
   VECTOR_AVX,
+  // this is a test used to bypass old implementation 
+  // (will be removed later)
+  NEW_VECTOR,
   // instructions that do not require special encodings
   OTHER
 } instr_type;
