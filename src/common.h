@@ -108,6 +108,9 @@
 #define MODE_MASK 0b11110000000
 #define MODE_CLEAR 0b00001111111
 #define VALUE_MASK 0b00000000111
+#define REG_RB 0b1000
+#define REX_W_RXB 0b1001111
+#define REX_W 0b1000
 
 // register string length
 #define REGISTER_LEN 6
