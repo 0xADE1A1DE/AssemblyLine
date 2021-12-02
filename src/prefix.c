@@ -94,7 +94,8 @@ unsigned int get_vex_prefix(struct instr *all_instr, asm_reg r, asm_reg m) {
   unsigned int vex_prefix_hex = rex_ + rex_x;
   // registers r or m are vectorized
   if ((r & MODE_MASK) == mmx64 || (m & MODE_MASK) == mmx64) {
-    if (((m & REG_MASK) > mm7 && (r & MODE_MASK) == mmx64) || (m & ext8)) {
+    // condition to switch between C4H and C5H
+    if ((m & REG_MASK) > mm7 || (m & ext8)) {
       // C4H 3 byte prefix
       all_instr->hex.is_C5H = false;
       all_instr->hex.vex_RXB[2] &= R_WvvvvLpp;
