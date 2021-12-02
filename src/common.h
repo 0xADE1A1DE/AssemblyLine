@@ -56,6 +56,8 @@
 // VEX settings (Will be shifted right one bit to remove WIG)
 // use none if not present
 #define VEX(vvvv, L, pp, mmmmm, WIG) VEX | RXB | mmmmm | W | vvvv | L | pp | WIG
+#define C5H 0xc5
+#define C4H 0xc4
 #define NONE 0x0
 
 // mmmmm constants (VEX must be 3-byte)
@@ -96,8 +98,6 @@
 #define R_VEX 0b10000000
 #define M_VEX 0b00100000
 
-#define C5H 0b11000101
-#define C4H 0b11000100
 #define R_WvvvvLpp 0b01111111
 
 // old implementation

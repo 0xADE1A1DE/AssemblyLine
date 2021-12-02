@@ -40,6 +40,7 @@ TEST_ASM =\
 		  adcx.asm \
 		  add.asm \
 		  adox.asm \
+		  bextr.asm \
 		  and.asm \
 		  bzhi.asm \
 		  clc.asm \

@@ -40,9 +40,9 @@ typedef enum {
 
   rex_ = 0x40,
   rex_w = 0x48,
-  rex_b = 0x01,
   rex_r = 0x04,
   rex_x = 0x02,
+  rex_b = 0x01,
   evex = 0x67,
   evex_128 = 0xc4 // +1 if operand is mmx, mmx
 //add evex encodings here

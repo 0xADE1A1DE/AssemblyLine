@@ -147,9 +147,16 @@ static int assemble_vex(unsigned int vex[], unsigned char ptr[], int size) {
 }
 
 static int assemble_VEX(struct instr *instruc, unsigned char ptr[], int vex) {
-  int size = 1;
-
-  return size;
+  int i = 0;
+  // ignore the WIG bit for now
+  vex >>= 1;
+  // write the WvvvLpp byte
+  ptr[i++] = vex & 0xff;
+  vex >>= 8;
+  vex &= ~(instruc->hex.rex & 0b111) << 5;
+  ptr[i++] = vex & 0xff;
+  ptr[i++] = C4H;
+  return i;
 }
 
 /**
