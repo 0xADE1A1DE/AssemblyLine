@@ -69,8 +69,13 @@
 #define X0F3A 0b00011000000000
 // just a place holder for reference
 #define W 0x0
+// will always be 3 bytes
 #define W0 0b000000000
 #define W1 0b100000000
+// most signifcant bit will depend on m/size
+#define W0_W1 0b100000001
+// WIG constant to specify we could switch between 3 and 2 byte hex
+#define WIG 0b1
 // CONSIDER: W1|WIG should represent changing between W1 and W0 depending on the
 //           register size (this denotes 3-byte prefix) ex:bzhi and bextr
 // CONSIDER: W1|WIG could also be replaced with key++
@@ -86,9 +91,6 @@
 #define DDS 0b00010000
 // no register specifier
 #define NNN 0b11110000
-
-// WIG constant to specify we could switch between 3 and 2 byte hex
-#define WIG 0b1
 
 // L constant
 #define LZ 0x0
