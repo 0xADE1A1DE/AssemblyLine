@@ -146,6 +146,12 @@ static int assemble_vex(unsigned int vex[], unsigned char ptr[], int size) {
   return size;
 }
 
+static int assemble_VEX(struct instr *instruc, unsigned char ptr[], int vex) {
+  int size = 1;
+
+  return size;
+}
+
 /**
  * assembles the prefix and opcode of a @param instruc and writes the
  * opcode to pointer location @param ptr
@@ -184,6 +190,9 @@ static int assemble_instr(struct instr *instruc, unsigned char ptr[]) {
           ptr[ptr_pos++] = instruc->hex.vex;
       } else {
         // place new implementation here
+        // assemble_VEX(struct instr *instruc, unsigned char ptr[], int vex)
+        int new_vex = INSTR_TABLE[instruc->key].opcode[opcode_pos];
+        ptr_pos += assemble_VEX(instruc, ptr + ptr_pos, new_vex);
       }
 
       break;
