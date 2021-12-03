@@ -27,12 +27,12 @@ typedef enum {
   none = 0,
   SIB = 0x24,
   //uned in opcode layout
-  REG = 0b100000000000000,
-  REX = 0b1000000000000000,
-  VEX = 0b10000000000000000,
-  VEX_WIG = 0b100000000000000000,
-  W0_ = 0b1000000000000000000,
-  NO_PREFIX = 0b10000000000000000000
+  REG =            0b100000000000000000,
+  REX =           0b1000000000000000000,
+  VEX =          0b10000000000000000000,
+  VEX_WIG =     0b100000000000000000000,
+  W0_ =        0b1000000000000000000000,
+  NO_PREFIX = 0b10000000000000000000000
 } op_encoding;
 
 // only used for determining what prefix to use based on registers
@@ -227,25 +227,25 @@ typedef enum {
 typedef enum {
 
   // enforce a different mode of processing constant operand 
-  DATA_TRANSFER,
+  DATA_TRANSFER = 0b000001, 
   /* to ensure shift instruction such as "shr REG, 1" does not
    * assemble the predefined constant 1 operand. Rather use the special 
    * instruction  for shr REG, 1
    */
-  SHIFT,  
+  SHIFT = 0b000010,  
   /* for control flow instructions constant operand is handled
    * differently due to no having an associated register
    */
-  CONTROL_FLOW,
+  CONTROL_FLOW = 0b000100,
   // SSE and vector extension instructions 
-  VECTOR,
+  VECTOR = 0b001000,
   // AVX 256 instruction
-  VECTOR_AVX,
+  VECTOR_AVX = 0b011000,
   // this is a test used to bypass old implementation 
   // (will be removed later)
-  NEW_VECTOR,
+  NEW_VECTOR = 0b101000,
   // instructions that do not require special encodings
-  OTHER
+  OTHER = 0b1000000
 } instr_type;
 
 // register bit size and category (ext denotes extended x64 registers)

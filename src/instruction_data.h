@@ -47,6 +47,7 @@ struct prefix {
   unsigned int vex;
   // [W|R][vvvv][L][pp]
   unsigned int vvvv : 4;
+  bool is_w0 : 1;
 
   // CONSIDER: keep this to switch between C4H and C5H
   bool is_C5H : 1;

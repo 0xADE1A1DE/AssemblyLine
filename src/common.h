@@ -52,17 +52,14 @@
 // set register length to 1 byte
 #define SET_BYTE ~(reg16 | reg32 | reg64)
 
-// used for setting prefix
-// VEX settings (Will be shifted right one bit to remove WIG)
-// use none if not present
-#define VEX(vvvv, L, pp, mmmmm, WIG) VEX | RXB | mmmmm | W | vvvv | L | pp | WIG
 #define C5H 0xc5
 #define C4H 0xc4
 #define NONE 0x0
 
 // mmmmm constants (VEX must be 3-byte)
 // RXB bits in front of mmmm corresponds to !(rex_r), !(rex_x), and !(rex_b)
-#define RXB 0b11100000000000000
+// #define RXB 0b11100000000000000
+#define RXB 0x0
 // NOTE: RXB could potentially be obtained from get_rex_prefix() function
 #define X0F 0b00001000000000
 #define X0F38 0b00010000000000
@@ -72,7 +69,7 @@
 // will always be 3 bytes
 #define W0 0b000000000
 #define W1 0b100000000
-// most signifcant bit will depend on m/size
+// most signifcant bit will depend on m/size defaults to 64 bit
 #define W0_W1 0b100000001
 // WIG constant to specify we could switch between 3 and 2 byte hex
 #define WIG 0b1
@@ -91,11 +88,18 @@
 #define DDS 0b00010000
 // no register specifier
 #define NNN 0b11110000
+#define CLEARvvvv 0b1111000
 
 // L constant
 #define LZ 0x0
 #define B128 0x0
 #define B256 0x1000
+
+// used for setting prefix
+// VEX settings (Will be shifted right one bit to remove WIG)
+// use none if not present
+#define VEX_NEW(vvvv, L, pp, mmmmm, WIG)                                       \
+  VEX | RXB | mmmmm | W | vvvv | L | pp | WIG
 
 #define R_VEX 0b10000000
 #define M_VEX 0b00100000
@@ -110,6 +114,7 @@
 #define MODE_MASK 0b11110000000
 #define MODE_CLEAR 0b00001111111
 #define VALUE_MASK 0b00000000111
+#define VVVV_MASK 0b00000001111
 #define REG_RB 0b1000
 #define REX_W_RXB 0b1001111
 #define REX_W 0b1000
@@ -149,7 +154,7 @@
 #define SECOND_OPERAND 1
 #define THIRD_OPERAND 2
 
-#define GET_EN 0b11111100000000000000
+#define GET_EN 0b11111100000000000000000
 
 // fail condition preprocessor
 #define FAIL_IF(EXP)                                                           \

@@ -54,6 +54,12 @@ unsigned int get_vector_rex_prefix(struct instr *all_instr, asm_reg m,
 
 unsigned int get_rex_prefix(struct instr *all_instr, asm_reg m, asm_reg r) {
 
+  // preprocess vex paremeters
+  if ((m & MODE_MASK) < reg64)
+    all_instr->hex.is_w0 = false;
+  else
+    all_instr->hex.is_w0 = true;
+
   int rex_prefix = 0;
   if ((m & MODE_MASK) == mmx64 || (r & MODE_MASK) == mmx64)
     return get_vector_rex_prefix(all_instr, m, r);
@@ -117,8 +123,8 @@ unsigned int get_vex_prefix(struct instr *all_instr, asm_reg r, asm_reg m) {
   return vex_prefix_hex;
 }
 
-unsigned int get_w0_prefix(asm_reg v) {
-
+unsigned int get_w0_prefix(struct instr *all_instr, asm_reg v) {
+  all_instr->hex.vvvv = (VVVV_MASK & v);
   switch (v & MODE_MASK) {
   case reg64:
     return 0xfb - ((v & VALUE_MASK) << 3);

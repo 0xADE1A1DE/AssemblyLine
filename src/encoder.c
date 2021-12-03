@@ -91,7 +91,7 @@ static void encode_three_opds(struct instr *instruc, int r, int m, int v) {
   // register inverse for vvvv paramter
   instruc->hex.vvvv = ~v & 0xf;
 
-  instruc->hex.w0 = get_w0_prefix(instruc->opd[v]);
+  instruc->hex.w0 = get_w0_prefix(instruc, instruc->opd[v]);
   instruc->hex.w0 -= INSTR_TABLE[instruc->key].w0_disp;
   if (instruc->mem_disp && !instruc->mem_offset)
     set_zero_byte(instruc, m);

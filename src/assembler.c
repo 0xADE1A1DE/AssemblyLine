@@ -146,16 +146,22 @@ static int assemble_vex(unsigned int vex[], unsigned char ptr[], int size) {
   return size;
 }
 
-static int assemble_VEX(struct instr *instruc, unsigned char ptr[], int vex) {
+static int assemble_VEX(struct instr *instruc, unsigned char ptr[],
+                        unsigned int vex) {
   int i = 0;
+  // set W bit depending on register size
+  if ((vex & W0_W1) && !instruc->hex.is_w0) {
+    vex &= ~W1;
+  }
   // ignore the WIG bit for now
   vex >>= 1;
-  // write the WvvvLpp byte
-  ptr[i++] = vex & 0xff;
-  vex >>= 8;
-  vex &= ~(instruc->hex.rex & 0b111) << 5;
-  ptr[i++] = vex & 0xff;
+  // assume prefix is always 4 byte for now
   ptr[i++] = C4H;
+  // set to RXBm-mmmm
+  ptr[i++] = ((vex >> 8) | (~(instruc->hex.rex & 0b111) << 5)) & 0xff;
+  // last byte of the vex prefix
+  vex &= ~CLEARvvvv;
+  ptr[i++] = ((~(instruc->hex.vvvv) << 3) & 0x7f) | (vex & 0xff);
   return i;
 }
 
@@ -169,7 +175,7 @@ static int assemble_instr(struct instr *instruc, unsigned char ptr[]) {
   int opcode_pos = 0;
 
   // 67h - address size overwrite prefix
-  if (INSTR_TABLE[instruc->key].type == VECTOR && instruc->mem_disp)
+  if ((INSTR_TABLE[instruc->key].type & VECTOR) && instruc->mem_disp)
     if ((instruc->opd[0] & BIT_MASK) == BIT_32 ||
         (instruc->opd[1] & BIT_MASK) == BIT_32 ||
         (instruc->opd[2] & BIT_MASK) == BIT_32)
@@ -198,7 +204,7 @@ static int assemble_instr(struct instr *instruc, unsigned char ptr[]) {
       } else {
         // place new implementation here
         // assemble_VEX(struct instr *instruc, unsigned char ptr[], int vex)
-        int new_vex = INSTR_TABLE[instruc->key].opcode[opcode_pos];
+        int new_vex = ~GET_EN & INSTR_TABLE[instruc->key].opcode[opcode_pos];
         ptr_pos += assemble_VEX(instruc, ptr + ptr_pos, new_vex);
       }
 
