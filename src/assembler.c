@@ -177,6 +177,7 @@ static int assemble_instr(struct instr *instruc, unsigned char ptr[]) {
 
   int ptr_pos = 0;
   int opcode_pos = 0;
+  int new_vex = 0;
 
   // 67h - address size overwrite prefix
   if ((INSTR_TABLE[instruc->key].type & VECTOR) && instruc->mem_disp)
@@ -201,23 +202,15 @@ static int assemble_instr(struct instr *instruc, unsigned char ptr[]) {
       break;
 
     case VEX:
-      // ignore old implementation for NEW_VECTOR
-      if (INSTR_TABLE[instruc->key].type != NEW_VECTOR) {
-        if (instruc->hex.vex != NO_PREFIX)
-          ptr[ptr_pos++] = instruc->hex.vex;
-      } else {
-        // place new implementation here
-        // assemble_VEX(struct instr *instruc, unsigned char ptr[], int vex)
-        int new_vex = ~GET_EN & INSTR_TABLE[instruc->key].opcode[opcode_pos];
-        ptr_pos += assemble_VEX(instruc, ptr + ptr_pos, new_vex);
-      }
-
+      // assemble_VEX(struct instr *instruc, unsigned char ptr[], int vex)
+      new_vex = ~GET_EN & INSTR_TABLE[instruc->key].opcode[opcode_pos];
+      ptr_pos += assemble_VEX(instruc, ptr + ptr_pos, new_vex);
       break;
 
     case ib:
       instruc->reduced_imm = true;
       break;
-    // VEX_WIG
+
     case VEX_WIG:
       // 2 byte vex prefix
       if (instruc->hex.is_C5H)
