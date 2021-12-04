@@ -95,30 +95,20 @@ unsigned int get_mem_prefix(asm_reg s, asm_reg m, asm_reg r) {
   return prefix_hex;
 }
 
-unsigned int get_vex_prefix(struct instr *all_instr, asm_reg r, asm_reg m) {
-
-  unsigned int vex_prefix_hex = rex_ + rex_x;
+void set_vex_prefix(struct instr *all_instr, asm_reg r, asm_reg m) {
   // registers r or m are vectorized
-  if ((r & MODE_MASK) == mmx64 || (m & MODE_MASK) == mmx64) {
-    // condition to switch between C4H and C5H
-    if ((m & REG_MASK) > mm7 || (m & ext8)) {
-      // C4H 3 byte prefix
-      all_instr->hex.is_C5H = false;
-      all_instr->hex.vex_RXB[2] &= R_WvvvvLpp;
-      if ((r & REG_MASK) < mm8)
-        // set middle byte [1] to 0xc1
-        all_instr->hex.vex_RXB[1] |= RXB_;
-    } else if ((r & REG_MASK) > mm7) {
-      all_instr->hex.is_C5H = true;
-      all_instr->hex.vex_R[1] &= R_WvvvvLpp;
-    }
+  if ((r & MODE_MASK) != mmx64 && (m & MODE_MASK) != mmx64)
+    return;
+  // condition to switch between C4H and C5H
+  if ((m & REG_MASK) > mm7 || (m & ext8)) {
+    // C4H 3 byte prefix
+    all_instr->hex.is_C5H = false;
+    all_instr->hex.vex_RXB[2] &= R_WvvvvLpp;
+    if ((r & REG_MASK) < mm8)
+      // set middle byte [1] to 0xc1
+      all_instr->hex.vex_RXB[1] |= RXB_;
+  } else if ((r & REG_MASK) > mm7) {
+    all_instr->hex.is_C5H = true;
+    all_instr->hex.vex_R[1] &= R_WvvvvLpp;
   }
-  // registers r or m are part of the standard x86 set
-  else {
-    if (!(r & ext8))
-      vex_prefix_hex |= R_VEX;
-    if (!(m & ext8))
-      vex_prefix_hex |= M_VEX;
-  }
-  return vex_prefix_hex;
 }

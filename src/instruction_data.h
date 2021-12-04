@@ -44,7 +44,6 @@ struct assemblyline {
 struct prefix {
   unsigned int reg;
   unsigned int rex;
-  unsigned int vex;
   // [W|R][vvvv][L][pp]
   unsigned int vvvv : 4;
   bool is_w0 : 1;

@@ -86,7 +86,6 @@ static int line_to_instr(struct instr *instr_data, char *filtered_asm_str) {
   // values will be determined during encoding
   instr_data->hex.reg = NO_PREFIX;
   instr_data->hex.rex = NO_PREFIX;
-  instr_data->hex.vex = NO_PREFIX;
   instr_data->hex.is_C5H = true;
   instr_data->hex.vex_R[0] = C5H;
   instr_data->hex.vex_R[1] = 0xfd;
