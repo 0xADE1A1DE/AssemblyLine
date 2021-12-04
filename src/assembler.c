@@ -231,6 +231,7 @@ static int assemble_instr(struct instr *instruc, unsigned char ptr[]) {
     }
     opcode_pos++;
   }
+  // fix later
   if (instruc->hex.mem != NO_PREFIX)
     ptr[ptr_pos++] = instruc->hex.mem;
   return ptr_pos;

@@ -245,7 +245,7 @@ typedef enum {
   VECTOR_AVX = 0b011000,
   // this is a test used to bypass old implementation 
   // (will be removed later)
-  NEW_VECTOR = 0b101000,
+  VECTOR_EXT = 0b101000,
   // instructions that do not require special encodings
   OTHER = 0b1000000
 } instr_type;
