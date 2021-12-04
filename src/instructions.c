@@ -178,7 +178,7 @@ const struct instr_table INSTR_TABLE[] = {
     {"ret",         ret,         {n,  n},    NA,  CONTROL_FLOW,   NA,  NA,  NA,  1,  0, {0xc3}},
     {"ror",         ror,         {NA, ri},   M,   SHIFT,          NA,  NA,  1,   3,  0, {REX, 0xd1, REG}},
     {{'\0'},        ror,         {NA, NA},   M,   SHIFT,          NA,  NA,  1,   3,  0, {REX, 0xc1, REG}},
-    {"rorx",        rorx,        {rri, rmi}, RM,  OTHER,          NA,  NA,  NA,  5,  0, {0xc4, VEX, 0xfb, 0xf0, REG}},
+    {"rorx",        rorx,        {rri, rmi}, RM,  NEW_VECTOR,     NA,  NA,  NA,  3,  0, {VEX_NEW(NNN,LZ,XF2,X0F3A,W0_W1), 0xf0, REG}},
     {"sar",         sar,         {mi, ri},   M,   SHIFT,          1,   NA,  7,   3,  0, {REX, 0xd0, REG}},
     {{'\0'},        sar,         {NA, NA},   M,   SHIFT,          1,   NA,  7,   3,  0, {REX, 0xc0, REG}},
     {"sarx",        sarx,        {rrr, rmr}, RMV, NEW_VECTOR,     NA,  NA,  NA,  3,  1, {VEX_NEW(NDS,LZ,XF3,X0F38,W0_W1), 0xf7, REG}},
