@@ -85,13 +85,10 @@ static void set_zero_byte(struct instr *instruc, int m) {
 static void encode_three_opds(struct instr *instruc, int r, int m, int v) {
 
   instruc->hex.vex = get_vex_prefix(instruc, instruc->opd[r], instruc->opd[m]);
-
   // used for RXB and R
   instruc->hex.rex = get_rex_prefix(instruc, instruc->opd[m], instruc->opd[r]);
-  // register inverse for vvvv parameter
-  instruc->hex.vvvv = ~v & 0xf;
-
-  instruc->hex.w0 = get_w0_prefix(instruc, instruc->opd[v]);
+  // get vvvv parameter
+  instruc->hex.vvvv = instruc->opd[v] & 0xf;
   if (instruc->mem_disp && !instruc->mem_offset)
     set_zero_byte(instruc, m);
   instruc->hex.reg = get_modRM32_64(instruc, instruc->opd[m], instruc->opd[r]);

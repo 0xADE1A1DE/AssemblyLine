@@ -122,18 +122,3 @@ unsigned int get_vex_prefix(struct instr *all_instr, asm_reg r, asm_reg m) {
   }
   return vex_prefix_hex;
 }
-
-unsigned int get_w0_prefix(struct instr *all_instr, asm_reg v) {
-  all_instr->hex.vvvv = (VVVV_MASK & v);
-  switch (v & MODE_MASK) {
-  case reg64:
-    return 0xfb - ((v & VALUE_MASK) << 3);
-  case reg32:
-    return 0x7b - ((v & VALUE_MASK) << 3);
-  case ext64:
-    return 0xbb - ((v & VALUE_MASK) << 3);
-  case ext32:
-    return 0x3b - ((v & VALUE_MASK) << 3);
-  }
-  return NO_PREFIX;
-}
