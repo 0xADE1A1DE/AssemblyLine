@@ -31,7 +31,8 @@ typedef enum {
   REX =           0b1000000000000000000,
   VEX =          0b10000000000000000000,
   VEX_WIG =     0b100000000000000000000,
-  W0_ =        0b1000000000000000000000,
+  // this denotes the presence of a 1 byte immediate
+  ib =        0b1000000000000000000000,
   NO_PREFIX = 0b10000000000000000000000
 } op_encoding;
 
@@ -90,6 +91,7 @@ typedef enum {
   vm,
   mv,
   vvv,
+  mri
 } operand_format;
 
 // unique identifier for each instuction

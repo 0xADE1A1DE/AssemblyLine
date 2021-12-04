@@ -35,7 +35,7 @@ const static struct {
                         {rrm, "rrm"},   {rmr, "rmr"}, {vr,  "vr"},
                         {rv, "rv"},     {vv,  "vv"},  {vi,  "vi"}, 
                         {vm, "vm"},     {mv, "mv"},   {vvv, "vvv"},
-                        {opd_error, "error"}};
+                        {mri, "mri"},   {opd_error, "error"}};
 
 // defines opcode layout of each supported instruction
 struct instr_table{
@@ -89,12 +89,6 @@ struct instr_table{
 
   // number of bytes in the opcode[MAX_OPCODE_LEN] field
   int instr_size;
-
-  /* displacement for the W0 prefix (following byte after the vector extension
-   * prefix VEX) check intel manual section 3.1.1.2 (set this value to NA if not
-   * applicable to the instruction)
-   */
-  int w0_disp;
 
   /* opcode layout for an instruction ex: {REX,0x0f,0xa9,REG}
    * REX and REG are placeholders for the prefix and register values

@@ -79,10 +79,14 @@ static int assemble_imm(struct instr *instruc, unsigned char ptr[]) {
     bytes++;
   }
   // no need to zero pad if the immediate operand has been reduced
+  // printf("instruc->reduced_imm = %d\n", instruc->reduced_imm);
   if (instruc->reduced_imm)
     return ptr_pos;
   // get the register size for the first operand
   int opd0_mode = instruc->opd[0] & MODE_MASK;
+
+  // printf("instruc->op_offset = %d\n", instruc->op_offset);
+
   // zero padding is required rarely.
   bool zero_pad =
       ((type != CONTROL_FLOW &&
@@ -210,11 +214,10 @@ static int assemble_instr(struct instr *instruc, unsigned char ptr[]) {
 
       break;
 
-    case W0_:
-      if (instruc->hex.w0 != NO_PREFIX)
-        ptr[ptr_pos++] = instruc->hex.w0;
+    case ib:
+      instruc->reduced_imm = true;
       break;
-      // VEX_WIG
+    // VEX_WIG
     case VEX_WIG:
       // 2 byte vex prefix
       if (instruc->hex.is_C5H)
