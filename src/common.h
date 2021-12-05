@@ -17,7 +17,6 @@
 /*defines all preprocessors used in assemblyline*/
 #ifndef COMMON_H
 #define COMMON_H
-#include <stdio.h>
 
 // max length of filtered assembly string
 #define FILTERED_STR_LEN 100
