@@ -90,7 +90,8 @@ typedef enum {
   vm,
   mv,
   vvv,
-  mri
+  mri,
+  vvm
 } operand_format;
 
 // unique identifier for each instuction

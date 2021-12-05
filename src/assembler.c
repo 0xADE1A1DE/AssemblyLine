@@ -144,7 +144,7 @@ static int assemble_VEX(struct instr *instruc, unsigned char ptr[],
   uint8_t vex_first_byte = C4H;
   uint8_t RvvvvLpp = 0;
   // set W bit depending on register size
-  if ((vex & W0_W1) && !instruc->hex.is_w0)
+  if ((vex & W0_W1) == W0_W1 && !instruc->hex.is_w0)
     vex &= ~W1;
   // WIG is true therefore we could switch between C4H and C5H
   else if ((vex & WIG) && !(vex & W1))

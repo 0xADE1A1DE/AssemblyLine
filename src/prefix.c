@@ -31,7 +31,7 @@ unsigned int get_vector_rex_prefix(struct instr *all_instr, asm_reg m,
   if ((m & REG_MASK) > mm7 || (r & REG_MASK) > mm7) {
     if ((r & REG_MASK) > mm7)
       prefix_hex += rex_r;
-    if ((m & REG_MASK) > mm7 || m & ext8)
+    if ((m & REG_MASK) > mm7 || m & REG_RB)
       prefix_hex += rex_b;
     return prefix_hex;
   } else {
@@ -43,10 +43,10 @@ unsigned int get_vector_rex_prefix(struct instr *all_instr, asm_reg m,
     // only a single operand
     if (m == reg_none || r == reg_none)
       return NO_PREFIX;
-    if ((m & MODE_MASK) < reg64 && !(m & ext8))
+    if ((m & MODE_MASK) < reg64 && !(m & REG_RB))
       prefix_hex = NO_PREFIX;
     // an operand is part of the x64 extended set
-    if (m & ext8 || r & ext8)
+    if (m & REG_RB || r & ext8)
       prefix_hex += rex_b;
   }
   return prefix_hex;
@@ -54,13 +54,11 @@ unsigned int get_vector_rex_prefix(struct instr *all_instr, asm_reg m,
 
 unsigned int get_rex_prefix(struct instr *all_instr, asm_reg m, asm_reg r) {
 
+  int rex_prefix = 0;
   // preprocess vex paremeters
+  all_instr->hex.is_w0 = true;
   if ((m & MODE_MASK) < reg64)
     all_instr->hex.is_w0 = false;
-  else
-    all_instr->hex.is_w0 = true;
-
-  int rex_prefix = 0;
   if ((m & MODE_MASK) == mmx64 || (r & MODE_MASK) == mmx64)
     return get_vector_rex_prefix(all_instr, m, r);
   if (all_instr->keyword.is_byte)
