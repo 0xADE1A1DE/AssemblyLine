@@ -84,13 +84,9 @@ static int assemble_imm(struct instr *instruc, unsigned char ptr[]) {
     return ptr_pos;
   // get the register size for the first operand
   int opd0_mode = instruc->opd[0] & MODE_MASK;
-
-  // printf("instruc->op_offset = %d\n", instruc->op_offset);
-
   // zero padding is required rarely.
   bool zero_pad =
-      ((type != CONTROL_FLOW &&
-        type != SHIFT &&              // it must not be SHIFT/CONTROL_FLOW
+      ((type != CONTROL_FLOW &&       // it must not be CONTROL_FLOW
         instruc->op_offset != 3 &&    // and cannot have op_offset 3
         !instruc->keyword.is_byte) && // and cannot be a byte
        opd0_mode > noext8) ||         // and op0 mode must be bigger than noext8
