@@ -97,7 +97,7 @@
 // used for setting prefix
 // VEX settings (Will be shifted right one bit to remove WIG)
 // use none if not present
-#define VEX_NEW(vvvv, L, pp, mmmmm, WIG)                                       \
+#define VEX(vvvv, L, pp, mmmmm, WIG)                                       \
   VEX | RXB | mmmmm | W | vvvv | L | pp | WIG
 
 #define R_VEX 0b10000000
