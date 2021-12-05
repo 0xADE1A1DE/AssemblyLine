@@ -35,9 +35,4 @@ unsigned int get_rex_prefix(struct instr *all_instr, asm_reg m, asm_reg r);
  */
 unsigned int get_mem_prefix(asm_reg s, asm_reg m, asm_reg r);
 
-/**
- * takes in 2 operands @param r, and @param m, and returns the vex prefix value
- */
-void set_vex_prefix(struct instr *all_instr, asm_reg r, asm_reg m);
-
 #endif

@@ -144,12 +144,6 @@ static int assemble_mem(struct instr *instruc, unsigned char ptr[]) {
   return ptr_pos;
 }
 
-static int assemble_vex(unsigned int vex[], unsigned char ptr[], int size) {
-  for (int i = 0; i < size; i++)
-    ptr[i] = vex[i];
-  return size;
-}
-
 static int assemble_VEX(struct instr *instruc, unsigned char ptr[],
                         unsigned int vex) {
   int i = 0;

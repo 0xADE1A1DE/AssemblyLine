@@ -83,8 +83,6 @@ static void set_zero_byte(struct instr *instruc, int m) {
  * @param r, @param m, and @param v used for RMV or RVM encoding
  */
 static void encode_three_opds(struct instr *instruc, int r, int m, int v) {
-
-  set_vex_prefix(instruc, instruc->opd[r], instruc->opd[m]);
   // used for RXB and R
   instruc->hex.rex = get_rex_prefix(instruc, instruc->opd[m], instruc->opd[r]);
   // get vvvv parameter
@@ -108,8 +106,6 @@ static void encode_two_opds(struct instr *instruc, int r, int m) {
     if (instruc->mem_disp && !instruc->mem_offset)
       set_zero_byte(instruc, m);
     instruc->hex.reg = get_reg(instruc, instruc->opd[m], instruc->opd[r]);
-    if (INSTR_TABLE[instruc->key].type == VECTOR_AVX)
-      set_vex_prefix(instruc, instruc->opd[r], instruc->opd[m]);
     if (instruc->mem_disp && (instruc->opd[m] & VALUE_MASK) == spl)
       instruc->sib = true;
   } else {
