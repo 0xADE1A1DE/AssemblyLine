@@ -104,9 +104,6 @@
 #define R_VEX 0b10000000
 #define M_VEX 0b00100000
 
-// old implementation
-#define RXB_ 0b10000000
-
 // used for getting register type, length, and value
 #define REG_MASK 0b00000011111
 #define MODE_MASK 0b11110000000
