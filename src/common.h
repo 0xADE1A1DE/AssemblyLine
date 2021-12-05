@@ -104,8 +104,6 @@
 #define R_VEX 0b10000000
 #define M_VEX 0b00100000
 
-#define R_WvvvvLpp 0b01111111
-
 // old implementation
 #define RXB_ 0b10000000
 
