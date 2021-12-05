@@ -161,7 +161,7 @@ static int assemble_VEX(struct instr *instruc, unsigned char ptr[],
   vex >>= 1;
   // assume prefix is always 4 byte for now
   ptr[i++] = C4H;
-  // set to RXBm-mmmm
+  // set to RXBm-mmmm if vex if 3 bytes ie. C4H
   ptr[i++] = ((vex >> 8) | (~(instruc->hex.rex & 0b111) << 5)) & 0xff;
   // last byte of the vex prefix
   vex &= ~CLEARvvvv;
