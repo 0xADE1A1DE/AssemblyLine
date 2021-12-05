@@ -223,14 +223,6 @@ static int assemble_instr(struct instr *instruc, unsigned char ptr[]) {
       instruc->reduced_imm = true;
       break;
 
-    case VEX_WIG:
-      // 2 byte vex prefix
-      if (instruc->hex.is_C5H)
-        ptr_pos += assemble_vex(instruc->hex.vex_R, ptr + ptr_pos, 2);
-      // 3 byte vex prefix
-      else
-        ptr_pos += assemble_vex(instruc->hex.vex_RXB, ptr + ptr_pos, 3);
-      break;
     default:
       if (INSTR_TABLE[instruc->key].opcode[opcode_pos] < REG) {
         unsigned char opc = INSTR_TABLE[instruc->key].opcode[opcode_pos];
