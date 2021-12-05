@@ -93,7 +93,7 @@
 // L constant
 #define LZ 0x0
 #define B128 0x0
-#define B256 0x1000
+#define B256 0b1000
 
 // used for setting prefix
 // VEX settings (Will be shifted right one bit to remove WIG)

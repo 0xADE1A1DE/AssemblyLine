@@ -153,19 +153,31 @@ static int assemble_vex(unsigned int vex[], unsigned char ptr[], int size) {
 static int assemble_VEX(struct instr *instruc, unsigned char ptr[],
                         unsigned int vex) {
   int i = 0;
+  uint8_t vex_first_byte = C4H;
+  uint8_t RvvvvLpp = 0;
   // set W bit depending on register size
-  if ((vex & W0_W1) && !instruc->hex.is_w0) {
+  if ((vex & W0_W1) && !instruc->hex.is_w0)
     vex &= ~W1;
-  }
-  // ignore the WIG bit for now
+  // WIG is true therefore we could switch between C4H and C5H
+  else if ((vex & WIG) && !(vex & W1))
+    if (!(instruc->hex.rex & rex_b))
+      vex_first_byte = C5H;
+  // Byte 0 if VEX prefix
   vex >>= 1;
-  // assume prefix is always 4 byte for now
-  ptr[i++] = C4H;
+  ptr[i++] = vex_first_byte;
   // set to RXBm-mmmm if vex if 3 bytes ie. C4H
-  ptr[i++] = ((vex >> 8) | (~(instruc->hex.rex & 0b111) << 5)) & 0xff;
+  if (vex_first_byte == C4H)
+    ptr[i++] = ((vex >> 8) | (~(instruc->hex.rex & 0b111) << 5)) & 0xff;
   // last byte of the vex prefix
   vex &= ~CLEARvvvv;
-  ptr[i++] = ((~(instruc->hex.vvvv) << 3) & 0x7f) | (vex & 0xff);
+  // W is predetermined therefore we do not want to overwrite it
+  if (vex_first_byte == C4H) {
+    // can be used for both RvvvvLpp and WvvvvLpp
+    ptr[i++] = ((~(instruc->hex.vvvv) << 3) & 0x7f) | (vex & 0xff);
+  } else if (vex_first_byte == C5H) {
+    RvvvvLpp = (vex & 0xff) | ((~(instruc->hex.rex & rex_r) << 5) & 0x80);
+    ptr[i++] = ((~(instruc->hex.vvvv) << 3) & 0x7f) | (RvvvvLpp & 0xff);
+  }
   return i;
 }
 
