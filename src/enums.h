@@ -217,6 +217,7 @@ typedef enum {
   sub,
   test,
   vaddpd,
+  vdivpd,
   vmovupd,
   vmulpd,
   vsubpd,
