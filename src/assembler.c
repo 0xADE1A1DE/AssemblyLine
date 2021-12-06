@@ -203,8 +203,7 @@ static int assemble_instr(struct instr *instruc, unsigned char ptr[]) {
         break;
 
       case REG:
-        if (instruc->hex.reg != NO_PREFIX)
-          ptr[ptr_pos++] = instruc->hex.reg;
+        ptr[ptr_pos++] = instruc->hex.reg;
         break;
 
       case VEX:
