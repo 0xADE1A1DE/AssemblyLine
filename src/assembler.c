@@ -178,7 +178,6 @@ static int assemble_instr(struct instr *instruc, unsigned char ptr[]) {
   int ptr_pos = 0;
   int opcode_pos = 0;
   int new_vex = 0;
-
   // 67h - address size overwrite prefix
   if ((INSTR_TABLE[instruc->key].type & VECTOR) && instruc->mem_disp)
     if ((instruc->opd[0] & BIT_MASK) == BIT_32 ||
@@ -190,34 +189,47 @@ static int assemble_instr(struct instr *instruc, unsigned char ptr[]) {
     ptr[ptr_pos++] = 0x66;
   // assemble all prefixes and instruction opcode
   while (opcode_pos < INSTR_TABLE[instruc->key].instr_size) {
-    switch (INSTR_TABLE[instruc->key].opcode[opcode_pos] & GET_EN) {
-    case REX:
-      if (instruc->hex.rex != NO_PREFIX)
-        ptr[ptr_pos++] = instruc->hex.rex;
-      break;
+    unsigned char opc = INSTR_TABLE[instruc->key].opcode[opcode_pos];
+    // check if the byte in the opcode is fixed
+    if (!(INSTR_TABLE[instruc->key].opcode[opcode_pos] & (~0xff))) {
+      if (opcode_pos == INSTR_TABLE[instruc->key].rd_offset_i)
+        opc += instruc->rd_offset;
+      if (opcode_pos == INSTR_TABLE[instruc->key].op_offset_i)
+        opc += instruc->op_offset;
+      ptr[ptr_pos++] = opc;
+    } else {
+      switch (INSTR_TABLE[instruc->key].opcode[opcode_pos] & GET_EN) {
+      case REX:
+        if (instruc->hex.rex != NO_PREFIX)
+          ptr[ptr_pos++] = instruc->hex.rex;
+        break;
 
-    case REG:
-      if (instruc->hex.reg != NO_PREFIX)
-        ptr[ptr_pos++] = instruc->hex.reg;
-      break;
+      case REG:
+        if (instruc->hex.reg != NO_PREFIX)
+          ptr[ptr_pos++] = instruc->hex.reg;
+        break;
 
-    case VEX:
-      new_vex = ~GET_EN & INSTR_TABLE[instruc->key].opcode[opcode_pos];
-      ptr_pos += assemble_VEX(instruc, ptr + ptr_pos, new_vex);
-      break;
+      case VEX:
+        new_vex = ~GET_EN & INSTR_TABLE[instruc->key].opcode[opcode_pos];
+        ptr_pos += assemble_VEX(instruc, ptr + ptr_pos, new_vex);
+        break;
 
-    case ib:
-      instruc->reduced_imm = true;
-      break;
+      case ib:
+        instruc->reduced_imm = true;
+        break;
 
-    default:
-      if (INSTR_TABLE[instruc->key].opcode[opcode_pos] < REG) {
-        unsigned char opc = INSTR_TABLE[instruc->key].opcode[opcode_pos];
-        if (opcode_pos == INSTR_TABLE[instruc->key].rd_offset_i)
-          opc += instruc->rd_offset;
-        if (opcode_pos == INSTR_TABLE[instruc->key].op_offset_i)
-          opc += instruc->op_offset;
-        ptr[ptr_pos++] = opc;
+      default:
+        /*
+        if (INSTR_TABLE[instruc->key].opcode[opcode_pos] < REG) {
+          unsigned char opc = INSTR_TABLE[instruc->key].opcode[opcode_pos];
+          if (opcode_pos == INSTR_TABLE[instruc->key].rd_offset_i)
+            opc += instruc->rd_offset;
+          if (opcode_pos == INSTR_TABLE[instruc->key].op_offset_i)
+            opc += instruc->op_offset;
+          ptr[ptr_pos++] = opc;
+        }
+        */
+        break;
       }
     }
     opcode_pos++;
