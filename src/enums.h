@@ -34,7 +34,6 @@ typedef enum {
   ib = 0b0100000000000000000000,
   rd = 0b1000000000000000000000,
   NO_PREFIX = 0b10000000000000000000000
-
 } op_encoding;
 
 // only used for determining what prefix to use based on registers
@@ -45,9 +44,6 @@ typedef enum {
   rex_r = 0x04,
   rex_x = 0x02,
   rex_b = 0x01,
-  evex = 0x67,
-  evex_128 = 0xc4 // +1 if operand is mmx, mmx
-//add evex encodings here
 } prefix_encoding;
 
 typedef enum { CHUNK_COUNT, CHUNK_FITTING, ASSEMBLE } ASM_MODE;
