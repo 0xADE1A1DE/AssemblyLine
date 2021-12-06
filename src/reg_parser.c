@@ -58,7 +58,7 @@ int get_opcode_offset(asm_reg reg_value) {
   if (IN_RANGE(index, reg16, ext64))
     return 1;
   else
-    return none;
+    return NONE;
 }
 
 void get_reg_str(char *opd_str, char *reg) {
