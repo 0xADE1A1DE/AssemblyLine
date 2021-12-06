@@ -37,14 +37,14 @@ unsigned int get_vector_rex_prefix(struct instr *all_instr, asm_reg m,
   } else {
     // M encoding refers to a memory displacement
     if (all_instr->mem_disp)
-      return (m & ext8) ? rex_ + rex_b : NO_PREFIX;
+      return (m & ext8) ? rex_ + rex_b : NONE;
     if ((m & MODE_MASK) == mmx64)
-      return NO_PREFIX;
+      return NONE;
     // only a single operand
     if (m == reg_none || r == reg_none)
-      return NO_PREFIX;
+      return NONE;
     if ((m & MODE_MASK) < reg64 && !(m & REG_RB))
-      prefix_hex = NO_PREFIX;
+      prefix_hex = NONE;
     // an operand is part of the x64 extended set
     if (m & REG_RB || r & REG_RB)
       prefix_hex += rex_b;
@@ -77,7 +77,7 @@ unsigned int get_rex_prefix(struct instr *all_instr, asm_reg m, asm_reg r) {
     rex_prefix |= rex_w;
   if (rex_prefix & REX_W_RXB)
     return rex_ | rex_prefix;
-  return NO_PREFIX;
+  return NONE;
 }
 
 unsigned int get_mem_prefix(asm_reg s, asm_reg m, asm_reg r) {

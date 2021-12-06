@@ -198,7 +198,7 @@ static int assemble_instr(struct instr *instruc, unsigned char ptr[]) {
     } else {
       switch (INSTR_TABLE[instruc->key].opcode[opcode_pos] & GET_EN) {
       case REX:
-        if (instruc->hex.rex != NO_PREFIX)
+        if (instruc->hex.rex != NONE)
           ptr[ptr_pos++] = instruc->hex.rex;
         break;
 
@@ -228,7 +228,7 @@ static int assemble_instr(struct instr *instruc, unsigned char ptr[]) {
     opcode_pos++;
   }
   // fix later
-  if (instruc->hex.mem != NO_PREFIX)
+  if (instruc->hex.mem != NONE)
     ptr[ptr_pos++] = instruc->hex.mem;
   return ptr_pos;
 }

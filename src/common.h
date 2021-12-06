@@ -107,7 +107,6 @@
 // process WRXB bit of the rex prefix
 #define REG_RB 0b1000
 #define REX_W_RXB 0b1001111
-#define NO_PREFIX 0b10000000000000000000000
 
 // max register string length
 #define REGISTER_LEN 6
