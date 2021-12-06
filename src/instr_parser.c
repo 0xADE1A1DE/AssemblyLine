@@ -17,9 +17,9 @@
 /*implements functions for parsing instruction name
  and operand format of instruction*/
 #include "instr_parser.h"
+#include "common.h"
 #include "instruction_data.h"
 #include "instructions.h"
-#include <stdio.h>
 #include <string.h>
 
 operand_format get_opd_format(char *opd_en) {

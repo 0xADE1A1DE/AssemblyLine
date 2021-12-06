@@ -40,7 +40,7 @@ typedef enum {
   rex_w = 0x48,
   rex_r = 0x04,
   rex_x = 0x02,
-  rex_b = 0x01,
+  rex_b = 0x01
 } prefix_encoding;
 
 typedef enum { CHUNK_COUNT, CHUNK_FITTING, ASSEMBLE } ASM_MODE;
@@ -48,7 +48,6 @@ typedef enum { CHUNK_COUNT, CHUNK_FITTING, ASSEMBLE } ASM_MODE;
 // describes how operands are encoded
 typedef enum {
 
-  NA = -1,
   MR = 500,
   RM,
   RVM,
@@ -260,7 +259,7 @@ typedef enum {
   ext32 = 0b01110000000,
   reg64 = 0b10000000000,
   ext64 = 0b10010000000,
-  mmx64 = 0b10100000000,
+  mmx64 = 0b10100000000
 } bit_mode;
 
 // register representation (converted from string)
@@ -303,7 +302,7 @@ typedef enum {
   mm12 = 0b11100,
   mm13 = 0b11101,
   mm14 = 0b11110,
-  mm15 = 0b11111,
+  mm15 = 0b11111
 
 } asm_reg;
 

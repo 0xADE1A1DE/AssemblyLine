@@ -24,6 +24,8 @@
 #define MEM_BUFFER 6000
 // actual writable buffer size = MEM_BUFFER - BUFFER_TOLERANCE
 #define BUFFER_TOLERANCE 20
+// used when 0 cannot denote none
+#define NA -1
 // denotes an error during assembly
 #define ASM_ERROR -1
 // denotes an error during instruction look up
