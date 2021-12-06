@@ -46,7 +46,7 @@ unsigned int get_vector_rex_prefix(struct instr *all_instr, asm_reg m,
     if ((m & MODE_MASK) < reg64 && !(m & REG_RB))
       prefix_hex = NO_PREFIX;
     // an operand is part of the x64 extended set
-    if (m & REG_RB || r & ext8)
+    if (m & REG_RB || r & REG_RB)
       prefix_hex += rex_b;
   }
   return prefix_hex;

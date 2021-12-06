@@ -90,7 +90,6 @@
 #define B128 0x0
 #define B256 0b1000
 
-// used for setting prefix
 // VEX settings (Will be shifted right one bit to remove WIG)
 // use none if not present
 #define VEX(vvvv, L, pp, mmmmm, WIG) VEX | RXB | mmmmm | W | vvvv | L | pp | WIG
