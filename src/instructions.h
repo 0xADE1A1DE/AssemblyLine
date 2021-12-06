@@ -86,7 +86,7 @@ struct instr_table{
 
   /* opcode layout for an instruction ex: {REX,0x0f,0xa9,REG}
    * REX and REG are placeholders for the prefix and register values
-   * more can be found in enums.h op_encoding
+   * more can be found in enums.h opcode_encoding
    */
   unsigned int opcode[MAX_OPCODE_LEN];
 

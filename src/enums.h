@@ -32,7 +32,7 @@ typedef enum {
   // this denotes the presence of an 8-bit immediate
   ib = 0b0100000000000000000000,
   rd = 0b1000000000000000000000
-} op_encoding;
+} opcode_encoding;
 
 // only used for determining what prefix to use based on registers
 typedef enum {
