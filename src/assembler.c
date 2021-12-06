@@ -263,7 +263,6 @@ int assemble_asm(struct instr *instruc, uint8_t *dest) {
   int instr_len = 0;
   int mem_len = 0;
   int imm_len = 0;
-
   // assemble instruction
   instr_len = assemble_instr(instruc, dest);
   ptr_pos += instr_len;

@@ -26,7 +26,7 @@ typedef enum {
 
   none = 0,
   SIB = 0x24,
-  //uned in opcode layout
+  //used in opcode layout to denote a dynamic byte
   REG = 0b00100000000000000000,
   REX = 0b01000000000000000000,
   VEX = 0b10000000000000000000,
@@ -98,6 +98,7 @@ typedef enum {
 
 // unique identifier for each instuction
 typedef enum {
+
   EOI,
   LABEL,
   SKIP,
@@ -249,7 +250,6 @@ typedef enum {
   // AVX 256 instruction
   VECTOR_AVX = 0b011000,
   // this is a test used to bypass old implementation 
-  // (will be removed later)
   VECTOR_EXT = 0b101000,
   // instructions that do not require special encodings
   OTHER = 0b1000000
@@ -275,8 +275,7 @@ typedef enum {
 
   reg_error = 0b1000000,
   reg_none = 0b100000,
-
-  // 8bitregisters
+  // 8-bit registers
   al = 0b00000,
   cl = 0b00001,
   dl = 0b00010,
@@ -285,7 +284,7 @@ typedef enum {
   bpl = 0b00101,
   sil = 0b00110,
   dil = 0b00111,
-
+  // 8-bit extended registers
   r8b = 0b01000,
   r9b = 0b01001,
   r10b = 0b01010,
@@ -294,7 +293,7 @@ typedef enum {
   r13b = 0b01101,
   r14b = 0b01110,
   r15b = 0b01111,
-
+  // 64-bit vector reigsters
   mm0 = 0b10000,
   mm1 = 0b10001,
   mm2 = 0b10010,
@@ -303,7 +302,7 @@ typedef enum {
   mm5 = 0b10101,
   mm6 = 0b10110,
   mm7 = 0b10111,
-
+  // 64-bit extended vector reigsters
   mm8 = 0b11000,
   mm9 = 0b11001,
   mm10 = 0b11010,
