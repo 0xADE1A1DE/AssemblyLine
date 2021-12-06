@@ -138,6 +138,9 @@
 #define MOD16 0b10000000
 #define MOD24 0b11000000
 
+// scaled indexed addressing
+#define SIB 0x24
+
 // operand position
 #define FIRST_OPERAND 0
 #define SECOND_OPERAND 1

@@ -24,7 +24,6 @@ typedef enum { BEGIN, FIRST_CH, SPACE_FOUND } filter_op;
 // with instruction opcode)
 typedef enum {
 
-  SIB = 0x24,
   //used in opcode layout to denote a dynamic byte
   REG = 0b00100000000000000000,
   REX = 0b01000000000000000000,
