@@ -47,7 +47,7 @@ struct prefix {
   // [W|R][vvvv][L][pp]
   unsigned int vvvv : 4;
   bool is_w0 : 1;
-  // fix later
+  // fix later if possible
   unsigned int mem;
 };
 

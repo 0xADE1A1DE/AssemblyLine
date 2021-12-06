@@ -107,7 +107,7 @@
 #define REG_RB 0b1000
 #define REX_W_RXB 0b1001111
 
-// register string length
+// max register string length
 #define REGISTER_LEN 6
 // all generic registers have at most 7 variations
 #define NUM_OF_REGISTERS 7
