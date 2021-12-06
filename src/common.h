@@ -55,11 +55,10 @@
 #define C4H 0xc4
 #define NONE 0x0
 
-// mmmmm constants (VEX must be 3-byte)
 // RXB bits in front of mmmm corresponds to !(rex_r), !(rex_x), and !(rex_b)
-// #define RXB 0b11100000000000000
+// Obtained from get_rex_prefix()
 #define RXB 0x0
-// NOTE: RXB could potentially be obtained from get_rex_prefix() function
+// mmmmm constants (VEX must be 3-byte)
 #define X0F 0b00001000000000
 #define X0F38 0b00010000000000
 #define X0F3A 0b00011000000000
@@ -72,9 +71,6 @@
 #define W0_W1 0b100000001
 // WIG constant to specify we could switch between 3 and 2 byte hex
 #define WIG 0b1
-// CONSIDER: W1|WIG should represent changing between W1 and W0 depending on the
-//           register size (this denotes 3-byte prefix) ex:bzhi and bextr
-// CONSIDER: W1|WIG could also be replaced with key++
 
 // pp constant
 #define X66 0b010
@@ -97,8 +93,7 @@
 // used for setting prefix
 // VEX settings (Will be shifted right one bit to remove WIG)
 // use none if not present
-#define VEX(vvvv, L, pp, mmmmm, WIG)                                       \
-  VEX | RXB | mmmmm | W | vvvv | L | pp | WIG
+#define VEX(vvvv, L, pp, mmmmm, WIG) VEX | RXB | mmmmm | W | vvvv | L | pp | WIG
 
 #define R_VEX 0b10000000
 #define M_VEX 0b00100000
@@ -111,7 +106,6 @@
 #define VVVV_MASK 0b00000001111
 #define REG_RB 0b1000
 #define REX_W_RXB 0b1001111
-#define REX_W 0b1000
 
 // register string length
 #define REGISTER_LEN 6

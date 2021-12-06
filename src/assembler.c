@@ -202,7 +202,6 @@ static int assemble_instr(struct instr *instruc, unsigned char ptr[]) {
       break;
 
     case VEX:
-      // assemble_VEX(struct instr *instruc, unsigned char ptr[], int vex)
       new_vex = ~GET_EN & INSTR_TABLE[instruc->key].opcode[opcode_pos];
       ptr_pos += assemble_VEX(instruc, ptr + ptr_pos, new_vex);
       break;
