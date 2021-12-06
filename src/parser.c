@@ -205,7 +205,7 @@ static void debug_with_chunksize(uint8_t *buf, int opcode_pos,
 /**
  * checks if the buffer length has been exceeded
  */
-int check_len_or_resize(assemblyline_t al, int buf_pos) {
+static int check_len_or_resize(assemblyline_t al, int buf_pos) {
 
   if (buf_pos + BUFFER_TOLERANCE > al->buffer_len) {
     FAIL_IF_VAR(al->external,
