@@ -75,12 +75,6 @@ struct instr_table{
    */
   int op_offset_i;
 
-  /* 'i' index of opcode[i] when an offset is present for a REG value denoted as
-   * '+ rd' in the intel manual section 3.1.1.1
-   * (set this value to NA if not applicable to the instruction)
-   */
-  int rd_offset_i;
-
   /* used for instructions with a single register operand denoted as '/digit'
    * in the intel manual section 3.1.1.1
    * (set this value to NA if not applicable to the instruction)
