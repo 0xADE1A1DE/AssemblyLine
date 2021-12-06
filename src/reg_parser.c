@@ -133,7 +133,7 @@ asm_reg find_reg(int row, const int col, char *reg_str) {
 }
 
 asm_reg str_to_reg(char *reg) {
-  // the operand does not exit or is an immediate
+  // the operand does not contain a register
   if (reg[0] == '\0')
     return reg_none;
   unsigned int end = strlen(reg) - 1;
