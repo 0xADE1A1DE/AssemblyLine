@@ -32,8 +32,7 @@ typedef enum {
   VEX = 0b10000000000000000000,
   // this denotes the presence of an 8-bit immediate
   ib = 0b0100000000000000000000,
-  rd = 0b1000000000000000000000,
-  NO_PREFIX = 0b10000000000000000000000
+  rd = 0b1000000000000000000000
 } op_encoding;
 
 // only used for determining what prefix to use based on registers
