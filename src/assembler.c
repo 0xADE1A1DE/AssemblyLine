@@ -189,11 +189,9 @@ static int assemble_instr(struct instr *instruc, unsigned char ptr[]) {
     ptr[ptr_pos++] = 0x66;
   // assemble all prefixes and instruction opcode
   while (opcode_pos < INSTR_TABLE[instruc->key].instr_size) {
-    unsigned char opc = INSTR_TABLE[instruc->key].opcode[opcode_pos];
+    unsigned char opc = INSTR_TABLE[instruc->key].opcode[opcode_pos] & 0xff;
     // check if the byte in the opcode is fixed
     if (!(INSTR_TABLE[instruc->key].opcode[opcode_pos] & (~0xff))) {
-      if (opcode_pos == INSTR_TABLE[instruc->key].rd_offset_i)
-        opc += instruc->rd_offset;
       if (opcode_pos == INSTR_TABLE[instruc->key].op_offset_i)
         opc += instruc->op_offset;
       ptr[ptr_pos++] = opc;
@@ -218,17 +216,13 @@ static int assemble_instr(struct instr *instruc, unsigned char ptr[]) {
         instruc->reduced_imm = true;
         break;
 
+      case rd:
+        if (opcode_pos == INSTR_TABLE[instruc->key].op_offset_i)
+          opc += instruc->op_offset;
+        ptr[ptr_pos++] = opc + instruc->rd_offset;
+        break;
+
       default:
-        /*
-        if (INSTR_TABLE[instruc->key].opcode[opcode_pos] < REG) {
-          unsigned char opc = INSTR_TABLE[instruc->key].opcode[opcode_pos];
-          if (opcode_pos == INSTR_TABLE[instruc->key].rd_offset_i)
-            opc += instruc->rd_offset;
-          if (opcode_pos == INSTR_TABLE[instruc->key].op_offset_i)
-            opc += instruc->op_offset;
-          ptr[ptr_pos++] = opc;
-        }
-        */
         break;
       }
     }
