@@ -234,7 +234,7 @@ typedef enum {
    */
   SHIFT = 0b000010,  
   /* for control flow instructions constant operand is handled
-   * differently due to no having an associated register
+   * differently due to not having an associated register
    */
   CONTROL_FLOW = 0b000100,
   // SSE and vector extension instructions 

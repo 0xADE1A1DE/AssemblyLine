@@ -66,10 +66,10 @@
 #define X0F3A 0b00011000000000
 // just a place holder for reference
 #define W 0x0
-// will always be 3 bytes
 #define W0 0b000000000
+// most signifcant bit will depend on the size of m operand (default 64 bit)
 #define W1 0b100000000
-// most signifcant bit will depend on m/size defaults to 64 bit
+// most signifcant bit will depend on the size of m operand (default 64 bit)
 #define W0_W1 0b100000001
 // WIG constant to specify we could switch between 3 and 2 byte hex
 #define WIG 0b1
@@ -150,7 +150,7 @@
 
 #define GET_EN 0b11111100000000000000000
 
-// fail condition preprocessor
+// fail conditions
 #define FAIL_IF(EXP)                                                           \
   if (EXP) {                                                                   \
     return EXIT_FAILURE;                                                       \
