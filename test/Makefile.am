@@ -102,6 +102,7 @@ TEST_ASM =\
 		  vector_mul.asm \
 		  vector_sub.asm \
 		  vmovupd.asm \
+		  vsubpd.asm \
 		  xor.asm \
 		  zero_byte_rbp.asm
 
