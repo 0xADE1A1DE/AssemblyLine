@@ -79,7 +79,6 @@ static int assemble_imm(struct instr *instruc, unsigned char ptr[]) {
     bytes++;
   }
   // no need to zero pad if the immediate operand has been reduced
-  // printf("instruc->reduced_imm = %d\n", instruc->reduced_imm);
   if (instruc->reduced_imm)
     return ptr_pos;
   // get the register size for the first operand

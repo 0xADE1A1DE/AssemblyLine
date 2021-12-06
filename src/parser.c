@@ -162,10 +162,8 @@ static int str_to_instr(struct instr *instr_data, const char unfiltered_str[],
     ch_pos++;
   if (unfiltered_str[ch_pos] == '\n' || unfiltered_str[ch_pos] == '\r')
     ch_pos++;
-  // for debugging purposes to check the filtered instruction
-  // printf("filter = {%s}\n", filter);
   *read_len = ch_pos;
-  // map filter_str to instr_data if not it is not a label
+  // map filter_str to instr_data if not it is not a label or header
   if (filter_str[0] != '\0' && strstr(filter_str, "section") == NULL &&
       strstr(filter_str, "global") == NULL && strchr(filter_str, ':') == NULL)
     return line_to_instr(instr_data, filter_str);
