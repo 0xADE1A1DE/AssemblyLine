@@ -218,6 +218,8 @@ typedef enum {
   test,
   vaddpd,
   vmovupd,
+  vmulpd,
+  vsubpd,
   xabort,
   xbegin,
   xchg,

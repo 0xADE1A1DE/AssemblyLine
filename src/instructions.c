@@ -205,6 +205,8 @@ const struct instr_table INSTR_TABLE[] = {
     {"vaddpd",      vaddpd,      {vvm, vvv}, RVM, VECTOR_AVX,     NA,  NA,  NA,  3,  {VEX(NDS,B256,X66,X0F,WIG), 0x58, REG}},
     {"vmovupd",     vmovupd,     {vm, vv},   RM,  VECTOR_AVX,     NA,  NA,  NA,  3,  {VEX(NNN,B256,X66,X0F,WIG), 0x10, REG}},
     {{'\0'},        vmovupd,     {mv, NA},   MR,  VECTOR_AVX,     NA,  NA,  NA,  3,  {VEX(NNN,B256,X66,X0F,WIG), 0x11, REG}},
+    {"vmulpd",      vmulpd,      {vvm, vvv}, RVM, VECTOR_AVX,     NA,  NA,  NA,  3,  {VEX(NDS,B256,X66,X0F,WIG), 0x59, REG}},
+    {"vsubpd",      vsubpd,      {vvm, vvv}, RVM, VECTOR_AVX,     NA,  NA,  NA,  3,  {VEX(NDS,B256,X66,X0F,WIG), 0x5c, REG}},
     {"xabort",      xabort,      {n,  n},    I,   CONTROL_FLOW,   NA,  NA,  NA,  2,  {0xc6, 0xf8}},
     {"xbegin",      xbegin,      {n,  n},    NA,  CONTROL_FLOW,   NA,  NA,  NA,  2,  {0xc7, 0xf8}},
     {"xchg",        xchg,        {rr, rm},   RM,  DATA_TRANSFER,  1,   NA,  NA,  3,  {REX, 0x86, REG}},
