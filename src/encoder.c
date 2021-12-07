@@ -267,8 +267,7 @@ void encode_imm(struct instr *instruc) {
   } else if (INSTR_TABLE[instruc->key].type == DATA_TRANSFER) {
     // only condition for mov with M operand encoding implemenation
     // check if immediate operand is a negative 32 bit value
-    if (INSTR_TABLE[instruc->key].type == DATA_TRANSFER &&
-        IN_RANGE(instruc->cons, NEG32BIT + 1, NEG64BIT) &&
+    if (IN_RANGE(instruc->cons, NEG32BIT + 1, NEG64BIT) &&
         (instruc->cons & NEG32BIT_CHECK) && (instruc->opd[0].reg & reg64)) {
       // set mov I operand encoding to M
       instruc->key++;
