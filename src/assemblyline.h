@@ -111,4 +111,10 @@ void *asm_get_code(assemblyline_t al);
  */
 void disable_optimization(assemblyline_t al);
 
+/**
+ * enables mov immediate register optimization for assemblyline instance
+ * @param al
+ */
+void enable_optimization(assemblyline_t al);
+
 #endif

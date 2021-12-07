@@ -162,3 +162,5 @@ uint8_t *asm_get_buffer(assemblyline_t al) { return al->buffer; }
 void *asm_get_code(assemblyline_t al) { return (void *)al->buffer; }
 
 void disable_optimization(assemblyline_t al) { al->optimize_register = false; }
+
+void enable_optimization(assemblyline_t al) { al->optimize_register = true; }
