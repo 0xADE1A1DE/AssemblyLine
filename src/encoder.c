@@ -271,12 +271,12 @@ void encode_imm(struct instr *instruc) {
         (instruc->cons & NEG32BIT_CHECK) && (instruc->opd[0].reg & reg64)) {
       // set mov I operand encoding to M
       instruc->key++;
-      // do not zero pad immediate
+      // clear most significant 4 bytes
       instruc->cons &= MAX_UNSIGNED_32BIT;
+      // do not zero pad immediate
       instruc->reduced_imm = true;
       return;
-    }
-    if (instruc->cons <= MAX_UNSIGNED_32BIT)
+    } else if (instruc->cons <= MAX_UNSIGNED_32BIT)
       nasm_register_size_optimize(instruc);
     if ((instruc->opd[0].reg & MODE_MASK) > noext8)
       instruc->op_offset = 8;
