@@ -25,7 +25,7 @@
 typedef struct assemblyline *assemblyline_t;
 
 /**
- * Allocates an instance of assemblyline_t and attaches a pointer to a memory
+ * allocates an instance of assemblyline_t and attaches a pointer to a memory
  * buffer @param buffer where machine code will be written to. Buffer length
  * will be specified by @param len.
  * NOTE: @param buffer could also be set to NULL for internal memory memory
@@ -40,21 +40,21 @@ assemblyline_t asm_create_instance(uint8_t *buffer, int len);
 int asm_destroy_instance(assemblyline_t instance);
 
 /**
- * Assembles the given string @param assembly_str containing valid x64 assembly
+ * assembles the given string @param assembly_str containing valid x64 assembly
  * code with instance @param al It writes the corresponding machine code to the
  * memory location specified by al->buffer.
  */
 int assemble_str(assemblyline_t al, const char *assembly_str);
 
 /**
- * Assembles the given file path @param asm_file containing valid x64 assembly
+ * assembles the given file path @param asm_file containing valid x64 assembly
  * code with instance @param al It writes the corresponding machine code to the
  * memory location specified by al->buffer.
  */
 int assemble_file(assemblyline_t al, char *asm_file);
 
 /**
- * Assembles the given null-terminated @param string with instance @param al.
+ * assembles the given null-terminated @param string with instance @param al.
  * It counts the number of instructions that break the chunk boundary of size
  * @param chunk_size and saves it to @param dest It does not nop-pad
  * necessarily, depends on the @param al instance (you can nop-pad and count
@@ -66,7 +66,7 @@ int assemble_string_counting_chunks(assemblyline_t al, char *string,
                                     int chunk_size, int *dest);
 
 /**
- * Sets a given chunk size boundary @param chunk_size in bytes with instance
+ * sets a given chunk size boundary @param chunk_size in bytes with instance
  * @param al. When called before assemble_str() or assemble_file() assemblyline
  * will ensure no instruction opcode will cross the specified  @param chunk_size
  * boundary via nop padding.
@@ -76,35 +76,39 @@ int assemble_string_counting_chunks(assemblyline_t al, char *string,
 void asm_set_chunk_size(assemblyline_t al, size_t chunk_size);
 
 /**
- * Set debug flag @param debug to true or false with instance @param al. When is
+ * set debug flag @param debug to true or false with instance @param al. When is
  * set @param debug to true machine code represented in hexidecimal will be
  * printed to stdout.
  */
 void asm_set_debug(assemblyline_t al, bool debug);
 
 /**
- * Returns the offset associated with @param al
+ * returns the offset associated with @param al
  */
 int asm_get_offset(assemblyline_t al);
 
 /**
- * Sets a memory offset @param offset to specify exact location in memory block
+ * sets a memory offset @param offset to specify exact location in memory block
  * for writting machine code with instance @param al.
  * NOTE: @param offset could be set to 0 for the resulting memory block.
  */
 void asm_set_offset(assemblyline_t al, int offset);
 
 /**
- * Returns the buffer associated with @param al
+ * returns the buffer associated with @param al
  */
 uint8_t *asm_get_buffer(assemblyline_t al);
 
 /**
- * Returns the buffer associated with @param al as type void* for easy
+ * returns the buffer associated with @param al as type void* for easy
  * typecasting to any function pointer format.
  */
 void *asm_get_code(assemblyline_t al);
 
+/**
+ * disables mov immediate register optimization for assemblyline instance
+ * @param al
+ */
 void disable_optimization(assemblyline_t al);
 
 #endif
