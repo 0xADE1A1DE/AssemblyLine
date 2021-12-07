@@ -50,6 +50,7 @@ assemblyline_t asm_create_instance(uint8_t *buffer, int len) {
 
   assemblyline_t al = malloc(sizeof(struct assemblyline));
   al->offset = 0;
+  al->optimize_register = true;
   // allocate buffer internally if not directly given
   if (buffer == NULL) {
     al->external = false;
@@ -159,3 +160,5 @@ void asm_set_offset(assemblyline_t al, int offset) { al->offset = offset; }
 uint8_t *asm_get_buffer(assemblyline_t al) { return al->buffer; }
 
 void *asm_get_code(assemblyline_t al) { return (void *)al->buffer; }
+
+void disable_optimization(assemblyline_t al) { al->optimize_register = false; }

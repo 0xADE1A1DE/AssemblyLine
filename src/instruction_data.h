@@ -37,6 +37,7 @@ struct assemblyline {
   size_t chunk_size;
   bool external;
   ASM_MODE assembly_mode;
+  bool optimize_register;
   bool debug;
   bool finalized;
 };
@@ -83,6 +84,8 @@ struct instr {
   struct operand opd[NUM_OF_OPD];
   // bitmap for keywords
   struct keywords keyword;
+  // enable or disable nasm register optimization
+  bool optimize_register : 1;
   // constants and memory displacement
   bool imm : 1;
   bool reduced_imm : 1;

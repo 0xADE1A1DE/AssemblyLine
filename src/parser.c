@@ -306,6 +306,7 @@ int assemble_all(assemblyline_t al, const char *str, int *dest) {
   // read str and assemble instruction line by line
   while (*tokenizer != '\0') {
     struct instr new_instr = {0};
+    new_instr.optimize_register = al->optimize_register;
     int chars_read = 0;
     FAIL_IF_ERR(str_to_instr(&new_instr, tokenizer, &chars_read));
     tokenizer += chars_read;
