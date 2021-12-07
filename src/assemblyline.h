@@ -105,4 +105,6 @@ uint8_t *asm_get_buffer(assemblyline_t al);
  */
 void *asm_get_code(assemblyline_t al);
 
+void disable_optimization(assemblyline_t al);
+
 #endif

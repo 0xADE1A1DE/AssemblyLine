@@ -276,9 +276,29 @@ void encode_imm(struct instr *instruc) {
       // do not zero pad immediate
       instruc->reduced_imm = true;
       return;
-    } else if (instruc->cons <= MAX_UNSIGNED_32BIT)
-      nasm_register_size_optimize(instruc);
-    if ((instruc->opd[0].reg & MODE_MASK) > noext8)
+    } else if (instruc->cons <= MAX_UNSIGNED_32BIT) {
+      if (instruc->optimize_register)
+        nasm_register_size_optimize(instruc);
+      /*
+      else {
+        // set to mov to c7 and do not zeropad to 8 bytes
+        if (instruc->cons < NEG32BIT_CHECK &&
+            (instruc->opd[0].reg & MODE_MASK) >= reg64) {
+          instruc->key++;
+        }
+      }
+      */
+      else if (instruc->cons < NEG32BIT_CHECK &&
+               (instruc->opd[0].reg & MODE_MASK) >= reg64) {
+        instruc->key++;
+      }
+    }
+    if ((instruc->opd[0].reg & MODE_MASK) > noext8 &&
+        instruc->optimize_register)
+      instruc->op_offset = 8;
+    else if ((instruc->opd[0].reg & MODE_MASK) > noext8 &&
+             !instruc->optimize_register &&
+             INSTR_TABLE[instruc->key].encode_operand == I)
       instruc->op_offset = 8;
 
     instruc->rd_offset = instruc->opd[0].reg & VALUE_MASK;

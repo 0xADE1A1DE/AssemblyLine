@@ -54,7 +54,20 @@ static int assemble_const(unsigned long constant, unsigned char ptr[]) {
   }
   return ptr_pos;
 }
-
+// used alongside register optimization
+bool check_zero(struct instr *instruc, unsigned long saved_imm,
+                instr_type type) {
+  if (IN_RANGE(saved_imm, NEG32BIT_CHECK, MAX_UNSIGNED_32BIT) &&
+      !instruc->reduced_imm && type != CONTROL_FLOW) {
+    // nasm optimization disabled
+    if (!instruc->optimize_register)
+      return true;
+    // nasm optimization enabled
+    if (type != DATA_TRANSFER)
+      return true;
+  }
+  return false;
+}
 /**
  * assembles the immediate operand of a @param instruc and writes the
  * opcode to pointer location @param ptr
@@ -71,12 +84,15 @@ static int assemble_imm(struct instr *instruc, unsigned char ptr[]) {
   unsigned int bytes = assemble_const(imm_operand, ptr + ptr_pos);
   ptr_pos += bytes;
   // check if the zero byte is present?
-  if (imm_operand == 0 ||
-      (IN_RANGE(imm_operand, NEG32BIT_CHECK, MAX_UNSIGNED_32BIT) &&
-       !instruc->reduced_imm && type != CONTROL_FLOW &&
-       type != DATA_TRANSFER)) {
+  // printf("IN_RANGE(imm_operand, NEG32BIT_CHECK, MAX_UNSIGNED_32BIT) = %d\n",
+  //       (IN_RANGE(imm_operand, NEG32BIT_CHECK, MAX_UNSIGNED_32BIT)));
+  // printf("instruc->reduced_imm = %d\n", instruc->reduced_imm);
+  // printf("type != CONTROL_FLOW = %d\n", (type != CONTROL_FLOW));
+  // printf("type != DATA_TRANSFER = %d\n", (type != DATA_TRANSFER));
+  if (imm_operand == 0 || check_zero(instruc, imm_operand, type)) {
     ptr[ptr_pos++] = 0x0;
     bytes++;
+    // printf("I have added a zero byte for you, cheers\n");
   }
   // no need to zero pad if the immediate operand has been reduced
   if (instruc->reduced_imm)
