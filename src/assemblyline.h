@@ -115,10 +115,18 @@ void disable_imm_handling(assemblyline_t al);
 
 /**
  * enables nasm style mov immediate register size optimization for assemblyline
- * instance @param al current set as default
+ * instance @param al currently set as default
  * ex: if immediate size for mov is less than or equal to max signed 32 bit
  * assemblyline will interpret "mov rax, 0x7fffffff" as "mov eax, 0x7fffffff"
  */
 void enable_imm_handling(assemblyline_t al);
+
+/**
+ * allows manual enabling of nasm style mov immediate register size optimization
+ * via zero padding for assemblyline instance @param al currently set as default
+ * ex: "mov rax, 0x000000007fffffff" will be interpreted as
+ * "mov rax, 0x7fffffff" while "mov rax, 0x7fffffff" as "mov rax, 0x7fffffff"
+ */
+void manual_imm_handling(assemblyline_t al);
 
 #endif
