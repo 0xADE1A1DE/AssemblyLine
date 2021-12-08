@@ -106,16 +106,16 @@ uint8_t *asm_get_buffer(assemblyline_t al);
 void *asm_get_code(assemblyline_t al);
 
 /**
- * disables mov immediate register optimization for assemblyline instance
- * @param al
+ * disables nasm style mov immediate register size optimization for assemblyline
+ * instance @param al
  * ex: if immediate size for mov is less than or equal to max signed 32 bit
  * assemblyline will interpret "mov rax, 0x7fffffff" as is
  */
 void disable_optimization(assemblyline_t al);
 
 /**
- * enables mov immediate register optimization for assemblyline instance
- * @param al current set as default
+ * enables nasm style mov immediate register size optimization for assemblyline
+ * instance @param al current set as default
  * ex: if immediate size for mov is less than or equal to max signed 32 bit
  * assemblyline will interpret "mov rax, 0x7fffffff" as "mov eax, 0x7fffffff"
  */
