@@ -30,7 +30,7 @@ int get_opcode_offset(asm_reg reg_value);
 
 /**
  * finds the register in @param str and copies the characters to @param reg
- * ex: '[rax+0x8]' or 'rax ,'-> 'rax'
+ * ex: "[rax+0x8]" or "rax ," -> "rax"
  */
 void get_reg_str(char *opd_str, char *reg);
 
@@ -42,7 +42,7 @@ uint32_t process_neg_disp(uint32_t neg_num);
 
 /**
  * finds 2nd register in @param mem and copies the characters to @param reg
- * ex: '[rax+rbp]' -> 'rbp'
+ * ex: "[rax+rbp]" -> "rbp"
  */
 void get_second_reg(char *mem, char *reg);
 
