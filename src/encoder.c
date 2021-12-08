@@ -289,8 +289,7 @@ void encode_imm(struct instr *instruc) {
     if ((instruc->opd[0].reg & MODE_MASK) > noext8) {
       if (instruc->optimize_register)
         instruc->op_offset = 8;
-      else if (!instruc->optimize_register &&
-               INSTR_TABLE[instruc->key].encode_operand == I)
+      else if (INSTR_TABLE[instruc->key].encode_operand == I)
         instruc->op_offset = 8;
     }
   }
