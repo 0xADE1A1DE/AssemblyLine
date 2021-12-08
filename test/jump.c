@@ -48,7 +48,7 @@ int main(int argc, char **argv) {
     if (assemble_str(asm_exe, short_jmp) == EXIT_FAILURE) 
         return EXIT_FAILURE; 
 
-    int (*funcA)() = (int (*)())(asm_get_code(asm_exe));
+    int (*funcA)() = asm_get_code(asm_exe);
     if(funcA() != 0x123)
         return EXIT_FAILURE; 
 
@@ -57,7 +57,7 @@ int main(int argc, char **argv) {
     if (assemble_str(asm_exe, long_jmp) == EXIT_FAILURE) 
         return EXIT_FAILURE; 
 
-    int (*funcB)() = (int (*)())(asm_get_code(asm_exe));
+    int (*funcB)() = asm_get_code(asm_exe);
     if(funcB() != 0x123)
         return EXIT_FAILURE; 
 
@@ -66,7 +66,7 @@ int main(int argc, char **argv) {
     if (assemble_str(asm_exe, std_jmp) == EXIT_FAILURE) 
         return EXIT_FAILURE; 
 
-    int (*funcC)() = (int (*)())(asm_get_code(asm_exe));
+    int (*funcC)() = asm_get_code(asm_exe);
     if(funcC() != 0x123)
         return EXIT_FAILURE; 
 

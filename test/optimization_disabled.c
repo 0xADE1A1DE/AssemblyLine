@@ -302,7 +302,7 @@ int main(int argc, char **argv) {
   if (assemble_str(asm_exe, mov_ri) == EXIT_FAILURE)
     return EXIT_FAILURE;
 
-  uint8_t *ptr = (uint8_t *)(asm_get_code(asm_exe));
+  uint8_t *ptr = asm_get_code(asm_exe);
 
   size_t len = sizeof(mov_ri_code) / sizeof(mov_ri_code[0]);
   for (int i = 0; i < len; ++i)

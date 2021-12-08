@@ -22,6 +22,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/mman.h>
+
+// expected results
 uint64_t expected_out[] = {0x165651D83282, 0x18883C3EA80B, 0x1EDBDFE96957,
                            0x238587B25BAC3, 0x182355AC294};
 
@@ -347,8 +349,7 @@ int main(int argc, char **argv) {
     return EXIT_FAILURE;
 
   // type cast to function pointer
-  void (*curB)(uint64_t * out, uint64_t * in0, ...) =
-      (void (*)(uint64_t *, uint64_t *, ...))(asm_get_code(asm_exe));
+  void (*curB)(uint64_t * out, uint64_t * in0, ...) = asm_get_code(asm_exe);
       
   if (execute_test(curB)) {
     fprintf(stderr, "cur_B.asm did not produce expected results\n");
@@ -359,8 +360,7 @@ int main(int argc, char **argv) {
   if (assemble_str(asm_exe, function_B) == EXIT_FAILURE)
     return EXIT_FAILURE;
 
-  void (*funcB)(uint64_t * out, uint64_t * in0, ...) =
-      (void (*)(uint64_t *, uint64_t *, ...))(asm_get_code(asm_exe));
+  void (*funcB)(uint64_t * out, uint64_t * in0, ...) = asm_get_code(asm_exe);
 
   if (execute_test(funcB)) {
     fprintf(stderr, "function_B.asm did not produce expected results\n");
@@ -373,8 +373,7 @@ int main(int argc, char **argv) {
 
 
   // type cast to function pointer
-  void (*curB_w_chunk)(uint64_t * out, uint64_t * in0, ...) =
-      (void (*)(uint64_t *, uint64_t *, ...))(asm_get_code(asm_exe));
+  void (*curB_w_chunk)(uint64_t * out, uint64_t * in0, ...) = asm_get_code(asm_exe);
 
   if (execute_test(curB_w_chunk)) {
     fprintf(stderr,
@@ -396,8 +395,7 @@ int main(int argc, char **argv) {
     return EXIT_FAILURE;
 
   // type cast to function pointer
-  void (*curB_my)(uint64_t * out, uint64_t * in0, ...) =
-      (void (*)(uint64_t *, uint64_t *, ...))(asm_get_code(asm_my));
+  void (*curB_my)(uint64_t * out, uint64_t * in0, ...) = asm_get_code(asm_my);
 
   if (execute_test(curB_my)) {
     fprintf(stderr, "cur_B.asm did not produce expected results\n");
