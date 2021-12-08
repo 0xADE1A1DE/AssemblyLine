@@ -49,6 +49,9 @@ static int check_registers(struct instr *check_instr) {
 static int line_to_instr(struct instr *instr_data, char *filtered_asm_str) {
   // default mod displacement value
   instr_data->mod_disp = MOD24;
+  // clear the least significant bit
+  if (instr_data->optimize_register & MANUAL)
+    instr_data->optimize_register &= MANUAL;
   // tokenize filtered instruction for mapping to instr internal structure
   FAIL_IF_MSG(instr_tok(instr_data, filtered_asm_str), "syntax error\n");
   // convert operand format from string to enum representation
@@ -168,8 +171,6 @@ static int str_to_instr(struct instr *instr_data, const char unfiltered_str[],
     ch_pos++;
   if (unfiltered_str[ch_pos] == '\n' || unfiltered_str[ch_pos] == '\r')
     ch_pos++;
-  // for debugging purposes to check the filtered instruction
-  // printf("filter = {%s}\n", filter);
   *read_len = ch_pos;
   // map filter_str to instr_data if not it is not a label
   if (filter_str[0] != '\0' && strstr(filter_str, "section") == NULL &&

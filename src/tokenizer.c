@@ -83,12 +83,16 @@ static void mem_tok(struct instr *instr_buffer, char *mem, int opd_pos) {
  */
 static void imm_tok(struct instr *instr_buffer, char *imme) {
 
+  size_t imme_str_len = strlen(imme);
   char *saved_saved;
   instr_buffer->imm = true;
   int base = 10;
   imme = strtok_r(imme, " ", &saved_saved);
-  if (imme[1] == 'x' || imme[2] == 'x')
+  if (imme[1] == 'x' || imme[2] == 'x') {
     base = 16;
+    if ((instr_buffer->optimize_register & MANUAL) && imme_str_len < 18)
+      instr_buffer->optimize_register |= NASM;
+  }
   // convert string to unsigned long for immediate representation
   instr_buffer->cons = strtoul(imme, NULL, base);
 }
@@ -126,8 +130,8 @@ static void check_for_keyword(struct instr *instr_buffer, char *all_opd,
 
 /**
  * Given an instance of @param instr_buffer, checks the operand type of
- * @param opds at operand postion @param opd_pos to get the register if operand
- * is not an immediate.
+ * @param opds at operand postion @param opd_pos to get the register if
+ * operand is not an immediate.
  */
 static int check_operand_type(struct instr *instr_buffer, char *all_opd,
                               int opd_pos) {
@@ -155,8 +159,8 @@ static int check_operand_type(struct instr *instr_buffer, char *all_opd,
 }
 
 /**
- * Given an instance of @param instr_buffer, tokenize operand string @param opds
- * at operand postion @param opd_pos.
+ * Given an instance of @param instr_buffer, tokenize operand string @param
+ * opds at operand postion @param opd_pos.
  */
 static int operand_tok(struct instr *instr_buffer, char *opds, int opd_pos) {
 
