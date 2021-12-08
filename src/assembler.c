@@ -59,6 +59,8 @@ static int assemble_const(unsigned long constant, unsigned char ptr[]) {
  * checks the conditions for including a an additional leading zero byte in the
  * immediate given @param instruc, immediate value @param saved_imm, and
  * instruction type @param type
+ * ex: if an immediate for a mov instruction is between 0x80000000 0x7fffffff
+ *     this function ensure the immediate dues not get interpreted as 64-bit
  */
 static bool check_zero(struct instr *instruc, unsigned long saved_imm,
                        instr_type type) {
