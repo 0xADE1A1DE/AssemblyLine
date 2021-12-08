@@ -113,7 +113,7 @@ void disable_optimization(assemblyline_t al);
 
 /**
  * enables mov immediate register optimization for assemblyline instance
- * @param al
+ * @param al current set as default
  */
 void enable_optimization(assemblyline_t al);
 
