@@ -50,8 +50,8 @@ static int line_to_instr(struct instr *instr_data, char *filtered_asm_str) {
   // default mod displacement value
   instr_data->mod_disp = MOD24;
   // clear the least significant bit
-  if (instr_data->optimize_register & MANUAL)
-    instr_data->optimize_register &= MANUAL;
+  if (instr_data->imm_handling & MANUAL)
+    instr_data->imm_handling &= MANUAL;
   // tokenize filtered instruction for mapping to instr internal structure
   FAIL_IF_MSG(instr_tok(instr_data, filtered_asm_str), "syntax error\n");
   // convert operand format from string to enum representation
@@ -307,7 +307,7 @@ int assemble_all(assemblyline_t al, const char *str, int *dest) {
   // read str and assemble instruction line by line
   while (*tokenizer != '\0') {
     struct instr new_instr = {0};
-    new_instr.optimize_register = al->mov_imm_handling;
+    new_instr.imm_handling = al->mov_imm_handling;
     int chars_read = 0;
     FAIL_IF_ERR(str_to_instr(&new_instr, tokenizer, &chars_read));
     tokenizer += chars_read;

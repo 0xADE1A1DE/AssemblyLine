@@ -279,7 +279,7 @@ void encode_imm(struct instr *instruc) {
       instruc->reduced_imm = true;
       return;
     } else if (instruc->cons <= MAX_UNSIGNED_32BIT) {
-      if (instruc->optimize_register & 1)
+      if (instruc->imm_handling & 1)
         nasm_register_size_optimize(instruc);
       // ensure instruction does not default to movabs
       else if (instruc->cons < NEG32BIT_CHECK &&
@@ -287,7 +287,7 @@ void encode_imm(struct instr *instruc) {
         instruc->key++;
     }
     if ((instruc->opd[0].reg & MODE_MASK) > noext8) {
-      if (instruc->optimize_register & 1)
+      if (instruc->imm_handling & 1)
         instruc->op_offset = 8;
       else if (INSTR_TABLE[instruc->key].encode_operand == I)
         instruc->op_offset = 8;

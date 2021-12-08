@@ -85,7 +85,7 @@ struct instr {
   // bitmap for keywords
   struct keywords keyword;
   // enable or disable nasm register optimization
-  uint8_t optimize_register : 2;
+  uint8_t imm_handling : 2;
   // constants and memory displacement
   bool imm : 1;
   bool reduced_imm : 1;

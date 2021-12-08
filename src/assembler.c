@@ -68,7 +68,7 @@ static bool check_zero(struct instr *instruc, unsigned long saved_imm,
   if (IN_RANGE(saved_imm, NEG32BIT_CHECK, MAX_UNSIGNED_32BIT) &&
       !instruc->reduced_imm && type != CONTROL_FLOW) {
     // optimization disabled
-    if (!(instruc->optimize_register & 1))
+    if (!(instruc->imm_handling & 1))
       return true;
     // nasm optimization enabled
     if (type != DATA_TRANSFER)
