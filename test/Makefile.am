@@ -25,8 +25,8 @@ ASM_LOG_COMPILER = ./al_nasm_compare.sh
 
 # add .c -tests here
 TEST_C= check_chunk_counting \
-		jump \
 		invalid \
+		jump \
 		memory_reallocation \
 		optimization_disabled \
 		run 
