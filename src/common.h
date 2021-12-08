@@ -96,6 +96,11 @@
 #define SECOND_OPERAND 1
 #define THIRD_OPERAND 2
 
+// different modes of immediate handing for mov
+#define STRICT 0b00
+#define NASM 0b01
+#define AUTO 0b10
+
 // fail condition preprocessor
 #define FAIL_IF(EXP)                                                           \
   if (EXP) {                                                                   \
