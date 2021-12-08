@@ -50,7 +50,7 @@ assemblyline_t asm_create_instance(uint8_t *buffer, int len) {
 
   assemblyline_t al = malloc(sizeof(struct assemblyline));
   al->offset = 0;
-  al->optimize_register = true;
+  al->mov_imm_handling = NASM;
   // allocate buffer internally if not directly given
   if (buffer == NULL) {
     al->external = false;
@@ -161,6 +161,6 @@ uint8_t *asm_get_buffer(assemblyline_t al) { return al->buffer; }
 
 void *asm_get_code(assemblyline_t al) { return (void *)al->buffer; }
 
-void disable_imm_handling(assemblyline_t al) { al->optimize_register = false; }
+void disable_imm_handling(assemblyline_t al) { al->mov_imm_handling = STRICT; }
 
-void enable_imm_handling(assemblyline_t al) { al->optimize_register = true; }
+void enable_imm_handling(assemblyline_t al) { al->mov_imm_handling = NASM; }

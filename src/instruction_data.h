@@ -37,7 +37,7 @@ struct assemblyline {
   size_t chunk_size;
   bool external;
   ASM_MODE assembly_mode;
-  bool optimize_register;
+  uint8_t mov_imm_handling : 2;
   bool debug;
   bool finalized;
 };
