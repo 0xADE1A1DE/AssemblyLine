@@ -295,14 +295,14 @@ int main(int argc, char **argv) {
       0x02, 0xD1, 0x48, 0xC7, 0xC6, 0x12, 0x51, 0x10, 0xFD, 0x48, 0xBE, 0xEE,
       0xEE, 0xAE, 0xEF, 0x02, 0x00, 0x00, 0x00};
 
-  assemblyline_t asm_exe = asm_create_instance(NULL, 0);
+  assemblyline_t al = asm_create_instance(NULL, 0);
   // enure register size optimization is disabled
-  disable_optimization(asm_exe);
+  disable_optimization(al);
 
-  if (assemble_str(asm_exe, mov_ri) == EXIT_FAILURE)
+  if (assemble_str(al, mov_ri) == EXIT_FAILURE)
     return EXIT_FAILURE;
 
-  uint8_t *ptr = asm_get_code(asm_exe);
+  uint8_t *ptr = asm_get_code(al);
 
   size_t len = sizeof(mov_ri_code) / sizeof(mov_ri_code[0]);
   for (int i = 0; i < len; ++i)

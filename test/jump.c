@@ -44,29 +44,29 @@ int main(int argc, char **argv) {
     "mov rax, rcx\n"
     "ret";
 
-    assemblyline_t asm_exe = asm_create_instance(NULL, 0);
-    if (assemble_str(asm_exe, short_jmp) == EXIT_FAILURE) 
+    assemblyline_t al = asm_create_instance(NULL, 0);
+    if (assemble_str(al, short_jmp) == EXIT_FAILURE) 
         return EXIT_FAILURE; 
 
-    int (*funcA)() = asm_get_code(asm_exe);
+    int (*funcA)() = asm_get_code(al);
     if(funcA() != 0x123)
         return EXIT_FAILURE; 
 
-    asm_set_offset(asm_exe, 0);
+    asm_set_offset(al, 0);
 
-    if (assemble_str(asm_exe, long_jmp) == EXIT_FAILURE) 
+    if (assemble_str(al, long_jmp) == EXIT_FAILURE) 
         return EXIT_FAILURE; 
 
-    int (*funcB)() = asm_get_code(asm_exe);
+    int (*funcB)() = asm_get_code(al);
     if(funcB() != 0x123)
         return EXIT_FAILURE; 
 
-    asm_set_offset(asm_exe, 0);
+    asm_set_offset(al, 0);
 
-    if (assemble_str(asm_exe, std_jmp) == EXIT_FAILURE) 
+    if (assemble_str(al, std_jmp) == EXIT_FAILURE) 
         return EXIT_FAILURE; 
 
-    int (*funcC)() = asm_get_code(asm_exe);
+    int (*funcC)() = asm_get_code(al);
     if(funcC() != 0x123)
         return EXIT_FAILURE; 
 
