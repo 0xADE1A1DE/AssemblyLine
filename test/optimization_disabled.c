@@ -297,7 +297,7 @@ int main(int argc, char **argv) {
 
   assemblyline_t al = asm_create_instance(NULL, 0);
   // enure register size optimization is disabled
-  disable_optimization(al);
+  disable_imm_handling(al);
 
   if (assemble_str(al, mov_ri) == EXIT_FAILURE)
     return EXIT_FAILURE;

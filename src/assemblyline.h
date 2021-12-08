@@ -111,7 +111,7 @@ void *asm_get_code(assemblyline_t al);
  * ex: if immediate size for mov is less than or equal to max signed 32 bit
  * assemblyline will interpret "mov rax, 0x7fffffff" as is
  */
-void disable_optimization(assemblyline_t al);
+void disable_imm_handling(assemblyline_t al);
 
 /**
  * enables nasm style mov immediate register size optimization for assemblyline
@@ -119,6 +119,6 @@ void disable_optimization(assemblyline_t al);
  * ex: if immediate size for mov is less than or equal to max signed 32 bit
  * assemblyline will interpret "mov rax, 0x7fffffff" as "mov eax, 0x7fffffff"
  */
-void enable_optimization(assemblyline_t al);
+void enable_imm_handling(assemblyline_t al);
 
 #endif
