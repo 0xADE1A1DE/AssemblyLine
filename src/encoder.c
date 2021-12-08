@@ -265,6 +265,8 @@ void encode_imm(struct instr *instruc) {
     }
     // special condition for to mov instruction
   } else if (INSTR_TABLE[instruc->key].type == DATA_TRANSFER) {
+    // calculate value for +rd and +rw
+    instruc->rd_offset = instruc->opd[0].reg & VALUE_MASK;
     // only condition for mov with M operand encoding implemenation
     // check if immediate operand is a negative 32 bit value
     if (IN_RANGE(instruc->cons, NEG32BIT + 1, NEG64BIT) &&
@@ -284,15 +286,13 @@ void encode_imm(struct instr *instruc) {
                (instruc->opd[0].reg & MODE_MASK) >= reg64)
         instruc->key++;
     }
-    if ((instruc->opd[0].reg & MODE_MASK) > noext8 &&
-        instruc->optimize_register)
-      instruc->op_offset = 8;
-    else if ((instruc->opd[0].reg & MODE_MASK) > noext8 &&
-             !instruc->optimize_register &&
-             INSTR_TABLE[instruc->key].encode_operand == I)
-      instruc->op_offset = 8;
-    // calculate value for +rd and +rw
-    instruc->rd_offset = instruc->opd[0].reg & VALUE_MASK;
+    if ((instruc->opd[0].reg & MODE_MASK) > noext8) {
+      if (instruc->optimize_register)
+        instruc->op_offset = 8;
+      else if (!instruc->optimize_register &&
+               INSTR_TABLE[instruc->key].encode_operand == I)
+        instruc->op_offset = 8;
+    }
   }
   // mask all bits except for the most significant byte
   if ((instruc->opd[0].reg & MODE_MASK) < reg32) {
