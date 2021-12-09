@@ -56,21 +56,23 @@ static int assemble_const(unsigned long constant, unsigned char ptr[]) {
 }
 
 /**
- * checks the conditions for including an additional leading zero byte in the
- * immediate given @param instruc, immediate value @param saved_imm, and
- * instruction type @param type
- * ex: if an immediate for a mov instruction is between 0x80000000 0xffffffff
- *     this function ensure the immediate does not get interpreted as 64-bit
+ * this function determines how the caller interprets immediates between
+ * 0x80000000 and 0xffffffff(64 bits when NASM mode is disabled) by including
+ * or excluding an additional leading zero byte in the immediate given
+ * @param instruc, immediate value @param saved_imm, and instruction type
+ * @param type
+ * ex: NASM mode disabled "mov rax, 0x80000000" -> 48,b8,00,00,00,80,00,00,00,00
+ * ex: NASM mode enabled "mov rax, 0x80000000" -> b8,00,00,00,80
  */
 static bool check_zero(struct instr *instruc, unsigned long saved_imm,
                        instr_type type) {
   // check for signed 32bit overflow
   if (IN_RANGE(saved_imm, NEG32BIT_CHECK, MAX_UNSIGNED_32BIT) &&
       !instruc->reduced_imm && type != CONTROL_FLOW) {
-    // optimization disabled
+    // nasm immediate register handling disabled
     if (!(instruc->imm_handling & NASM))
       return true;
-    // nasm optimization enabled
+    // nasm immediate register handling disabled
     if (type != DATA_TRANSFER)
       return true;
   }
