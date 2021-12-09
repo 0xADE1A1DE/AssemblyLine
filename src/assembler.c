@@ -59,8 +59,7 @@ static int assemble_const(unsigned long constant, unsigned char ptr[]) {
  * this function determines how the caller interprets immediates between
  * 0x80000000 and 0xffffffff(64 bits when NASM mode is disabled) by including
  * or excluding an additional leading zero byte in the immediate given
- * @param instruc, immediate value @param saved_imm, and instruction type
- * @param type
+ * @param instruc, immediate @param saved_imm, and instruction type @param type
  * ex: NASM mode disabled "mov rax, 0x80000000" -> 48,b8,00,00,00,80,00,00,00,00
  * ex: NASM mode enabled "mov rax, 0x80000000" -> b8,00,00,00,80
  */
