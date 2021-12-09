@@ -217,6 +217,7 @@ typedef enum {
   vmovdqu,
   vmulpd,
   vpaddq,
+  vpsubq,
   vsubpd,
   xabort,
   xbegin,
