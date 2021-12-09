@@ -48,6 +48,8 @@ typedef enum {
 
 typedef enum { CHUNK_COUNT, CHUNK_FITTING, ASSEMBLE } ASM_MODE;
 
+typedef enum { STRICT = 0b00, NASM = 0b01, MANUAL = 0b10 } mov_imm_shortening_mode;
+
 // describes how operands are encoded
 typedef enum {
 

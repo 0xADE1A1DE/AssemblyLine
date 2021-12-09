@@ -56,6 +56,28 @@ static int assemble_const(unsigned long constant, unsigned char ptr[]) {
 }
 
 /**
+ * this function determines how the caller interprets an immediate between
+ * 0x80000000 and 0xffffffff(64 bits when NASM mode is disabled) by including
+ * or excluding an additional leading zero byte in the immediate given
+ * @param instruc, immediate @param saved_imm, and instruction type @param type
+ * ex: NASM mode disabled "mov rax, 0x80000000" -> 48,b8,00,00,00,80,00,00,00,00
+ * ex: NASM mode enabled "mov rax, 0x80000000" -> b8,00,00,00,80
+ */
+static bool check_zero(struct instr *instruc, unsigned long saved_imm,
+                       instr_type type) {
+  // check for signed 32bit overflow
+  if (IN_RANGE(saved_imm, NEG32BIT_CHECK, MAX_UNSIGNED_32BIT) &&
+      !instruc->reduced_imm && type != CONTROL_FLOW) {
+    // nasm immediate register handling disabled
+    if (!(instruc->imm_handling & NASM))
+      return true;
+    // nasm immediate register handling disabled
+    if (type != DATA_TRANSFER)
+      return true;
+  }
+  return false;
+}
+/**
  * assembles the immediate operand of a @param instruc and writes the
  * opcode to pointer location @param ptr
  */
@@ -70,11 +92,8 @@ static int assemble_imm(struct instr *instruc, unsigned char ptr[]) {
   // assemble the constant
   unsigned int bytes = assemble_const(imm_operand, ptr + ptr_pos);
   ptr_pos += bytes;
-  // check if the zero byte is present?
-  if (imm_operand == 0 ||
-      (IN_RANGE(imm_operand, NEG32BIT_CHECK, MAX_UNSIGNED_32BIT) &&
-       !instruc->reduced_imm && type != CONTROL_FLOW &&
-       type != DATA_TRANSFER)) {
+  // check if the zero byte is present or needed?
+  if (imm_operand == 0 || check_zero(instruc, imm_operand, type)) {
     ptr[ptr_pos++] = 0x0;
     bytes++;
   }

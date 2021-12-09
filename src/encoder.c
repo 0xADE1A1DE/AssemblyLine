@@ -265,24 +265,33 @@ void encode_imm(struct instr *instruc) {
     }
     // special condition for to mov instruction
   } else if (INSTR_TABLE[instruc->key].type == DATA_TRANSFER) {
+    // calculate value for +rd and +rw
+    instruc->rd_offset = instruc->opd[0].reg & VALUE_MASK;
     // only condition for mov with M operand encoding implemenation
     // check if immediate operand is a negative 32 bit value
-    if (INSTR_TABLE[instruc->key].type == DATA_TRANSFER &&
-        IN_RANGE(instruc->cons, NEG32BIT + 1, NEG64BIT) &&
+    if (IN_RANGE(instruc->cons, NEG32BIT + 1, NEG64BIT) &&
         (instruc->cons & NEG32BIT_CHECK) && (instruc->opd[0].reg & reg64)) {
       // set mov I operand encoding to M
       instruc->key++;
-      // do not zero pad immediate
+      // clear most significant 4 bytes
       instruc->cons &= MAX_UNSIGNED_32BIT;
+      // do not zero pad immediate
       instruc->reduced_imm = true;
       return;
+    } else if (instruc->cons <= MAX_UNSIGNED_32BIT) {
+      if (instruc->imm_handling & NASM)
+        nasm_register_size_optimize(instruc);
+      // ensure instruction does not default to movabs
+      else if (instruc->cons < NEG32BIT_CHECK &&
+               (instruc->opd[0].reg & MODE_MASK) >= reg64)
+        instruc->key++;
     }
-    if (instruc->cons <= MAX_UNSIGNED_32BIT)
-      nasm_register_size_optimize(instruc);
-    if ((instruc->opd[0].reg & MODE_MASK) > noext8)
-      instruc->op_offset = 8;
-
-    instruc->rd_offset = instruc->opd[0].reg & VALUE_MASK;
+    if ((instruc->opd[0].reg & MODE_MASK) > noext8) {
+      if (instruc->imm_handling & NASM)
+        instruc->op_offset = 8;
+      else if (INSTR_TABLE[instruc->key].encode_operand == I)
+        instruc->op_offset = 8;
+    }
   }
   // mask all bits except for the most significant byte
   if ((instruc->opd[0].reg & MODE_MASK) < reg32) {

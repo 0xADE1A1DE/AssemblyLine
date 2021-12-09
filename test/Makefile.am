@@ -26,9 +26,10 @@ ASM_LOG_COMPILER = ./al_nasm_compare.sh
 # add .c -tests here
 TEST_C= check_chunk_counting \
 		invalid \
+		jump \
 		memory_reallocation \
-		run \
-		jump
+		optimization_disabled \
+		run 
 
 TEST_EXTENSIONS = .asm
 
@@ -49,6 +50,7 @@ TEST_ASM =\
 		  movzx.asm \
 		  mov_reg_imm.asm \
 		  MOV_REG_IMM.asm \
+		  mov_reg_imm32.asm \
 		  mulx.asm \
 		  negative_mem_disp.asm \
 		  new_instruction.asm \

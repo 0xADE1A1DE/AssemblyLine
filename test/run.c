@@ -22,6 +22,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/mman.h>
+
+// expected results
 uint64_t expected_out[] = {0x165651D83282, 0x18883C3EA80B, 0x1EDBDFE96957,
                            0x238587B25BAC3, 0x182355AC294};
 
@@ -342,64 +344,59 @@ int main(int argc, char **argv) {
                            "add rsp, 0x48 \n"
                            "ret\n";
 
-  assemblyline_t asm_exe = asm_create_instance(NULL, 0);
-  if (assemble_str(asm_exe, cur_B) == EXIT_FAILURE)
+  assemblyline_t al = asm_create_instance(NULL, 0);
+  if (assemble_str(al, cur_B) == EXIT_FAILURE)
     return EXIT_FAILURE;
 
-  // type cast to function pointer
-  void (*curB)(uint64_t * out, uint64_t * in0, ...) =
-      (void (*)(uint64_t *, uint64_t *, ...))(asm_get_code(asm_exe));
+  void (*curB)(uint64_t * out, uint64_t * in0, ...) = asm_get_code(al);
       
   if (execute_test(curB)) {
     fprintf(stderr, "cur_B.asm did not produce expected results\n");
     return 1;
   }
-  asm_set_offset(asm_exe, 0);
+  asm_set_offset(al, 0);
 
-  if (assemble_str(asm_exe, function_B) == EXIT_FAILURE)
+  if (assemble_str(al, function_B) == EXIT_FAILURE)
     return EXIT_FAILURE;
 
-  void (*funcB)(uint64_t * out, uint64_t * in0, ...) =
-      (void (*)(uint64_t *, uint64_t *, ...))(asm_get_code(asm_exe));
+  void (*funcB)(uint64_t * out, uint64_t * in0, ...) = asm_get_code(al);
 
   if (execute_test(funcB)) {
     fprintf(stderr, "function_B.asm did not produce expected results\n");
     return 1;
   }
-  asm_set_offset(asm_exe, 0);
-  asm_set_chunk_size(asm_exe, 9);
-  if (assemble_str(asm_exe, cur_B) == EXIT_FAILURE)
+  asm_set_offset(al, 0);
+  asm_set_chunk_size(al, 9);
+
+  if (assemble_str(al, cur_B) == EXIT_FAILURE)
     return EXIT_FAILURE;
 
-
-  // type cast to function pointer
-  void (*curB_w_chunk)(uint64_t * out, uint64_t * in0, ...) =
-      (void (*)(uint64_t *, uint64_t *, ...))(asm_get_code(asm_exe));
+  void (*curB_w_chunk)(uint64_t * out, uint64_t * in0, ...) = asm_get_code(al);
 
   if (execute_test(curB_w_chunk)) {
     fprintf(stderr,
             "cur_B.asm with chunk fitting did not produce expected results\n");
     return 1;
   }
-  asm_set_offset(asm_exe, 0);
-  uint8_t *mybuffer =
+  asm_set_offset(al, 0);
+
+  uint8_t *buffer =
       mmap(NULL, sizeof(uint8_t) * 60000, PROT_READ | PROT_WRITE | PROT_EXEC,
            MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
-  if (mybuffer == MAP_FAILED) {
+  if (buffer == MAP_FAILED) {
     fprintf(stderr, "failed to allocate internal memory buffer: %s\n",
             strerror(errno));
     return EXIT_FAILURE;
   }
 
-  assemblyline_t asm_my = asm_create_instance(mybuffer, 60000);
-  if (assemble_str(asm_my, cur_B) == EXIT_FAILURE)
+  // use asemblyline with external buffer
+  assemblyline_t al_buffer = asm_create_instance(buffer, 60000);
+  if (assemble_str(al_buffer, cur_B) == EXIT_FAILURE)
     return EXIT_FAILURE;
 
-  // type cast to function pointer
-  void (*curB_my)(uint64_t * out, uint64_t * in0, ...) =
-      (void (*)(uint64_t *, uint64_t *, ...))(asm_get_code(asm_my));
+  void (*curB_buffer)(uint64_t * out, uint64_t * in0, ...) = asm_get_code(al_buffer);
 
-  if (execute_test(curB_my)) {
+  if (execute_test(curB_buffer)) {
     fprintf(stderr, "cur_B.asm did not produce expected results\n");
     return 1;
   }

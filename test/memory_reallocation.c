@@ -25,18 +25,18 @@
 int main(int argc, char **argv) {
 
   // use internal memory allocation
-  assemblyline_t asm_realloc = asm_create_instance(NULL, 0);
+  assemblyline_t al = asm_create_instance(NULL, 0);
 
   // assemble file twice to ensure the internal buffer is exceeded
-  if (assemble_file(asm_realloc, "mov.asm") == EXIT_FAILURE) {
+  if (assemble_file(al, "mov.asm") == EXIT_FAILURE) {
     fprintf(stderr, "failed to assemble %s\n", argv[1]);
     return EXIT_FAILURE;
   }
-  if (assemble_file(asm_realloc, "mov.asm") == EXIT_FAILURE) {
+  if (assemble_file(al, "mov.asm") == EXIT_FAILURE) {
     fprintf(stderr, "failed to assemble %s\n", argv[1]);
     return EXIT_FAILURE;
   }
 
-  asm_destroy_instance(asm_realloc);
+  asm_destroy_instance(al);
   return 0;
 }
