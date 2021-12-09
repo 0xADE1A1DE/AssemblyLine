@@ -56,7 +56,7 @@ static int assemble_const(unsigned long constant, unsigned char ptr[]) {
 }
 
 /**
- * this function determines how the caller interprets immediates between
+ * this function determines how the caller interprets an immediate between
  * 0x80000000 and 0xffffffff(64 bits when NASM mode is disabled) by including
  * or excluding an additional leading zero byte in the immediate given
  * @param instruc, immediate @param saved_imm, and instruction type @param type
