@@ -161,8 +161,12 @@ uint8_t *asm_get_buffer(assemblyline_t al) { return al->buffer; }
 
 void *asm_get_code(assemblyline_t al) { return (void *)al->buffer; }
 
-void disable_imm_handling(assemblyline_t al) { al->mov_imm_handling = STRICT; }
+void strict_mov_imm_handling(assemblyline_t al) {
+  al->mov_imm_handling = STRICT;
+}
 
-void enable_imm_handling(assemblyline_t al) { al->mov_imm_handling = NASM; }
+void nasm_mov_imm_handling(assemblyline_t al) { al->mov_imm_handling = NASM; }
 
-void manual_imm_handling(assemblyline_t al) { al->mov_imm_handling = MANUAL; }
+void manual_mov_imm_handling(assemblyline_t al) {
+  al->mov_imm_handling = MANUAL;
+}
