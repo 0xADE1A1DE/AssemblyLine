@@ -130,6 +130,12 @@ const char *sub_long_ymm = "vmovdqu ymm0, [rdi]\n"
                            "vmovdqu [rdx], ymm3\n"
                            "ret\n";
 
+const char *mul_long_ymm = "vmovdqu ymm0, [rdi]\n"
+                           "vmovdqu ymm1, [rsi]\n"
+                           "vpmuldq ymm3, ymm0, ymm1\n"
+                           "vmovdqu [rdx], ymm3\n"
+                           "ret\n";
+
 int main(int argc, char **argv) {
 
   assemblyline_t al = asm_create_instance(NULL, 0);
@@ -204,6 +210,19 @@ int main(int argc, char **argv) {
 
   if (execute_long_test(test_long, SUB)) {
     fprintf(stderr, "SUBTRACT long did not produce expected results\n");
+    return EXIT_FAILURE;
+  }
+
+  // clear previous test
+  asm_set_offset(al, 0);
+
+  if (assemble_str(al, mul_long_ymm) == EXIT_FAILURE)
+    return EXIT_FAILURE;
+
+  test_long = asm_get_code(al);
+
+  if (execute_long_test(test_long, MUL)) {
+    fprintf(stderr, "MULTIPLY long did not produce expected results\n");
     return EXIT_FAILURE;
   }
 
