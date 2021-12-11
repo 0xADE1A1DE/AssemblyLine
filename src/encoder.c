@@ -132,9 +132,7 @@ static void encode_special_opd(struct instr *instruc, int m, int i) {
 
   switch (INSTR_TABLE[instruc->key].encode_operand) {
   case M:
-    // printf("here\n");
     instruc->hex.rex = get_rex_prefix(instruc, instruc->opd[m], reg_none);
-    // printf("instruc->hex.rex = %x\n", instruc->hex.rex);
     if (instruc->mem_disp && !instruc->mem_offset)
       set_zero_byte(instruc, m);
     instruc->hex.reg = get_reg(instruc, instruc->opd[m],
