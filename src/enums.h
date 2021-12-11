@@ -85,7 +85,9 @@ typedef enum {
   mv,
   vvv,
   mri,
-  vvm
+  vvm,
+  vvvi,
+  vvmi
 } operand_format;
 
 // unique identifier for each instuction
@@ -219,6 +221,7 @@ typedef enum {
   vpmuldq,
   vpaddq,
   vpermd,
+  vperm2i128,
   vpsubq,
   vsubpd,
   xabort,

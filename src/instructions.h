@@ -35,7 +35,8 @@ const static struct {
                         {rrm, "rrm"},   {rmr, "rmr"}, {vr,  "vr"},
                         {rv, "rv"},     {vv,  "vv"},  {vi,  "vi"}, 
                         {vm, "vm"},     {mv, "mv"},   {vvv, "vvv"},
-                        {mri, "mri"},   {vvm, "vvm"}, {opd_error, "error"}};
+                        {mri, "mri"},   {vvm, "vvm"}, {vvmi,"vvmi"},
+                        {vvvi,"vvvi"},  {opd_error, "error"}};
 
 // defines opcode layout of each supported instruction
 struct instr_table{
