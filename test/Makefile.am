@@ -101,6 +101,7 @@ TEST_ASM =\
 		  vector_float_mul.asm \
 		  vector_mul.asm \
 		  vector_sub.asm \
+		  vperm2i128.asm \
 		  vmovupd.asm \
 		  vsubpd.asm \
 		  xor.asm \
