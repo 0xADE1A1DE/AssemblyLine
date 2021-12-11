@@ -163,6 +163,7 @@ const struct instr_table INSTR_TABLE[] = {
     {"shl",         shl,         {NA, ri},   M,   SHIFT,          NA,  NA,  4,   3,  0, {REX, 0xd1, REG}},
     {{'\0'},        shl,         {NA, NA},   M,   SHIFT,          NA,  NA,  4,   3,  0, {REX, 0xc1, REG}},
     {"shld",        shld,        {rri, mri}, MR,  OTHER,          NA,  NA,  NA,  4,  0, {REX, 0x0f, 0xa4, REG}},
+    {"shld",        shld,        {rrr, mrr}, MR,  OTHER,          NA,  NA,  NA,  4,  0, {REX, 0x0f, 0xa5, REG}},
     {"shlx",        shlx,        {rrr, rmr}, RMV, OTHER,          NA,  NA,  NA,  5,  2, {0xc4, VEX, W0, 0xf7, REG}},
     {"shr",         shr,         {NA, ri},   M,   SHIFT,          1,   NA,  5,   3,  0, {REX, 0xbe, REG}},
     {{'\0'},        shr,         {NA, NA},   M,   SHIFT,          NA,  NA,  5,   3,  0, {REX, 0xc1, REG}},

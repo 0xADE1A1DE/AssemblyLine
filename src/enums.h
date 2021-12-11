@@ -82,7 +82,8 @@ typedef enum {
   rmi,
   rrm,
   rmr,
-  mri
+  mri,
+  mrr
 } operand_format;
 
 // unique identifier for each instuction
