@@ -221,6 +221,7 @@ typedef enum {
   vpmuldq,
   vpaddq,
   vpermd,
+  vperm2f128,
   vperm2i128,
   vpsubq,
   vsubpd,

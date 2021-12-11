@@ -212,6 +212,7 @@ const struct instr_table INSTR_TABLE[] = {
     {"vpaddq",      vpaddq,      {vvm, vvv}, RVM, VECTOR_AVX,     NA,  NA,  3,  {VEX(NDS,B256,X66,X0F,WIG), 0xd4, REG}},
     {"vpermd",      vpermd,      {vvm, vvv}, RVM, VECTOR_AVX,     NA,  NA,  3,  {VEX(NDS,B256,X66,X0F38,W0), 0x36, REG}},
     {"vperm2i128",  vperm2i128,  {vvmi,vvvi},RVM, VECTOR_AVX,     NA,  NA,  4,  {VEX(NDS,B256,X66,X0F3A,W0), 0x46, REG, ib}},
+    {"vperm2f128",  vperm2f128,  {vvmi,vvvi},RVM, VECTOR_AVX,     NA,  NA,  4,  {VEX(NDS,B256,X66,X0F3A,W0), 0x06, REG, ib}},
     {"vpmuldq",     vpmuldq,     {vvm, vvv}, RVM, VECTOR_AVX,     NA,  NA,  3,  {VEX(NDS,B256,X66,X0F38,W0), 0x28, REG}},
     {"vpsubq",      vpsubq,      {vvm, vvv}, RVM, VECTOR_AVX,     NA,  NA,  3,  {VEX(NDS,B256,X66,X0F,WIG), 0xfb, REG}},
     {"vsubpd",      vsubpd,      {vvm, vvv}, RVM, VECTOR_AVX,     NA,  NA,  3,  {VEX(NDS,B256,X66,X0F,WIG), 0x5c, REG}},
