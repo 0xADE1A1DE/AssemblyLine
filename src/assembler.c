@@ -186,6 +186,10 @@ static int assemble_instr(struct instr *instruc, unsigned char ptr[]) {
         ptr[ptr_pos++] = instruc->hex.vex;
       break;
 
+    case ib:
+      instruc->reduced_imm = true;
+      break;
+
     case EVEX:
       if ((instruc->opd[1].reg & BIT_MASK) == BIT_32)
         ptr[ptr_pos++] = evex;

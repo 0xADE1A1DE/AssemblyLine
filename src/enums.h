@@ -31,6 +31,7 @@ typedef enum {
   VEX,
   EVEX,
   W0,
+  ib,
   MEM,
   NO_PREFIX = 399
 } op_encoding;
