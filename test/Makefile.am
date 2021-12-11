@@ -68,6 +68,7 @@ TEST_ASM =\
 		  seto.asm \
 		  shl.asm \
 		  shlx.asm \
+		  shld.asm \
 		  shr.asm \
 		  shrd.asm \
 		  shrx.asm \
