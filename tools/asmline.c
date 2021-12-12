@@ -32,7 +32,7 @@ void err_print_usage(char *error_msg) {
   fprintf(
       stderr,
       "%s\nUsage: asmline [-r] [-p] [-c CHUNK_SIZE>1] [-o "
-      "ELF_FILENAME_NO_EXT] [-h] [-v] [-n] [-s] [-m] path/to/file.asm\n\n"
+      "ELF_FILENAME_NO_EXT] [-n] [-s] [-m] [-h] [-v] path/to/file.asm\n\n"
       "  -r, --return\n"
       "\tExecutes assembly code and prints out the contents of the rax "
       "register (return register)\n\n"
@@ -47,10 +47,6 @@ void err_print_usage(char *error_msg) {
       "  -o, --object FILENAME\n"
       "\tGenerates a binary file from path/to/file.asm called "
       "FILENAME.bin in the current directory.\n\n"
-      "  -h, --help\n"
-      "\tPrints usage information to stdout and exits.\n\n"
-      "  -v, --version\n"
-      "\tPrints version information to stdout and exits.\n\n"
       "  -n, --nasm\n"
       "\tEnables nasm-style mov-immediate register-size optimization.\n"
       "\tex: if immediate size for mov is less than or equal to max "
@@ -70,7 +66,11 @@ void err_print_usage(char *error_msg) {
       "allows manual optimizations\n"
       "\tex: \"mov rax, 0x000000007fffffff\" ->  48 b8 ff ff ff 7f 00 00 00 "
       "00\n"
-      "\t    \"mov rax, 0x7fffffff\" -> b8 ff ff ff 7f\n\n",
+      "\t    \"mov rax, 0x7fffffff\" -> b8 ff ff ff 7f\n\n"
+      "  -h, --help\n"
+      "\tPrints usage information to stdout and exits.\n\n"
+      "  -v, --version\n"
+      "\tPrints version information to stdout and exits.\n\n",
       error_msg);
   exit(EXIT_FAILURE);
 }
