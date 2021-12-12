@@ -109,6 +109,9 @@ int main(int argc, char *argv[]) {
                                          {"help", no_argument, 0, 'h'},
                                          {"return", no_argument, 0, 'r'},
                                          {"print", no_argument, 0, 'p'},
+                                         {"nasm", no_argument, 0, 'n'},
+                                         {"strict", no_argument, 0, 's'},
+                                         {"manual", no_argument, 0, 'm'},
                                          {"chunk", required_argument, 0, 'c'},
                                          {"object", required_argument, 0, 'o'},
                                          {0, 0, 0, 0}};
@@ -120,7 +123,7 @@ int main(int argc, char *argv[]) {
     err_print_usage("Error: invalid number of arguments\n");
 
   assemblyline_t al = asm_create_instance(NULL, 0);
-  while ((opt = getopt_long(argc, argv, "hvrpc:o:", long_options,
+  while ((opt = getopt_long(argc, argv, "hvrnsmpc:o:", long_options,
                             &option_index)) != -1) {
     switch (opt) {
     case 'v':
@@ -134,6 +137,15 @@ int main(int argc, char *argv[]) {
       break;
     case 'p':
       asm_set_debug(al, true);
+      break;
+    case 'n':
+      nasm_mov_imm_handling(al);
+      break;
+    case 's':
+      strict_mov_imm_handling(al);
+      break;
+    case 'm':
+      manual_mov_imm_handling(al);
       break;
     case 'c':
       if (check_digit(optarg))
