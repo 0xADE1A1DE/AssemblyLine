@@ -32,7 +32,7 @@ void err_print_usage(char *error_msg) {
   fprintf(
       stderr,
       "%s\nUsage: asmline [-r] [-p] [-c CHUNK_SIZE>1] [-o "
-      "ELF_FILENAME_NO_EXT] [-h] [-v] path/to/file.asm\n\n"
+      "ELF_FILENAME_NO_EXT] [-h] [-v] [-n] [-s] [-m] path/to/file.asm\n\n"
       "  -r, --return\n"
       "\tExecutes assembly code and prints out the contents of the rax "
       "register (return register)\n\n"
@@ -50,7 +50,27 @@ void err_print_usage(char *error_msg) {
       "  -h, --help\n"
       "\tPrints usage information to stdout and exits.\n\n"
       "  -v, --version\n"
-      "\tPrints version information to stdout and exits.\n\n",
+      "\tPrints version information to stdout and exits.\n\n"
+      "  -n, --nasm\n"
+      "\tEnables nasm-style mov-immediate register-size optimization.\n"
+      "\tex: if immediate size for mov is less than or equal to max "
+      "signed 32 bit assemblyline\n"
+      "\t    will emit code to mov to the 32-bit register rather than 64-bit.\n"
+      "\tThat is: \"mov rax,0x7fffffff\" as \"mov eax,0x7fffffff\" "
+      "-> b8 ff ff ff 7f\n\n"
+      "  -s, --strict\n"
+      "\tDisables nasm-style mov-immediate register-size optimization.\n"
+      "\tex: even if immediate size for mov is less than or equal to max "
+      "signed 32 bit assemblyline.\n"
+      "\t    will pad the immediate to fit 64-bit\n"
+      "\tThat is: \"mov rax,0x7fffffff\" as \"mov rax,0x000000007fffffff\"\n"
+      "\t          -> 48 b8 ff ff ff 7f 00 00 00 00\n\n"
+      "  -m, --manual\n"
+      "\tThe immediate value will be checked for leading 0's and thus "
+      "allows manual optimizations\n"
+      "\tex: \"mov rax, 0x000000007fffffff\" ->  48 b8 ff ff ff 7f 00 00 00 "
+      "00\n"
+      "\t    \"mov rax, 0x7fffffff\" -> b8 ff ff ff 7f\n\n",
       error_msg);
   exit(EXIT_FAILURE);
 }
