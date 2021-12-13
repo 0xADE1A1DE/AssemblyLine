@@ -106,17 +106,17 @@ uint8_t *asm_get_buffer(assemblyline_t al);
 void *asm_get_code(assemblyline_t al);
 
 /**
- * Nasm optimizes a `mov rax, IMM` to `mov eax, imm`, iff imm is <= 0x7fffffff for 
- * all destination registers. The following three methods allow the user to specify
- * this behavior.
+ * Nasm optimizes a `mov rax, IMM` to `mov eax, imm`, iff imm is <= 0x7fffffff
+ * for all destination registers. The following three methods allow the user to
+ * specify this behavior.
  */
 
 /**
  * disables nasm-style mov-immediate register-size optimization.
  * ex: even if immediate size for mov is less than or equal to max signed 32 bit
  * assemblyline will pad the immediate to fit 64bit.
- * That is: 
- * "mov rax, 0x7fffffff" as "mov rax, 0x000000007fffffff" 
+ * That is:
+ * "mov rax, 0x7fffffff" as "mov rax, 0x000000007fffffff"
  * -> 48 b8 ff ff ff 7f 00 00 00 00
  */
 void strict_mov_imm_handling(assemblyline_t al);
@@ -124,17 +124,16 @@ void strict_mov_imm_handling(assemblyline_t al);
 /**
  * enables nasm-style mov-immediate register-size optimization.
  * ex: if immediate size for mov is less than or equal to max signed 32 bit
- * assemblyline will emit code to mov to eax rather than rax. 
+ * assemblyline will emit code to mov to eax rather than rax.
  * That is: "mov rax, 0x7fffffff" as "mov eax, 0x7fffffff"
  * -> b8 ff ff ff 7f
  */
 void nasm_mov_imm_handling(assemblyline_t al);
 
 /**
- * With this setting, Assemblyline will check the immediate value for leading 0's
- * and thus allows manual optimizations.
- * Thid is currently set as default.
- * ex: 
+ * With this setting, Assemblyline will check the immediate value for leading
+ * 0's and thus allows manual optimizations. This is currently set as default.
+ * ex:
  * "mov rax, 0x000000007fffffff" ->  48 b8 ff ff ff 7f 00 00 00 00
  * "mov rax, 0x7fffffff" -> b8 ff ff ff 7f
  */
