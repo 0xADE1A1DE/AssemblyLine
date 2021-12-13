@@ -124,7 +124,6 @@ static int assemble_imm(struct instr *instruc, unsigned char ptr[]) {
   // pad zero byte
   for (int k = 0; k < bytes; k++)
     ptr[ptr_pos++] = 0x0;
-
   return ptr_pos;
 }
 
