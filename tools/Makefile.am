@@ -12,11 +12,16 @@
 ## See the License for the specific language governing permissions and
 ## limitations under the License.
 
-LDADD = -lassemblyline
-AM_LDFLAGS = -L$(top_srcdir)/src
-AM_CPPFLAGS = -I$(top_srcdir)/src/
-AM_CFLAGS = -Wall -std=gnu99
+SUBDIRS = ../src .
+# dynamically link asmline to libassemblyline.so once installed
+AM_CPPFLAGS = -I$(top_srcdir)/src/ 
+
+AM_CFLAGS = -Wall -std=gnu99  
 
 bin_PROGRAMS = asmline
 asmline_SOURCES = asmline.c
+asmline_DEPENDENCIES = $(top_srcdir)/src/.libs/libassemblyline.a
+asmline_LDADD = -lassemblyline
+asmline_LDFLAGS = -L/usr/local/lib -L$(top_srcdir)/src
+asmline_CPPFLAGS = -I$(top_srcdir)/src/ 
 dist_man1_MANS = asmline.1
