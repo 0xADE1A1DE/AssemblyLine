@@ -61,7 +61,7 @@ void encode_offset(struct instr *instruc) {
  * returns the register opcode given the operand at @param m and @param r
  * position given and instance of @param instruc
  */
-static uint8_t get_modRM32_64(struct instr *instruc, int m, int r) {
+static uint8_t get_reg(struct instr *instruc, int m, int r) {
   return instruc->mod_disp | ((VALUE_MASK & r) << 3) | (VALUE_MASK & m);
 }
 
@@ -83,13 +83,13 @@ static void set_zero_byte(struct instr *instruc, int m) {
  * @param r, @param m, and @param v used for RMV or RVM encoding
  */
 static void encode_three_opds(struct instr *instruc, int r, int m, int v) {
-
-  instruc->hex.vex = get_vex_prefix(instruc, instruc->opd[r], instruc->opd[m]);
-  instruc->hex.w0 = get_w0_prefix(instruc->opd[v]);
-  instruc->hex.w0 -= INSTR_TABLE[instruc->key].w0_disp;
+  // used for RXB and R
+  instruc->hex.rex = get_rex_prefix(instruc, instruc->opd[m], instruc->opd[r]);
+  // get vvvv parameter
+  instruc->hex.vvvv = instruc->opd[v] & 0xf;
   if (instruc->mem_disp && !instruc->mem_offset)
     set_zero_byte(instruc, m);
-  instruc->hex.reg = get_modRM32_64(instruc, instruc->opd[m], instruc->opd[r]);
+  instruc->hex.reg = get_reg(instruc, instruc->opd[m], instruc->opd[r]);
   if (instruc->mem_disp && (instruc->opd[m] & VALUE_MASK) == spl)
     instruc->sib = true;
 }
@@ -105,23 +105,14 @@ static void encode_two_opds(struct instr *instruc, int r, int m) {
         get_rex_prefix(instruc, instruc->opd[m], instruc->opd[r]);
     if (instruc->mem_disp && !instruc->mem_offset)
       set_zero_byte(instruc, m);
-    instruc->hex.reg =
-        get_modRM32_64(instruc, instruc->opd[m], instruc->opd[r]);
-    if (INSTR_TABLE[instruc->key].type == VECTOR_AVX)
-      instruc->hex.vex =
-          get_vex_prefix(instruc, instruc->opd[r], instruc->opd[m]);
-    else
-      // used for rorx instruction TODO: change this
-      instruc->hex.vex =
-          get_vex_prefix(instruc, instruc->opd[r], instruc->opd[m]) + 1;
+    instruc->hex.reg = get_reg(instruc, instruc->opd[m], instruc->opd[r]);
     if (instruc->mem_disp && (instruc->opd[m] & VALUE_MASK) == spl)
       instruc->sib = true;
   } else {
     instruc->hex.rex =
         get_mem_prefix(instruc->opd[r], instruc->opd[m], instruc->opd_mem[m]);
     instruc->hex.reg = rex_r + (((instruc->opd[r] & VALUE_MASK)) * 0x8);
-    instruc->hex.mem =
-        get_modRM32_64(instruc, instruc->opd[m], instruc->opd_mem[m]);
+    instruc->hex.mem = get_reg(instruc, instruc->opd[m], instruc->opd_mem[m]);
     unsigned int bitMRm = instruc->opd[m] & MODE_MASK;
     if (bitMRm > ext16 && bitMRm < mmx64 &&
         (instruc->opd[m] & VALUE_MASK) == bpl) {
@@ -141,13 +132,11 @@ static void encode_special_opd(struct instr *instruc, int m, int i) {
 
   switch (INSTR_TABLE[instruc->key].encode_operand) {
   case M:
-    // printf("here\n");
     instruc->hex.rex = get_rex_prefix(instruc, instruc->opd[m], reg_none);
-    // printf("instruc->hex.rex = %x\n", instruc->hex.rex);
     if (instruc->mem_disp && !instruc->mem_offset)
       set_zero_byte(instruc, m);
-    instruc->hex.reg = get_modRM32_64(instruc, instruc->opd[m],
-                                      INSTR_TABLE[instruc->key].single_reg_r);
+    instruc->hex.reg = get_reg(instruc, instruc->opd[m],
+                               INSTR_TABLE[instruc->key].single_reg_r);
     if (instruc->mem_disp && (instruc->opd[m] & VALUE_MASK) == spl)
       instruc->sib = true;
     break;
@@ -156,8 +145,8 @@ static void encode_special_opd(struct instr *instruc, int m, int i) {
     if ((MODE_MASK & instruc->opd[m]) == ext64)
       instruc->hex.rex = rex_ + rex_b;
     instruc->rd_offset = (instruc->opd[m] & VALUE_MASK);
-    instruc->hex.reg = get_modRM32_64(instruc, instruc->opd[m],
-                                      INSTR_TABLE[instruc->key].single_reg_r);
+    instruc->hex.reg = get_reg(instruc, instruc->opd[m],
+                               INSTR_TABLE[instruc->key].single_reg_r);
     break;
 
   case I:

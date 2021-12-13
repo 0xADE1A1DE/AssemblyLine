@@ -24,28 +24,23 @@ typedef enum { BEGIN, FIRST_CH, SPACE_FOUND } filter_op;
 // with instruction opcode)
 typedef enum {
 
-  none = 0,
-  SIB = 0x24,
-  //uned in opcode layout
-  REG = 0b100000000000000,
-  REX = 0b1000000000000000,
-  VEX = 0b10000000000000000,
-  VEX_WIG = 0b100000000000000000,
-  W0 = 0b1000000000000000000,
-  NO_PREFIX = 0b10000000000000000000
-} op_encoding;
+  //used in opcode layout to denote a dynamic byte
+  REG = 0b00100000000000000000,
+  REX = 0b01000000000000000000,
+  VEX = 0b10000000000000000000,
+  // this denotes the presence of an 8-bit immediate
+  ib = 0b0100000000000000000000,
+  rd = 0b1000000000000000000000
+} opcode_encoding;
 
 // only used for determining what prefix to use based on registers
 typedef enum {
 
   rex_ = 0x40,
   rex_w = 0x48,
-  rex_b = 0x01,
   rex_r = 0x04,
   rex_x = 0x02,
-  evex = 0x67,
-  evex_128 = 0xc4 // +1 if operand is mmx, mmx
-//add evex encodings here
+  rex_b = 0x01
 } prefix_encoding;
 
 typedef enum { CHUNK_COUNT, CHUNK_FITTING, ASSEMBLE } ASM_MODE;
@@ -53,7 +48,6 @@ typedef enum { CHUNK_COUNT, CHUNK_FITTING, ASSEMBLE } ASM_MODE;
 // describes how operands are encoded
 typedef enum {
 
-  NA = -1,
   MR = 500,
   RM,
   RVM,
@@ -90,10 +84,15 @@ typedef enum {
   vm,
   mv,
   vvv,
+  mri,
+  vvm,
+  vvvi,
+  vvmi
 } operand_format;
 
 // unique identifier for each instuction
 typedef enum {
+
   EOI,
   LABEL,
   SKIP,
@@ -103,6 +102,7 @@ typedef enum {
   adox,
   and,
   bzhi,
+  bextr,
   call,
   clc,
   clflush,
@@ -214,7 +214,17 @@ typedef enum {
   sub,
   test,
   vaddpd,
+  vdivpd,
   vmovupd,
+  vmovdqu,
+  vmulpd,
+  vpmuldq,
+  vpaddq,
+  vpermd,
+  vperm2f128,
+  vperm2i128,
+  vpsubq,
+  vsubpd,
   xabort,
   xbegin,
   xchg,
@@ -226,20 +236,24 @@ typedef enum {
 typedef enum {
 
   // enforce a different mode of processing constant operand 
-  DATA_TRANSFER,
+  DATA_TRANSFER = 0b000001, 
   /* to ensure shift instruction such as "shr REG, 1" does not
    * assemble the predefined constant 1 operand. Rather use the special 
    * instruction  for shr REG, 1
    */
-  SHIFT,  
+  SHIFT = 0b000010,  
   /* for control flow instructions constant operand is handled
-   * differently due to no having an associated register
+   * differently due to not having an associated register
    */
-  CONTROL_FLOW,
-  VECTOR,
-  VECTOR_AVX,
+  CONTROL_FLOW = 0b000100,
+  // SSE and vector extension instructions 
+  VECTOR = 0b001000,
+  // AVX 256 instruction
+  VECTOR_AVX = 0b011000,
+  // this is a test used to bypass old implementation 
+  VECTOR_EXT = 0b101000,
   // instructions that do not require special encodings
-  OTHER
+  OTHER = 0b1000000
 } instr_type;
 
 // register bit size and category (ext denotes extended x64 registers)
@@ -254,7 +268,7 @@ typedef enum {
   ext32 = 0b01110000000,
   reg64 = 0b10000000000,
   ext64 = 0b10010000000,
-  mmx64 = 0b10100000000,
+  mmx64 = 0b10100000000
 } bit_mode;
 
 // register representation (converted from string)
@@ -262,8 +276,7 @@ typedef enum {
 
   reg_error = 0b1000000,
   reg_none = 0b100000,
-
-  // 8bitregisters
+  // 8-bit registers
   al = 0b00000,
   cl = 0b00001,
   dl = 0b00010,
@@ -272,7 +285,7 @@ typedef enum {
   bpl = 0b00101,
   sil = 0b00110,
   dil = 0b00111,
-
+  // 8-bit extended registers
   r8b = 0b01000,
   r9b = 0b01001,
   r10b = 0b01010,
@@ -281,7 +294,7 @@ typedef enum {
   r13b = 0b01101,
   r14b = 0b01110,
   r15b = 0b01111,
-
+  // 64-bit vector reigsters
   mm0 = 0b10000,
   mm1 = 0b10001,
   mm2 = 0b10010,
@@ -290,7 +303,7 @@ typedef enum {
   mm5 = 0b10101,
   mm6 = 0b10110,
   mm7 = 0b10111,
-
+  // 64-bit extended vector reigsters
   mm8 = 0b11000,
   mm9 = 0b11001,
   mm10 = 0b11010,
@@ -298,7 +311,7 @@ typedef enum {
   mm12 = 0b11100,
   mm13 = 0b11101,
   mm14 = 0b11110,
-  mm15 = 0b11111,
+  mm15 = 0b11111
 
 } asm_reg;
 
