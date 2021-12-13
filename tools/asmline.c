@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-/*command-tool for generating machine code from a x64 assembly file*/
+/**
+ * commandline-tool for generating and optionally executing machine code from a
+ * x64 assembly string/file
+ */
 #include <assemblyline.h>
 #if HAVE_CONFIG_H
 #include <config.h> // from autotools
@@ -24,7 +27,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include <unistd.h>
+
+enum run { DONT_RUN, RUN, RUN_WITH_ARG };
 
 const char *asm_version = PACKAGE_STRING;
 
@@ -94,20 +100,37 @@ int create_bin_file(assemblyline_t al, char *file_name) {
   return EXIT_SUCCESS;
 }
 
-void execute_get_ret_value(int (*exe)()) {
-  printf("\nthe value is 0x%x\n", ((int (*)())exe)());
+void execute_get_ret_value(void *function, long *arguments[]) {
+
+  long result = 0;
+  if (arguments == NULL) {
+    long (*f)() = function;
+    result = f();
+  } else {
+    long (*f)(long *, long *, long *, long *, long *, long *) = function;
+    result = f(arguments[0], arguments[1], arguments[2], arguments[3],
+               arguments[4], arguments[5]);
+  }
+  printf("\nthe value is 0x%lx\n", result);
 }
 
 int main(int argc, char *argv[]) {
 
-  int opt, get_ret = 0, create_bin = 0;
+  int opt, create_bin = 0;
+  enum run get_ret = DONT_RUN;
   int chunk_size;
   char *write_file = NULL;
+  long *arguments[6];
+  int argnum = 0;
+  int arglen = 0;
 
   static struct option long_options[] = {/* These options set a flag. */
                                          {"version", no_argument, 0, 'v'},
                                          {"help", no_argument, 0, 'h'},
                                          {"return", no_argument, 0, 'r'},
+                                         {"argument", no_argument, 0, 'a'},
+                                         {"len", no_argument, 0, 'l'},
+                                         {"num", no_argument, 0, 'n'},
                                          {"print", no_argument, 0, 'p'},
                                          {"chunk", required_argument, 0, 'c'},
                                          {"object", required_argument, 0, 'o'},
@@ -120,27 +143,61 @@ int main(int argc, char *argv[]) {
     err_print_usage("Error: invalid number of arguments\n");
 
   assemblyline_t al = asm_create_instance(NULL, 0);
-  while ((opt = getopt_long(argc, argv, "hvrpc:o:", long_options,
+  while ((opt = getopt_long(argc, argv, "hvral:n:pc:o:", long_options,
                             &option_index)) != -1) {
     switch (opt) {
+
     case 'v':
       print_version();
       break;
+
     case 'h':
       err_print_usage("");
       break;
-    case 'r':
-      get_ret = 1;
+
+    case 'l':
+      if (check_digit(optarg))
+        goto err_len;
+      arglen = atoi(optarg);
+      if (arglen > 0)
+        break;
+    err_len:
+      err_print_usage(
+          "Error: [-l LEN] expects an integer. Will call "
+          "functon with (a[LEN], b[LEN], ... NUM[LEN]). NUM must be <=6.\n");
       break;
+
+    case 'n':
+      if (check_digit(optarg))
+        goto err_num;
+      argnum = atoi(optarg);
+      if (argnum > 0 || argnum <= 6)
+        break;
+    err_num:
+      err_print_usage(
+          "Error: [-n NUM] expects an integer 0 < NUM <= 6. Will call "
+          "functon with (a[LEN], b[LEN], ... NUM[LEN])..\n");
+      break;
+
+    case 'a':
+      get_ret = RUN_WITH_ARG;
+      break;
+
+    case 'r':
+      get_ret = RUN;
+      break;
+
     case 'p':
       asm_set_debug(al, true);
       break;
+
     case 'c':
       if (check_digit(optarg))
         err_print_usage("Error: [-c CHUNK_SIZE>1] expects an integer\n");
       chunk_size = atoi(optarg);
       asm_set_chunk_size(al, chunk_size);
       break;
+
     case 'o':
       if (strchr(optarg, '.'))
         err_print_usage("elf filename cannot have an extension\n");
@@ -175,9 +232,36 @@ int main(int argc, char *argv[]) {
     }
   }
 
-  if (get_ret) {
-    int (*funcB)() = (int (*)())(asm_get_code(al));
-    execute_get_ret_value(funcB);
+  long (*func)() = asm_get_code(al);
+
+  switch (get_ret) {
+  case RUN:
+    execute_get_ret_value(func, NULL);
+    break;
+  case RUN_WITH_ARG:
+    if (argnum < 1 || arglen < 1) {
+      fprintf(stderr, "invalid combination of -a -l -n\n");
+      exit(EXIT_FAILURE);
+    }
+
+    srand(time(NULL));
+    for (int i = 0; i < 6; i++) {
+      arguments[i] = malloc(arglen * sizeof(long));
+      for (int j = 0; j < arglen; j++) {
+        arguments[i][j] = rand() | ((long)rand()) >> 32;
+      }
+    }
+
+    fprintf(stderr, "num: %d, len:%d\n", argnum, arglen);
+    execute_get_ret_value(func, arguments);
+
+    for (int i = 0; i < argnum; i++) {
+      free(arguments[i]);
+    }
+    break;
+  default:
+    // intentionally blank
+    break;
   }
 
   if (create_bin) {
