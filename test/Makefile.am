@@ -28,9 +28,9 @@ TEST_C= check_chunk_counting \
 		invalid \
 		jump \
 		memory_reallocation \
-		vector_operations \
-		run 
-		
+    optimization_disabled \
+    run \ 
+		vector_operations
 
 TEST_EXTENSIONS = .asm
 
@@ -55,6 +55,7 @@ TEST_ASM =\
 		  movzx.asm \
 		  mov_reg_imm.asm \
 		  MOV_REG_IMM.asm \
+		  mov_reg_imm32.asm \
 		  mulx.asm \
 		  negative_mem_disp.asm \
 		  new_instruction.asm \
@@ -90,6 +91,7 @@ TEST_ASM =\
 		  seto.asm \
 		  shl.asm \
 		  shlx.asm \
+		  shld.asm \
 		  shr.asm \
 		  shrd.asm \
 		  shrx.asm \

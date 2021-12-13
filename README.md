@@ -164,7 +164,7 @@ To add support for new instructions please refer to: [src/README.md](https://git
 * Chitchanok Chuengsatiansup (University of Adelaide)
 * Daniel Genkin (Georgia Tech)
 * Joel Kuepper (University of Adelaide)
-* Marku Wagner (University of Adelaide)
+* Markus Wagner (University of Adelaide)
 * David Wu (University of Adelaide)  
 * Yuval Yarom (University of Adelaide)
 

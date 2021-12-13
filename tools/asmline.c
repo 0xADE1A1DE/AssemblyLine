@@ -32,7 +32,7 @@ void err_print_usage(char *error_msg) {
   fprintf(
       stderr,
       "%s\nUsage: asmline [-r] [-p] [-c CHUNK_SIZE>1] [-o "
-      "ELF_FILENAME_NO_EXT] [-h] [-v] path/to/file.asm\n\n"
+      "ELF_FILENAME_NO_EXT] [-n] [-s] [-m] [-h] [-v] path/to/file.asm\n\n"
       "  -r, --return\n"
       "\tExecutes assembly code and prints out the contents of the rax "
       "register (return register)\n\n"
@@ -47,6 +47,26 @@ void err_print_usage(char *error_msg) {
       "  -o, --object FILENAME\n"
       "\tGenerates a binary file from path/to/file.asm called "
       "FILENAME.bin in the current directory.\n\n"
+      "  -n, --nasm\n"
+      "\tEnables nasm-style mov-immediate register-size optimization.\n"
+      "\tex: if immediate size for mov is less than or equal to max "
+      "signed 32 bit assemblyline\n"
+      "\t    will emit code to mov to the 32-bit register rather than 64-bit.\n"
+      "\tThat is: \"mov rax,0x7fffffff\" as \"mov eax,0x7fffffff\" "
+      "-> b8 ff ff ff 7f\n\n"
+      "  -s, --strict\n"
+      "\tDisables nasm-style mov-immediate register-size optimization.\n"
+      "\tex: even if immediate size for mov is less than or equal to max "
+      "signed 32 bit assemblyline.\n"
+      "\t    will pad the immediate to fit 64-bit\n"
+      "\tThat is: \"mov rax,0x7fffffff\" as \"mov rax,0x000000007fffffff\"\n"
+      "\t          -> 48 b8 ff ff ff 7f 00 00 00 00\n\n"
+      "  -m, --manual\n"
+      "\tThe immediate value will be checked for leading 0's and thus "
+      "allows manual optimizations\n"
+      "\tex: \"mov rax, 0x000000007fffffff\" ->  48 b8 ff ff ff 7f 00 00 00 "
+      "00\n"
+      "\t    \"mov rax, 0x7fffffff\" -> b8 ff ff ff 7f\n\n"
       "  -h, --help\n"
       "\tPrints usage information to stdout and exits.\n\n"
       "  -v, --version\n"
@@ -109,6 +129,9 @@ int main(int argc, char *argv[]) {
                                          {"help", no_argument, 0, 'h'},
                                          {"return", no_argument, 0, 'r'},
                                          {"print", no_argument, 0, 'p'},
+                                         {"nasm", no_argument, 0, 'n'},
+                                         {"strict", no_argument, 0, 's'},
+                                         {"manual", no_argument, 0, 'm'},
                                          {"chunk", required_argument, 0, 'c'},
                                          {"object", required_argument, 0, 'o'},
                                          {0, 0, 0, 0}};
@@ -120,7 +143,7 @@ int main(int argc, char *argv[]) {
     err_print_usage("Error: invalid number of arguments\n");
 
   assemblyline_t al = asm_create_instance(NULL, 0);
-  while ((opt = getopt_long(argc, argv, "hvrpc:o:", long_options,
+  while ((opt = getopt_long(argc, argv, "hvrnsmpc:o:", long_options,
                             &option_index)) != -1) {
     switch (opt) {
     case 'v':
@@ -134,6 +157,15 @@ int main(int argc, char *argv[]) {
       break;
     case 'p':
       asm_set_debug(al, true);
+      break;
+    case 'n':
+      nasm_mov_imm_handling(al);
+      break;
+    case 's':
+      strict_mov_imm_handling(al);
+      break;
+    case 'm':
+      manual_mov_imm_handling(al);
       break;
     case 'c':
       if (check_digit(optarg))

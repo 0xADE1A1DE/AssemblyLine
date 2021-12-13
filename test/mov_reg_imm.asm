@@ -15,6 +15,7 @@ mov eax, 0xff
 mov eax, 0x7ff
 mov rax, 0x7fffffff
 mov rax, 0x8fffffff
+mov r13, 0x80000000
 mov rax, 0xffffffff
 mov rax, 0x7fffffffff
 mov rax, 0xafffffffff

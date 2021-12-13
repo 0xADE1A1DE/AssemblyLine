@@ -65,7 +65,7 @@ static void mem_tok(struct instr *instr_buffer, char *mem, int opd_pos) {
   int base = 16;
   // find the index position of the memory displacement string
   int index = find_add_mem(mem, &neg, &base);
-  get_second_reg(mem, instr_buffer->opds.opd_mem_cpy[opd_pos]);
+  get_second_reg(mem, instr_buffer->opd[opd_pos].mem);
   instr_buffer->mem_offset = 0;
   // convert string to unsigned long for memory displacement representation
   if (index != NA) {
@@ -83,12 +83,16 @@ static void mem_tok(struct instr *instr_buffer, char *mem, int opd_pos) {
  */
 static void imm_tok(struct instr *instr_buffer, char *imme) {
 
+  size_t imme_str_len = strlen(imme);
   char *saved_saved;
   instr_buffer->imm = true;
   int base = 10;
   imme = strtok_r(imme, " ", &saved_saved);
-  if (imme[1] == 'x' || imme[2] == 'x')
+  if (imme[1] == 'x' || imme[2] == 'x') {
     base = 16;
+    if ((instr_buffer->imm_handling & MANUAL) && imme_str_len < 18)
+      instr_buffer->imm_handling |= NASM;
+  }
   // convert string to unsigned long for immediate representation
   instr_buffer->cons = strtoul(imme, NULL, base);
 }
@@ -126,13 +130,13 @@ static void check_for_keyword(struct instr *instr_buffer, char *all_opd,
 
 /**
  * Given an instance of @param instr_buffer, checks the operand type of
- * @param opds at operand postion @param opd_pos to get the register if operand
- * is not an immediate.
+ * @param opds at operand postion @param opd_pos to get the register if
+ * operand is not an immediate.
  */
 static int check_operand_type(struct instr *instr_buffer, char *all_opd,
                               int opd_pos) {
   char *saved_opd;
-  switch (instr_buffer->opds.opd_type[opd_pos]) {
+  switch (instr_buffer->opd[opd_pos].type) {
   // convert immediate to unsigned long
   case 'i':
     imm_tok(instr_buffer, all_opd);
@@ -145,8 +149,8 @@ static int check_operand_type(struct instr *instr_buffer, char *all_opd,
   case 'r':
   case 'v':
   case 'm':
-    get_reg_str(all_opd, instr_buffer->opds.opd_cpy[opd_pos]);
-    if (instr_buffer->opds.opd_type[opd_pos] == 'm')
+    get_reg_str(all_opd, instr_buffer->opd[opd_pos].str);
+    if (instr_buffer->opd[opd_pos].type == 'm')
       mem_tok(instr_buffer, all_opd, opd_pos);
     return EXIT_SUCCESS;
   // operand type is not found
@@ -156,19 +160,19 @@ static int check_operand_type(struct instr *instr_buffer, char *all_opd,
 }
 
 /**
- * Given an instance of @param instr_buffer, tokenize operand string @param opds
- * at operand postion @param opd_pos.
+ * Given an instance of @param instr_buffer, tokenize operand string @param
+ * opds at operand postion @param opd_pos.
  */
 static int operand_tok(struct instr *instr_buffer, char *opds, int opd_pos) {
 
   char *saved_opd;
   FAIL_IF(opds[0] == ',');
-  char *all_opd = instr_buffer->opds.operand[opd_pos];
+  char *all_opd = instr_buffer->opd[opd_pos].ptr;
   // get the 1st operand
   all_opd = strtok_r(opds, ",", &saved_opd);
   check_for_keyword(instr_buffer, all_opd, opd_pos);
   // get the operand type can be 'i', 'r', or 'm'
-  instr_buffer->opds.opd_type[opd_pos] = get_operand_type(all_opd);
+  instr_buffer->opd[opd_pos].type = get_operand_type(all_opd);
   FAIL_IF(check_operand_type(instr_buffer, all_opd, opd_pos));
   // get next operand
   char *next_operands = strtok_r(NULL, "", &saved_opd);

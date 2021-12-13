@@ -132,8 +132,8 @@
 
 // keyword length
 #define BYTE_LEN 4
-#define SHORT_LEN 5
 #define LONG_LEN 4
+#define SHORT_LEN 5
 
 // mod values for the ModR/M Byte
 #define MOD8 0b1000000

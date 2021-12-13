@@ -4126,3 +4126,7 @@ mov [ rsp + 0xd8 ], rsi
 mov [ rsp + 0xe0 ], r13
 mov [ rsp + 0xe8 ], rcx
 mov [ rsp + 0xf8 ], r14
+mov eax, r15d
+mov eax, r15d
+mov ax, r15w
+mov al, r15b
