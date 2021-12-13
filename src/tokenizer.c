@@ -147,6 +147,7 @@ static int check_operand_type(struct instr *instr_buffer, char *all_opd,
 
   // get register string from operand
   case 'r':
+  case 'v':
   case 'm':
     get_reg_str(all_opd, instr_buffer->opd[opd_pos].str);
     if (instr_buffer->opd[opd_pos].type == 'm')
@@ -178,7 +179,7 @@ static int operand_tok(struct instr *instr_buffer, char *opds, int opd_pos) {
   if (next_operands == NULL)
     return EXIT_SUCCESS;
   // recursively call operand_tok to process next operand
-  if (opd_pos <= THIRD_OPERAND)
+  if (opd_pos <= FOURTH_OPERAND)
     return operand_tok(instr_buffer, next_operands, opd_pos + 1);
   else
     return EXIT_FAILURE;

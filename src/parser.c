@@ -40,6 +40,7 @@ static int check_registers(struct instr *check_instr) {
   FAIL_IF((check_instr->opd[1].reg & reg_error) == reg_error);
   FAIL_IF((check_instr->opd[1].reg_mem & reg_error) == reg_error);
   FAIL_IF((check_instr->opd[2].reg & reg_error) == reg_error);
+  FAIL_IF((check_instr->opd[2].reg_mem & reg_error) == reg_error);
   return EXIT_SUCCESS;
 }
 
@@ -55,11 +56,12 @@ static int line_to_instr(struct instr *instr_data, char *filtered_asm_str) {
   // tokenize filtered instruction for mapping to instr internal structure
   FAIL_IF_MSG(instr_tok(instr_data, filtered_asm_str), "syntax error\n");
   // convert operand format from string to enum representation
-  char opd_type[4];
+  char opd_type[5];
   opd_type[0] = instr_data->opd[0].type;
   opd_type[1] = instr_data->opd[1].type;
   opd_type[2] = instr_data->opd[2].type;
-  opd_type[3] = '\0';
+  opd_type[3] = instr_data->opd[3].type;
+  opd_type[4] = '\0';
   operand_format opd_format = get_opd_format(opd_type);
   FAIL_IF_VAR(opd_format == opd_error, "illegal operand format: %s\n", opd_type)
   // jcc [MEM] no register
@@ -91,11 +93,9 @@ static int line_to_instr(struct instr *instr_data, char *filtered_asm_str) {
   instr_data->opd[1].reg_mem = str_to_reg(instr_data->opd[1].mem);
   instr_data->opd[2].reg = str_to_reg(instr_data->opd[2].str);
   // values will be determined during encoding
-  instr_data->hex.reg = NO_PREFIX;
-  instr_data->hex.rex = NO_PREFIX;
-  instr_data->hex.vex = NO_PREFIX;
-  instr_data->hex.w0 = NO_PREFIX;
-  instr_data->hex.mem = NO_PREFIX;
+  instr_data->hex.reg = NONE;
+  instr_data->hex.rex = NONE;
+  instr_data->hex.mem = NONE;
   // checks if the registers are valid
   FAIL_IF_VAR(check_registers(instr_data),
               "Invalid register for instruction: %s\n",
@@ -172,7 +172,7 @@ static int str_to_instr(struct instr *instr_data, const char unfiltered_str[],
   if (unfiltered_str[ch_pos] == '\n' || unfiltered_str[ch_pos] == '\r')
     ch_pos++;
   *read_len = ch_pos;
-  // map filter_str to instr_data if not it is not a label
+  // map filter_str to instr_data if not it is not a label or header
   if (filter_str[0] != '\0' && strstr(filter_str, "section") == NULL &&
       strstr(filter_str, "global") == NULL && strchr(filter_str, ':') == NULL)
     return line_to_instr(instr_data, filter_str);
@@ -212,7 +212,7 @@ static void debug_with_chunksize(uint8_t *buf, int opcode_pos,
 /**
  * checks if the buffer length has been exceeded
  */
-int check_len_or_resize(assemblyline_t al, int buf_pos) {
+static int check_len_or_resize(assemblyline_t al, int buf_pos) {
 
   if (buf_pos + BUFFER_TOLERANCE > al->buffer_len) {
     FAIL_IF_VAR(al->external,
