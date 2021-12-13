@@ -50,7 +50,7 @@ assemblyline_t asm_create_instance(uint8_t *buffer, int len) {
 
   assemblyline_t al = malloc(sizeof(struct assemblyline));
   al->offset = 0;
-  al->mov_imm_handling = MANUAL;
+  al->mov_imm_handling = SMART;
   // allocate buffer internally if not directly given
   if (buffer == NULL) {
     al->external = false;
@@ -167,6 +167,6 @@ void strict_mov_imm_handling(assemblyline_t al) {
 
 void nasm_mov_imm_handling(assemblyline_t al) { al->mov_imm_handling = NASM; }
 
-void manual_mov_imm_handling(assemblyline_t al) {
-  al->mov_imm_handling = MANUAL;
+void smart_mov_imm_handling(assemblyline_t al) {
+  al->mov_imm_handling = SMART;
 }

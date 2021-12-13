@@ -54,14 +54,14 @@ void err_print_usage(char *error_msg) {
       "\t    will emit code to mov to the 32-bit register rather than 64-bit.\n"
       "\tThat is: \"mov rax,0x7fffffff\" as \"mov eax,0x7fffffff\" "
       "-> b8 ff ff ff 7f\n\n"
-      "  -s, --strict\n"
+      "  -t, --strict\n"
       "\tDisables nasm-style mov-immediate register-size optimization.\n"
       "\tex: even if immediate size for mov is less than or equal to max "
       "signed 32 bit assemblyline.\n"
       "\t    will pad the immediate to fit 64-bit\n"
       "\tThat is: \"mov rax,0x7fffffff\" as \"mov rax,0x000000007fffffff\"\n"
       "\t          -> 48 b8 ff ff ff 7f 00 00 00 00\n\n"
-      "  -m, --manual\n"
+      "  -s, --smart\n"
       "\tThe immediate value will be checked for leading 0's and thus "
       "allows manual optimizations\n"
       "\tex: \"mov rax, 0x000000007fffffff\" ->  48 b8 ff ff ff 7f 00 00 00 "
@@ -130,8 +130,8 @@ int main(int argc, char *argv[]) {
                                          {"return", no_argument, 0, 'r'},
                                          {"print", no_argument, 0, 'p'},
                                          {"nasm", no_argument, 0, 'n'},
-                                         {"strict", no_argument, 0, 's'},
-                                         {"manual", no_argument, 0, 'm'},
+                                         {"strict", no_argument, 0, 't'},
+                                         {"smart", no_argument, 0, 's'},
                                          {"chunk", required_argument, 0, 'c'},
                                          {"object", required_argument, 0, 'o'},
                                          {0, 0, 0, 0}};
@@ -143,7 +143,7 @@ int main(int argc, char *argv[]) {
     err_print_usage("Error: invalid number of arguments\n");
 
   assemblyline_t al = asm_create_instance(NULL, 0);
-  while ((opt = getopt_long(argc, argv, "hvrnsmpc:o:", long_options,
+  while ((opt = getopt_long(argc, argv, "hvrntspc:o:", long_options,
                             &option_index)) != -1) {
     switch (opt) {
     case 'v':
@@ -161,11 +161,11 @@ int main(int argc, char *argv[]) {
     case 'n':
       nasm_mov_imm_handling(al);
       break;
-    case 's':
+    case 't':
       strict_mov_imm_handling(al);
       break;
-    case 'm':
-      manual_mov_imm_handling(al);
+    case 's':
+      smart_mov_imm_handling(al);
       break;
     case 'c':
       if (check_digit(optarg))

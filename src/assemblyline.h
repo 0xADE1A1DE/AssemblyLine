@@ -137,6 +137,6 @@ void nasm_mov_imm_handling(assemblyline_t al);
  * "mov rax, 0x000000007fffffff" ->  48 b8 ff ff ff 7f 00 00 00 00
  * "mov rax, 0x7fffffff" -> b8 ff ff ff 7f
  */
-void manual_mov_imm_handling(assemblyline_t al);
+void smart_mov_imm_handling(assemblyline_t al);
 
 #endif

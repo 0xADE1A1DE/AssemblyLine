@@ -51,8 +51,8 @@ static int line_to_instr(struct instr *instr_data, char *filtered_asm_str) {
   // default mod displacement value
   instr_data->mod_disp = MOD24;
   // clear the least significant bit
-  if (instr_data->imm_handling & MANUAL)
-    instr_data->imm_handling &= MANUAL;
+  if (instr_data->imm_handling & SMART)
+    instr_data->imm_handling &= SMART;
   // tokenize filtered instruction for mapping to instr internal structure
   FAIL_IF_MSG(instr_tok(instr_data, filtered_asm_str), "syntax error\n");
   // convert operand format from string to enum representation

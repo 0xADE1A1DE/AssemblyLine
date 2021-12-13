@@ -50,7 +50,7 @@ ex: if immediate size for mov is less than or equal to max signed 32 bit assembl
 .br
 That is: "mov rax, 0x7fffffff" as "mov eax, 0x7fffffff" -> b8 ff ff ff 7f
 .TP
-.BR \-s ", " \-\-strict
+.BR \-t ", " \-\-strict
 disables nasm-style mov-immediate register-size optimization.
 .br
 ex: even if immediate size for mov is less than or equal to max signed 32 bit assemblyline 
@@ -61,7 +61,7 @@ That is: "mov rax,0x7fffffff" as "mov rax,0x000000007fffffff"
 .br
           -> 48 b8 ff ff ff 7f 00 00 00 00
 .TP
-.BR \-m ", " \-\-manual
+.BR \-s ", " \-\-smart
 assemblyline will check the immediate value for leading 0's and thus allows manual
 .br 
 optimizations. This is currently set as default.

@@ -90,7 +90,7 @@ static void imm_tok(struct instr *instr_buffer, char *imme) {
   imme = strtok_r(imme, " ", &saved_saved);
   if (imme[1] == 'x' || imme[2] == 'x') {
     base = 16;
-    if ((instr_buffer->imm_handling & MANUAL) && imme_str_len < 18)
+    if ((instr_buffer->imm_handling & SMART) && imme_str_len < 18)
       instr_buffer->imm_handling |= NASM;
   }
   // convert string to unsigned long for immediate representation
