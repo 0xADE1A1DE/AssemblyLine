@@ -15,9 +15,10 @@
 SUBDIRS = ../src
 # dynamically link asmline to libassemblyline.so once installed
 AM_CPPFLAGS = -I$(top_srcdir)/src/ 
-
 AM_CFLAGS = -Wall -std=gnu99  
+
 LIBRARY = $(top_srcdir)/src/.libs/libassemblyline.a
+
 bin_PROGRAMS = asmline
 asmline_SOURCES = asmline.c
 asmline_DEPENDENCIES = $(LIBRARY)

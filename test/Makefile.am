@@ -28,8 +28,8 @@ TEST_C= check_chunk_counting \
 		invalid \
 		jump \
 		memory_reallocation \
-    	optimization_disabled \
-    	run \
+		optimization_disabled \
+		run \
 		vector_operations
 
 TEST_EXTENSIONS = .asm
@@ -111,6 +111,23 @@ TEST_ASM =\
 
 # if needed, add utility programs, which should be build for the test, to check_PROGRAMS
 check_PROGRAMS = $(top_srcdir)/tools/asmline $(TEST_C)
+
+LIBRARY = $(top_srcdir)/src/.libs/libassemblyline.a
+
+check_chunk_counting_SOURCES = check_chunk_counting.c
+check_chunk_counting_DEPENDENCIES = $(LIBRARY)
+invalid_SOURCES = invalid.c
+invalid_DEPENDENCIES = $(LIBRARY)
+jump_SOURCES = jump.c
+jump_DEPENDENCIES = $(LIBRARY)
+memory_reallocation_SOURCES = memory_reallocation.c 
+memory_reallocation_DEPENDENCIES = $(LIBRARY)
+optimization_disabled_SOURCES = optimization_disabled.c 
+optimization_disabled_DEPENDENCIES = $(LIBRARY)
+run_SOURCES = run.c
+run_DEPENDENCIES = $(LIBRARY)
+vector_operations_SOURCES = vector_operations.c 
+vector_operations_DEPENDENCIES = $(LIBRARY)
 TESTS = $(TEST_ASM) $(TEST_C)
 
 # maybe this is helpful to create testcases:
