@@ -47,6 +47,12 @@ struct INSTR_TABLE[] {
    */
   int op_offset_i;
 
+  /* 'i' index of opcode[i] when an offset is present for a REG value denoted as
+   * '+ rd' in the intel manual section 3.1.1.1 
+   * (set this value to NA if not applicable to the instruction)
+   */
+  int rd_offset_i;
+
   /* used for instructions with a single register operand denoted as '/digit'
    * in the intel manual section 3.1.1.1
    * (set this value to NA if not applicable to the instruction)
@@ -55,7 +61,13 @@ struct INSTR_TABLE[] {
 
   // number of bytes in the opcode[MAX_OPCODE_LEN] field
   int instr_size;
-  
+
+  /* displacement for the W0 prefix (following byte after the vector extension prefix VEX)
+   * check intel manual section 3.1.1.2
+   * (set this value to NA if not applicable to the instruction)
+   */
+  int w0_disp;
+
   /* opcode layout for an instruction ex: {REX,0x0f,0xa9,REG}
    * REX and REG are placeholders for the prefix and register values
    * more can be found in enums.h op_encoding
