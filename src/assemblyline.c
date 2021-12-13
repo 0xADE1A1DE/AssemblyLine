@@ -70,7 +70,7 @@ assemblyline_t asm_create_instance(uint8_t *buffer, int len) {
     al->buffer = buffer;
   }
   al->assembly_mode = ASSEMBLE;
-  al->chunk_size = none;
+  al->chunk_size = NONE;
   al->chunk_size++;
   al->debug = false;
   al->finalized = false;

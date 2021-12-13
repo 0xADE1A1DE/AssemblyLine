@@ -45,6 +45,8 @@ mov rax, 0xfffff77777777777
 mov rax, 0xfffff22222222222
 mov rax, 0xf000000000000001
 mov rax, 0xffffffffffffffff
+mov rax, 0xffffffff00000001
+mov rax, -0x2
 mov rax, -0x1
 mov rax, -0x2
 mov rsi, 0x2

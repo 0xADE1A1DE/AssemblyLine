@@ -58,7 +58,7 @@ int get_opcode_offset(asm_reg reg_value) {
   if (IN_RANGE(index, reg16, ext64))
     return 1;
   else
-    return none;
+    return NONE;
 }
 
 void get_reg_str(char *opd_str, char *reg) {
@@ -109,9 +109,11 @@ char get_operand_type(char *operand) {
   // the starting character of each operand note the type
   if (operand[i] == '[')
     return 'm';
-  if (IN_RANGE(operand[i], 'a', 'z'))
+  if (operand[i] >= 'a' && operand[i] <= 's')
     return 'r';
-  if (IN_RANGE(operand[i], '0', '9'))
+  if (operand[i] >= 'x' && operand[i] <= 'z')
+    return 'v';
+  if (operand[i] >= '0' && operand[i] <= '9')
     return 'i';
   if (operand[i] >= '-')
     return 'i';
@@ -126,11 +128,12 @@ asm_reg find_reg(int row, const int col, char *reg_str) {
       return REG_TABLE[row].gen_reg;
     row++;
   }
+  fprintf(stderr, "assembyline: %s register not found\n", reg_str);
   return reg_error;
 }
 
 asm_reg str_to_reg(char *reg) {
-  // the operand does not exit or is an immediate
+  // the operand does not contain a register
   if (reg[0] == '\0')
     return reg_none;
   unsigned int end = strlen(reg) - 1;
@@ -151,6 +154,8 @@ asm_reg str_to_reg(char *reg) {
     return mmx64 | find_reg(16, 4, reg);
   } else if (reg[0] == 'x') {
     return mmx64 | find_reg(16, 5, reg);
+  } else if (reg[0] == 'y') {
+    return mmx64 | find_reg(16, 6, reg);
     // 64 bit register
   } else if (reg[0] == 'e') {
     return reg32 | find_reg(0, 3, reg);

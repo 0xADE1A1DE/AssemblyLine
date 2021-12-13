@@ -46,8 +46,10 @@ struct assemblyline {
 struct prefix {
   unsigned int reg;
   unsigned int rex;
-  unsigned int vex;
-  unsigned int w0;
+  // [W|R][vvvv][L][pp]
+  unsigned int vvvv : 4;
+  bool is_w0 : 1;
+  // fix later if possible
   unsigned int mem;
 };
 
@@ -78,7 +80,7 @@ struct keywords {
 struct instr {
   // connects instr to INSTR_TABLE[]
   asm_instr key;
-  // stores components assembly instruction into buffer
+  // stores components of assembly instruction into buffer
   char instruction[INSTRUCTION_CHAR_LEN];
   // stores operands represented as strings
   struct operand opd[NUM_OF_OPD];

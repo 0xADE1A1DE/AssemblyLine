@@ -104,14 +104,11 @@ static int assemble_imm(struct instr *instruc, unsigned char ptr[]) {
   int opd0_mode = instruc->opd[0].reg & MODE_MASK;
   // zero padding is required rarely.
   bool zero_pad =
-      ((type != CONTROL_FLOW &&
-        type != SHIFT &&              // it must not be SHIFT/CONTROL_FLOW
+      ((type != CONTROL_FLOW &&       // it must not be CONTROL_FLOW
         instruc->op_offset != 3 &&    // and cannot have op_offset 3
         !instruc->keyword.is_byte) && // and cannot be a byte
        opd0_mode > noext8) ||         // and op0 mode must be bigger than noext8
-      (!instruc->keyword
-            .is_short && // and if its not short, it cannot be bigger
-       INSTR_TABLE[instruc->key].encode_operand > I); // >I (i.e. O D S)
+      (INSTR_TABLE[instruc->key].encode_operand > I); // >I (i.e. O D S)
   // return if zero padding is not required
   if (!zero_pad)
     return ptr_pos;
@@ -135,8 +132,10 @@ static int assemble_mem(struct instr *instruc, unsigned char ptr[]) {
 
   int ptr_pos = 0;
   // check if zero byte is present
-  if (instruc->zero_byte)
+  if (instruc->zero_byte) {
     ptr[ptr_pos++] = 0x0;
+    return ptr_pos;
+  }
   // check if there is a memory reference
   if (instruc->mem_disp) {
     if (instruc->sib)
@@ -156,6 +155,37 @@ static int assemble_mem(struct instr *instruc, unsigned char ptr[]) {
   return ptr_pos;
 }
 
+static int assemble_VEX(struct instr *instruc, unsigned char ptr[],
+                        unsigned int vex) {
+  int i = 0;
+  uint8_t vex_first_byte = C4H;
+  uint8_t RvvvvLpp = 0;
+  // set W bit depending on register size
+  if ((vex & W0_W1) == W0_W1 && !instruc->hex.is_w0)
+    vex &= ~W1;
+  // WIG is true therefore we could switch between C4H and C5H
+  else if ((vex & WIG) && !(vex & W1))
+    if (!(instruc->hex.rex & rex_b))
+      vex_first_byte = C5H;
+  // Byte 0 if VEX prefix
+  vex >>= 1;
+  ptr[i++] = vex_first_byte;
+  // set to RXBm-mmmm if vex if 3 bytes ie. C4H
+  if (vex_first_byte == C4H)
+    ptr[i++] = ((vex >> 8) | (~(instruc->hex.rex & 0b111) << 5)) & 0xff;
+  // last byte of the vex prefix
+  vex &= ~CLEARvvvv;
+  // W is predetermined therefore we do not want to overwrite it
+  if (vex_first_byte == C4H) {
+    // can be used for both RvvvvLpp and WvvvvLpp
+    ptr[i++] = ((~(instruc->hex.vvvv) << 3) & 0x7f) | (vex & 0xff);
+  } else if (vex_first_byte == C5H) {
+    RvvvvLpp = (vex & 0xff) | ((~(instruc->hex.rex & rex_r) << 5) & 0x80);
+    ptr[i++] = ((~(instruc->hex.vvvv) << 3) & 0x7f) | (RvvvvLpp & 0xff);
+  }
+  return i;
+}
+
 /**
  * assembles the prefix and opcode of a @param instruc and writes the
  * opcode to pointer location @param ptr
@@ -164,54 +194,58 @@ static int assemble_instr(struct instr *instruc, unsigned char ptr[]) {
 
   int ptr_pos = 0;
   int opcode_pos = 0;
+  int new_vex = 0;
+  // 67h - address size overwrite prefix
+  if ((INSTR_TABLE[instruc->key].type & VECTOR) && instruc->mem_disp)
+    if ((instruc->opd[0] & BIT_MASK) == BIT_32 ||
+        (instruc->opd[1] & BIT_MASK) == BIT_32 ||
+        (instruc->opd[2] & BIT_MASK) == BIT_32)
+      ptr[ptr_pos++] = 0x67;
   // 16 bit register prefix
-  if ((instruc->opd[0].reg & BIT_MASK) == BIT_16)
+  if ((instruc->opd[0] & BIT_MASK) == BIT_16)
     ptr[ptr_pos++] = 0x66;
   // assemble all prefixes and instruction opcode
   while (opcode_pos < INSTR_TABLE[instruc->key].instr_size) {
-    switch (INSTR_TABLE[instruc->key].opcode[opcode_pos]) {
-    case REX:
-      if (instruc->hex.rex != NO_PREFIX)
-        ptr[ptr_pos++] = instruc->hex.rex;
-      break;
+    unsigned char opc = INSTR_TABLE[instruc->key].opcode[opcode_pos] & 0xff;
+    // check if the byte in the opcode is fixed
+    if (!(INSTR_TABLE[instruc->key].opcode[opcode_pos] & (~0xff))) {
+      if (opcode_pos == INSTR_TABLE[instruc->key].op_offset_i)
+        opc += instruc->op_offset;
+      ptr[ptr_pos++] = opc;
+    } else {
+      switch (INSTR_TABLE[instruc->key].opcode[opcode_pos] & GET_EN) {
+      case REX:
+        if (instruc->hex.rex != NONE)
+          ptr[ptr_pos++] = instruc->hex.rex;
+        break;
 
-    case REG:
-      if (instruc->hex.reg != NO_PREFIX)
+      case REG:
         ptr[ptr_pos++] = instruc->hex.reg;
-      break;
+        break;
 
-    case VEX:
-      if (instruc->hex.vex != NO_PREFIX)
-        ptr[ptr_pos++] = instruc->hex.vex;
-      break;
+      case VEX:
+        new_vex = ~GET_EN & INSTR_TABLE[instruc->key].opcode[opcode_pos];
+        ptr_pos += assemble_VEX(instruc, ptr + ptr_pos, new_vex);
+        break;
 
-    case ib:
-      instruc->reduced_imm = true;
-      break;
+      case ib:
+        instruc->reduced_imm = true;
+        break;
 
-    case EVEX:
-      if ((instruc->opd[1].reg & BIT_MASK) == BIT_32)
-        ptr[ptr_pos++] = evex;
-      break;
-
-    case W0:
-      if (instruc->hex.w0 != NO_PREFIX)
-        ptr[ptr_pos++] = instruc->hex.w0;
-      break;
-
-    default:
-      if (INSTR_TABLE[instruc->key].opcode[opcode_pos] < REG) {
-        unsigned char opc = INSTR_TABLE[instruc->key].opcode[opcode_pos];
-        if (opcode_pos == INSTR_TABLE[instruc->key].rd_offset_i)
-          opc += instruc->rd_offset;
+      case rd:
         if (opcode_pos == INSTR_TABLE[instruc->key].op_offset_i)
           opc += instruc->op_offset;
-        ptr[ptr_pos++] = opc;
+        ptr[ptr_pos++] = opc + instruc->rd_offset;
+        break;
+
+      default:
+        break;
       }
     }
     opcode_pos++;
   }
-  if (instruc->hex.mem != NO_PREFIX)
+  // fix later
+  if (instruc->hex.mem != NONE)
     ptr[ptr_pos++] = instruc->hex.mem;
   return ptr_pos;
 }
@@ -246,7 +280,6 @@ int assemble_asm(struct instr *instruc, uint8_t *dest) {
   int instr_len = 0;
   int mem_len = 0;
   int imm_len = 0;
-
   // assemble instruction
   instr_len = assemble_instr(instruc, dest);
   ptr_pos += instr_len;

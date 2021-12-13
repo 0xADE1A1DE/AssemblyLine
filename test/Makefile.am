@@ -28,8 +28,9 @@ TEST_C= check_chunk_counting \
 		invalid \
 		jump \
 		memory_reallocation \
-		optimization_disabled \
-		run 
+    optimization_disabled \
+    run \ 
+		vector_operations
 
 TEST_EXTENSIONS = .asm
 
@@ -39,14 +40,18 @@ TEST_ASM =\
 		  adcx.asm \
 		  add.asm \
 		  adox.asm \
+		  bextr.asm \
 		  and.asm \
 		  bzhi.asm \
 		  clc.asm \
+		  high_low_xmm.asm \
 		  imul.asm \
 		  lea.asm \
 		  mov.asm \
+		  movd.asm \
 		  movntdqa.asm \
 		  movntq.asm \
+		  movq.asm \
 		  movzx.asm \
 		  mov_reg_imm.asm \
 		  MOV_REG_IMM.asm \
@@ -57,7 +62,25 @@ TEST_ASM =\
 		  nop.asm \
 		  not.asm \
 		  or.asm \
+		  paddb.asm \
+		  paddd.asm \
+		  paddq.asm \
+		  paddw.asm \
+		  pand.asm \
+		  pmuldq.asm \
+		  pmulhw.asm \
+		  pmulhuw.asm \
+		  pmulld.asm \
+		  pmullq.asm \
+		  pmullw.asm \
+		  pmuludq.asm \
+		  por.asm \
 		  prefetch.asm \
+		  psubb.asm \
+		  psubd.asm \
+		  psubq.asm \
+		  psubw.asm \
+		  pxor.asm \
 		  rdtsc.asm \
 		  rdtscp.asm \
 		  ror.asm \
@@ -73,6 +96,16 @@ TEST_ASM =\
 		  shrd.asm \
 		  shrx.asm \
 		  sub.asm \
+		  vaddpd.asm \
+		  vector_add.asm \
+		  vector_add_mem.asm \
+		  vector_float_divide.asm \
+		  vector_float_mul.asm \
+		  vector_mul.asm \
+		  vector_sub.asm \
+		  vperm2i128.asm \
+		  vmovupd.asm \
+		  vsubpd.asm \
 		  xor.asm \
 		  zero_byte_rbp.asm
 

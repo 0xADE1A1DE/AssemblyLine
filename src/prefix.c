@@ -17,34 +17,67 @@
 /*implements functions for determining the prefix opcode for an assembly
  * instruction*/
 #include "prefix.h"
+#include "common.h"
 #include "instructions.h"
 #include "registers.h"
 
-unsigned int get_rex_prefix(struct instr *all_instr, asm_reg m, asm_reg r) {
-  // check if register r is a vectorized
-  if ((r & MODE_MASK) == mmx64)
-    return (m & ext8) ? rex_ + rex_b : NO_PREFIX;
+unsigned int get_vector_rex_prefix(struct instr *all_instr, asm_reg m,
+                                   asm_reg r) {
 
-  unsigned int prefix_hex = NO_PREFIX;
-  // keyword 'byte' is present
+  unsigned int prefix_hex = rex_;
+  if (IN_RANGE((m & MODE_MASK), reg64, ext64) && !all_instr->mem_disp)
+    prefix_hex = rex_w;
+  // check register size
+  if ((m & REG_MASK) > mm7 || (r & REG_MASK) > mm7) {
+    if ((r & REG_MASK) > mm7)
+      prefix_hex += rex_r;
+    if ((m & REG_MASK) > mm7 || m & REG_RB)
+      prefix_hex += rex_b;
+    return prefix_hex;
+  } else {
+    // M encoding refers to a memory displacement
+    if (all_instr->mem_disp)
+      return (m & ext8) ? rex_ + rex_b : NONE;
+    if ((m & MODE_MASK) == mmx64)
+      return NONE;
+    // only a single operand
+    if (m == reg_none || r == reg_none)
+      return NONE;
+    if ((m & MODE_MASK) < reg64 && !(m & REG_RB))
+      prefix_hex = NONE;
+    // an operand is part of the x64 extended set
+    if (m & REG_RB || r & REG_RB)
+      prefix_hex += rex_b;
+  }
+  return prefix_hex;
+}
+
+unsigned int get_rex_prefix(struct instr *all_instr, asm_reg m, asm_reg r) {
+
+  int rex_prefix = 0;
+  // preprocess vex paremeters
+  all_instr->hex.is_w0 = true;
+  if ((m & MODE_MASK) < reg64)
+    all_instr->hex.is_w0 = false;
+  if ((m & MODE_MASK) == mmx64 || (r & MODE_MASK) == mmx64)
+    return get_vector_rex_prefix(all_instr, m, r);
   if (all_instr->keyword.is_byte)
     m = m & SET_BYTE;
   else if (!(m & reg_none) && !(m & MODE_MASK) && m >= spl)
-    prefix_hex = rex_;
-  // register r or m is part of the 8bit x64 extended set
+    rex_prefix |= rex_;
   if (!(r & reg_none) && !(r & MODE_MASK) && r >= spl)
-    prefix_hex = rex_;
-  else if ((r & ext8) || (m & ext8))
-    prefix_hex = rex_;
+    rex_prefix |= rex_;
+  // r or m operand is part of the x64 extended set
+  if (r & REG_RB)
+    rex_prefix |= rex_r;
+  if (m & REG_RB)
+    rex_prefix |= rex_b;
   // register r or m is 64 bits wide
   if ((m & reg64) || (r & reg64))
-    prefix_hex = rex_w;
-  // register is r or m is part of the x64 extended set
-  if (r & ext8)
-    prefix_hex += rex_r;
-  if (m & ext8)
-    prefix_hex += rex_b;
-  return prefix_hex;
+    rex_prefix |= rex_w;
+  if (rex_prefix & REX_W_RXB)
+    return rex_ | rex_prefix;
+  return NONE;
 }
 
 unsigned int get_mem_prefix(asm_reg s, asm_reg m, asm_reg r) {
@@ -58,30 +91,4 @@ unsigned int get_mem_prefix(asm_reg s, asm_reg m, asm_reg r) {
   if ((r & MODE_MASK) == ext64)
     prefix_hex += rex_x;
   return prefix_hex;
-}
-
-unsigned int get_vex_prefix(asm_reg r, asm_reg m) {
-
-  unsigned int vex_prefix_hex = rex_ + rex_x;
-  // registers r or m is part of the standard x86 set
-  if (!(r & ext8))
-    vex_prefix_hex |= R_VEX;
-  if (!(m & ext8))
-    vex_prefix_hex |= M_VEX;
-  return vex_prefix_hex;
-}
-
-unsigned int get_w0_prefix(asm_reg v) {
-
-  switch (v & MODE_MASK) {
-  case reg64:
-    return 0xfb - ((v & VALUE_MASK) << 3);
-  case reg32:
-    return 0x7b - ((v & VALUE_MASK) << 3);
-  case ext64:
-    return 0xbb - ((v & VALUE_MASK) << 3);
-  case ext32:
-    return 0x3b - ((v & VALUE_MASK) << 3);
-  }
-  return NO_PREFIX;
 }
