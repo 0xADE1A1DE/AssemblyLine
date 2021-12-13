@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # is an assmebly-printing binary. It prints like ../tools/asmline -p <file.asm but without line break at 7
-AP=./asm_to_stdout
+AP=../tools/asmline
 
 test -z "${1}" && echo "Call with ${0} /path/to/file.asm" && exit 1
 test -f "${1}" || (echo "Argument is set to ${1}, but it's not a file." && exit 1)
@@ -11,7 +11,7 @@ test -x "${AP}" || exit 1
 
 # Diff'ing output of AP with  output of nasm after a little translations
 diff --ignore-trailing-space --side-by-side --left-column \
-  <(${AP} "${1}") \
+  <(${AP} -p "${1}") \
   <(
     # delete everything until \S*:, which means symbol:
     e1='1,/\S*:/d'

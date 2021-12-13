@@ -13,7 +13,7 @@
 ## limitations under the License.
 
 
-SUBDIRS = src test tools
+SUBDIRS = src tools test
 # run 'make check' from projects' root to have libassemblyline being compiled on change
 # check_LTLIBRARIES = libassemblyline.la
 EXTRA_DIST =

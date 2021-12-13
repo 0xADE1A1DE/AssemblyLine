@@ -110,7 +110,7 @@ TEST_ASM =\
 		  zero_byte_rbp.asm
 
 # if needed, add utility programs, which should be build for the test, to check_PROGRAMS
-check_PROGRAMS = asm_to_stdout $(TEST_C)
+check_PROGRAMS = $(top_srcdir)/tools/asmline $(TEST_C)
 TESTS = $(TEST_ASM) $(TEST_C)
 
 # maybe this is helpful to create testcases:
