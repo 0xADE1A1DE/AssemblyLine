@@ -28,8 +28,8 @@ TEST_C= check_chunk_counting \
 		invalid \
 		jump \
 		memory_reallocation \
-    optimization_disabled \
-    run \ 
+    	optimization_disabled \
+    	run \
 		vector_operations
 
 TEST_EXTENSIONS = .asm
