@@ -117,7 +117,7 @@
 
 // used in instruction_data.h
 #define MAX_REG_LEN 6
-#define NUM_OF_OPD 3
+#define NUM_OF_OPD 4
 #define OPD_FORMAT_LEN 4
 #define INSTRUCTION_CHAR_LEN 15
 
@@ -147,6 +147,7 @@
 #define FIRST_OPERAND 0
 #define SECOND_OPERAND 1
 #define THIRD_OPERAND 2
+#define FOURTH_OPERAND 3
 
 #define GET_EN 0b11111100000000000000000
 

@@ -40,6 +40,7 @@ static int check_registers(struct instr *check_instr) {
   FAIL_IF((check_instr->opd[1].reg & reg_error) == reg_error);
   FAIL_IF((check_instr->opd[1].reg_mem & reg_error) == reg_error);
   FAIL_IF((check_instr->opd[2].reg & reg_error) == reg_error);
+  FAIL_IF((check_instr->opd[2].reg_mem & reg_error) == reg_error);
   return EXIT_SUCCESS;
 }
 
@@ -55,11 +56,12 @@ static int line_to_instr(struct instr *instr_data, char *filtered_asm_str) {
   // tokenize filtered instruction for mapping to instr internal structure
   FAIL_IF_MSG(instr_tok(instr_data, filtered_asm_str), "syntax error\n");
   // convert operand format from string to enum representation
-  char opd_type[4];
+  char opd_type[5];
   opd_type[0] = instr_data->opd[0].type;
   opd_type[1] = instr_data->opd[1].type;
   opd_type[2] = instr_data->opd[2].type;
-  opd_type[3] = '\0';
+  opd_type[3] = instr_data->opd[3].type;
+  opd_type[4] = '\0';
   operand_format opd_format = get_opd_format(opd_type);
   FAIL_IF_VAR(opd_format == opd_error, "illegal operand format: %s\n", opd_type)
   // jcc [MEM] no register

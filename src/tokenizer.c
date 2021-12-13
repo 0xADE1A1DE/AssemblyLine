@@ -179,7 +179,7 @@ static int operand_tok(struct instr *instr_buffer, char *opds, int opd_pos) {
   if (next_operands == NULL)
     return EXIT_SUCCESS;
   // recursively call operand_tok to process next operand
-  if (opd_pos <= THIRD_OPERAND)
+  if (opd_pos <= FOURTH_OPERAND)
     return operand_tok(instr_buffer, next_operands, opd_pos + 1);
   else
     return EXIT_FAILURE;
