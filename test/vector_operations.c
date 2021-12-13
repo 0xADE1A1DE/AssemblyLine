@@ -23,12 +23,17 @@
 #include <string.h>
 #include <sys/mman.h>
 
-#define ADD 0
-#define SUB 1
-#define MUL 2
-#define DIV 3
+// describes how operands are encoded
+typedef enum {
+  ADD,
+  SUB,
+  MUL,
+  DIV,
 
-int execute_double_test(void (*exe)(double *, double *, double *), int type) {
+} operation;
+
+int execute_double_test(void (*exe)(double *, double *, double *),
+                        operation type) {
 
   double A[] = {1.0, 2.0, 3.0, 4.0};
   double B[] = {1.0, 2.0, 3.0, 4.0};
@@ -61,7 +66,7 @@ int execute_double_test(void (*exe)(double *, double *, double *), int type) {
   return EXIT_SUCCESS;
 }
 
-int execute_long_test(void (*exe)(long *, long *, long *), int type) {
+int execute_long_test(void (*exe)(long *, long *, long *), operation type) {
 
   long A[] = {1, 2, 3, 4};
   long B[] = {1, 2, 3, 4};
