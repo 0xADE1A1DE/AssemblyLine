@@ -349,7 +349,7 @@ int main(int argc, char **argv) {
     return EXIT_FAILURE;
 
   void (*curB)(uint64_t * out, uint64_t * in0, ...) = asm_get_code(al);
-      
+
   if (execute_test(curB)) {
     fprintf(stderr, "cur_B.asm did not produce expected results\n");
     return 1;
@@ -394,7 +394,8 @@ int main(int argc, char **argv) {
   if (assemble_str(al_buffer, cur_B) == EXIT_FAILURE)
     return EXIT_FAILURE;
 
-  void (*curB_buffer)(uint64_t * out, uint64_t * in0, ...) = asm_get_code(al_buffer);
+  void (*curB_buffer)(uint64_t * out, uint64_t * in0, ...) =
+      asm_get_code(al_buffer);
 
   if (execute_test(curB_buffer)) {
     fprintf(stderr, "cur_B.asm did not produce expected results\n");

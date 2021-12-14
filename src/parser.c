@@ -200,7 +200,6 @@ static void debug_without_chunksize(int opcode_len, uint8_t *ptr) {
  */
 static void debug_with_chunksize(uint8_t *buf, int opcode_pos,
                                  size_t chunk_size) {
-
   for (int i = 0; i < opcode_pos; i++) {
     if (i % chunk_size == 0 && chunk_size > 1 && i != 0)
       printf("|\n");
