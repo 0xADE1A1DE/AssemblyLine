@@ -17,6 +17,7 @@ Thumbs.db
 *.libs
 *.log
 *.trs
+.dirstamp
 assemblyline-*.tar.gz
 compile_commands.json
 Makefile
