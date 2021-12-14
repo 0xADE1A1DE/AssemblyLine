@@ -35,13 +35,11 @@ run_test
 stamp-h1
 tools/*
 !tools/*.[ch]
-!tools/Makefile.am
 
 test/*
 !test/*.c
 !test/*.sh
 !test/*.asm
-!test/Makefile.am
 
 *.in
 aclocal.m4
