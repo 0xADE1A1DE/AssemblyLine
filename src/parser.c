@@ -186,8 +186,11 @@ static int str_to_instr(struct instr *instr_data, const char unfiltered_str[],
  */
 static void debug_without_chunksize(int opcode_len, uint8_t *ptr) {
 
-  for (int i = 0; i < opcode_len; i++)
-    printf("%02x", *ptr++);
+  for (int i = 0; i < opcode_len; i++) {
+    if (i == 7)
+      printf("\n");
+    printf("%02x ", *ptr++);
+  }
   printf("\n");
 }
 
@@ -197,11 +200,10 @@ static void debug_without_chunksize(int opcode_len, uint8_t *ptr) {
  */
 static void debug_with_chunksize(uint8_t *buf, int opcode_pos,
                                  size_t chunk_size) {
-
   for (int i = 0; i < opcode_pos; i++) {
     if (i % chunk_size == 0 && chunk_size > 1 && i != 0)
       printf("|\n");
-    printf("%02x", buf[i]);
+    printf("%02x ", buf[i]);
   }
   printf("\n");
 }

@@ -31,22 +31,28 @@ const char *asm_version = PACKAGE_STRING;
 void err_print_usage(char *error_msg) {
   fprintf(
       stderr,
-      "%s\nUsage: asmline [-r] [-p] [-c CHUNK_SIZE>1] [-o "
-      "ELF_FILENAME_NO_EXT] [-n] [-s] [-m] [-h] [-v] path/to/file.asm\n\n"
+      "%s\nUsage: asmline "
+      "[-r] [-p] [-P FILENAME] [-o FILENAME_NO_EXT] [-c CHUNK_SIZE>1] "
+      "[-n] [-t] [-s] [-h] [-v] "
+      "[path/to/file.asm]\n\n"
       "  -r, --return\n"
       "\tExecutes assembly code and prints out the contents of the rax "
       "register (return register)\n\n"
       "  -p, --print\n"
-      "\tWhen assembling path/to/file.asm the corresponding machine code "
-      "will be printed to stdout.\n\n"
+      "\tThe corresponding machine code will be printed to stdout in hex form. "
+      "This output is similar to `objdump`: Byte-wise delimited by space and "
+      "linebreaks after seven bytes. If -c is given, the chunks are delimited "
+      "by '|' and each chunk is on one line.\n\n"
+      "  -P, --printfile FILENAME\n"
+      "\tThe corresponding machine code will be printed to FILENAME in binary "
+      "form. Can be set to '/dev/stdout' to write to stdout.\n\n"
+      "  -o, --object FILENAME\n"
+      "\tThe corresponding machine code will be printed to FILENAME.bin in "
+      "binary.\n\n"
       "  -c, --chunk CHUNK_SIZE>1\n"
       "\tSets a given CHUNK_SIZE boundary in bytes. Nop padding will be used "
       "to ensure no instruction\n"
-      "\topcode will cross the specified CHUNK_SIZE "
-      "boundary.\n\n"
-      "  -o, --object FILENAME\n"
-      "\tGenerates a binary file from path/to/file.asm called "
-      "FILENAME.bin in the current directory.\n\n"
+      "\topcode will cross the specified CHUNK_SIZE boundary.\n\n"
       "  -n, --nasm\n"
       "\tEnables nasm-style mov-immediate register-size optimization.\n"
       "\tex: if immediate size for mov is less than or equal to max "
@@ -62,8 +68,8 @@ void err_print_usage(char *error_msg) {
       "\tThat is: \"mov rax,0x7fffffff\" as \"mov rax,0x000000007fffffff\"\n"
       "\t          -> 48 b8 ff ff ff 7f 00 00 00 00\n\n"
       "  -s, --smart\n"
-      "\tThe immediate value will be checked for leading 0's and thus "
-      "allows manual optimizations\n"
+      "\tThe immediate value will be checked for leading 0's. If it specifies "
+      "exactly 64-bits, it sill not optimize.\n"
       "\tex: \"mov rax, 0x000000007fffffff\" ->  48 b8 ff ff ff 7f 00 00 00 "
       "00\n"
       "\t    \"mov rax, 0x7fffffff\" -> b8 ff ff ff 7f\n\n"
@@ -101,14 +107,16 @@ int check_digit(char *optarg) {
   return EXIT_SUCCESS;
 }
 
-int create_bin_file(assemblyline_t al, char *file_name) {
-
-  FILE *write_ptr = fopen(strcat(file_name, ".bin"), "wb");
+int create_bin_file(assemblyline_t al, const char *file_name) {
+  void *buffer = asm_get_buffer(al);
+  int len = asm_get_offset(al);
+  FILE *write_ptr = fopen(file_name, "wb");
 
   if (write_ptr == NULL)
     return EXIT_FAILURE;
 
-  fwrite(asm_get_buffer(al), sizeof(uint8_t), asm_get_offset(al), write_ptr);
+  fwrite(buffer, sizeof(uint8_t), len, write_ptr);
+
   fclose(write_ptr);
 
   return EXIT_SUCCESS;
@@ -117,24 +125,27 @@ int create_bin_file(assemblyline_t al, char *file_name) {
 void execute_get_ret_value(int (*exe)()) {
   printf("\nthe value is 0x%x\n", ((int (*)())exe)());
 }
+enum OUTPUT { NONE, BIN_FILE, GENERIC_FILE };
 
 int main(int argc, char *argv[]) {
 
-  int opt, get_ret = 0, create_bin = 0;
-  int chunk_size;
+  int opt, get_ret = 0;
+  enum OUTPUT create_bin = NONE;
   char *write_file = NULL;
 
-  static struct option long_options[] = {/* These options set a flag. */
-                                         {"version", no_argument, 0, 'v'},
-                                         {"help", no_argument, 0, 'h'},
-                                         {"return", no_argument, 0, 'r'},
-                                         {"print", no_argument, 0, 'p'},
-                                         {"nasm", no_argument, 0, 'n'},
-                                         {"strict", no_argument, 0, 't'},
-                                         {"smart", no_argument, 0, 's'},
-                                         {"chunk", required_argument, 0, 'c'},
-                                         {"object", required_argument, 0, 'o'},
-                                         {0, 0, 0, 0}};
+  static struct option long_options[] = {
+      /* These options set a flag. */
+      {"version", no_argument, 0, 'v'},
+      {"help", no_argument, 0, 'h'},
+      {"return", no_argument, 0, 'r'},
+      {"print", no_argument, 0, 'p'},
+      {"printfile", required_argument, 0, 'P'},
+      {"nasm", no_argument, 0, 'n'},
+      {"strict", no_argument, 0, 't'},
+      {"smart", no_argument, 0, 's'},
+      {"chunk", required_argument, 0, 'c'},
+      {"object", required_argument, 0, 'o'},
+      {0, 0, 0, 0}};
 
   /* getopt_long stores the option index here. */
   int option_index = 0;
@@ -143,7 +154,7 @@ int main(int argc, char *argv[]) {
     err_print_usage("Error: invalid number of arguments\n");
 
   assemblyline_t al = asm_create_instance(NULL, 0);
-  while ((opt = getopt_long(argc, argv, "hvrntspc:o:", long_options,
+  while ((opt = getopt_long(argc, argv, "hvrntspP:c:o:", long_options,
                             &option_index)) != -1) {
     switch (opt) {
     case 'v':
@@ -170,13 +181,17 @@ int main(int argc, char *argv[]) {
     case 'c':
       if (check_digit(optarg))
         err_print_usage("Error: [-c CHUNK_SIZE>1] expects an integer\n");
-      chunk_size = atoi(optarg);
+      int chunk_size = atoi(optarg);
       asm_set_chunk_size(al, chunk_size);
+      break;
+    case 'P':
+      create_bin = GENERIC_FILE;
+      write_file = optarg;
       break;
     case 'o':
       if (strchr(optarg, '.'))
         err_print_usage("elf filename cannot have an extension\n");
-      create_bin = 1;
+      create_bin = BIN_FILE;
       write_file = optarg;
       break;
 
@@ -208,15 +223,27 @@ int main(int argc, char *argv[]) {
   }
 
   if (get_ret) {
-    int (*funcB)() = (int (*)())(asm_get_code(al));
-    execute_get_ret_value(funcB);
+    int (*func)() = asm_get_code(al);
+    execute_get_ret_value(func);
   }
 
-  if (create_bin) {
-    if (create_bin_file(al, write_file) == EXIT_FAILURE) {
-      fprintf(stderr, "failed to create test.bin\n");
+  switch (create_bin) {
+  case NONE:
+    break;
+  case BIN_FILE: {
+    const char *filename = strcat(write_file, ".bin");
+    if (create_bin_file(al, filename) == EXIT_FAILURE) {
+      fprintf(stderr, "failed to create %s\n", filename);
       exit(EXIT_FAILURE);
     }
+    break;
+  }
+  case GENERIC_FILE: {
+    if (create_bin_file(al, write_file) == EXIT_FAILURE) {
+      fprintf(stderr, "failed to create %s\n", write_file);
+      exit(EXIT_FAILURE);
+    }
+  }
   }
 
   exit(EXIT_SUCCESS);
