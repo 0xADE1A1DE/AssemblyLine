@@ -242,22 +242,14 @@ const struct instr_table INSTR_TABLE[] = {
     {"vpmuldq",     vpmuldq,     {yym, yyy}, RVM, VECTOR_AVX,     NA,  NA,  3,  {VEX(NDS,B256,X66,X0F38,W0), 0x28, REG}},
     {"vpor",        vpor,        {yym, yyy}, RVM, VECTOR_AVX,     NA,  NA,  3,  {VEX(NDS,B256,X66,X0F,WIG), 0xeb, REG}},
     {{'\0'},        vpor,        {vvm, vvv}, RVM, VECTOR_AVX,     NA,  NA,  3,  {VEX(NDS,B128,X66,X0F,WIG), 0xeb, REG}},
+    {"vpsubb",      vpsubb,      {yym, yyy}, RVM, VECTOR_AVX,     NA,  NA,  3,  {VEX(NDS,B256,X66,X0F,WIG), 0xf8, REG}},
+    {{'\0'},        vpsubb,      {vvm, vvv}, RVM, VECTOR_AVX,     NA,  NA,  3,  {VEX(NDS,B128,X66,X0F,WIG), 0xf8, REG}},    
     {"vpsubd",      vpsubd,      {yym, yyy}, RVM, VECTOR_AVX,     NA,  NA,  3,  {VEX(NDS,B256,X66,X0F,WIG), 0xfa, REG}},
     {{'\0'},        vpsubd,      {vvm, vvv}, RVM, VECTOR_AVX,     NA,  NA,  3,  {VEX(NDS,B128,X66,X0F,WIG), 0xfa, REG}},
     {"vpsubq",      vpsubq,      {yym, yyy}, RVM, VECTOR_AVX,     NA,  NA,  3,  {VEX(NDS,B256,X66,X0F,WIG), 0xfb, REG}},
     {{'\0'},        vpsubq,      {vvm, vvv}, RVM, VECTOR_AVX,     NA,  NA,  3,  {VEX(NDS,B128,X66,X0F,WIG), 0xfb, REG}},
     {"vpsubw",      vpsubw,      {yym, yyy}, RVM, VECTOR_AVX,     NA,  NA,  3,  {VEX(NDS,B256,X66,X0F,WIG), 0xf9, REG}},
     {{'\0'},        vpsubw,      {vvm, vvv}, RVM, VECTOR_AVX,     NA,  NA,  3,  {VEX(NDS,B128,X66,X0F,WIG), 0xf9, REG}},
-
-
-
-
-    {"vpsubb",      vpsubb,      {yym, yyy}, RVM, VECTOR_AVX,     NA,  NA,  3,  {VEX(NDS,B256,X66,X0F,WIG), 0xf8, REG}},
-    {{'\0'},        vpsubb,      {vvm, vvv}, RVM, VECTOR_AVX,     NA,  NA,  3,  {VEX(NDS,B128,X66,X0F,WIG), 0xf8, REG}},
-
-
-
-
     {"vpxor",       vpxor,       {yym, yyy}, RVM, VECTOR_AVX,     NA,  NA,  3,  {VEX(NDS,B256,X66,X0F,WIG), 0xef, REG}},
     {{'\0'},        vpxor,       {vvm, vvv}, RVM, VECTOR_AVX,     NA,  NA,  3,  {VEX(NDS,B128,X66,X0F,WIG), 0xef, REG}},
     {"vsubpd",      vsubpd,      {yym, yyy}, RVM, VECTOR_AVX,     NA,  NA,  3,  {VEX(NDS,B256,X66,X0F,WIG), 0x5c, REG}},
