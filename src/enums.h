@@ -82,15 +82,22 @@ typedef enum {
   vr,
   rv,
   vv,
+  yy,
   vi,
   vm,
   mv,
+  ym,
+  my,
   vvv,
+  yyy,
   mri,
   mrr,
   vvm,
+  yym,
   vvvi,
   vvmi,
+  yyyi,
+  yymi,
   
 } operand_format;
 
