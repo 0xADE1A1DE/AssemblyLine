@@ -233,6 +233,7 @@ typedef enum {
   vmulpd,
   vpor,
   vpmuldq,
+  vpmulhw,
   vpaddb,
   vpaddd,
   vpaddq,
