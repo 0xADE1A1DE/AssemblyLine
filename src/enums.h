@@ -240,6 +240,7 @@ typedef enum {
   vperm2f128,
   vperm2i128,
   vpsubq,
+  vpxor,
   vsubpd,
   xabort,
   xbegin,
