@@ -158,17 +158,12 @@ const struct instr_table INSTR_TABLE[] = {
     {{'\0'},        pand,        {rm, rr},   RM,  VECTOR,         NA,  NA,  4,  {REX,  0x0f, 0xdb, REG}},
     {"pandn",       pandn,       {vm, vv},   RM,  VECTOR,         NA,  NA,  5,  {0x66, REX, 0x0f, 0xdf, REG}},
     {{'\0'},        pandn,       {rm, rr},   RM,  VECTOR,         NA,  NA,  4,  {REX,  0x0f, 0xdf, REG}},
-
-
-    {"pmulhrsw",    pmulhrsw,     {vm, vv},   RM,  VECTOR,        NA,  NA,  6,  {0x66, REX, 0x0f, 0x38, 0x0b, REG}},
-    {{'\0'},        pmulhrsw,     {rm, rr},   RM,  VECTOR,        NA,  NA,  5,  {REX, 0x0f, 0x38, 0x0b, REG}},
-    
+    {"pmulhrsw",    pmulhrsw,    {vm, vv},   RM,  VECTOR,         NA,  NA,  6,  {0x66, REX, 0x0f, 0x38, 0x0b, REG}},
+    {{'\0'},        pmulhrsw,    {rm, rr},   RM,  VECTOR,         NA,  NA,  5,  {REX, 0x0f, 0x38, 0x0b, REG}},
     {"pmulhuw",     pmulhuw,     {vm, vv},   RM,  VECTOR,         NA,  NA,  5,  {0x66, REX, 0x0f, 0xe4, REG}},
     {{'\0'},        pmulhuw,     {rm, rr},   RM,  VECTOR,         NA,  NA,  4,  {REX, 0x0f, 0xe4, REG}},
-
     {"pmulhw",      pmulhw,      {vm, vv},   RM,  VECTOR,         NA,  NA,  5,  {0x66, REX, 0x0f, 0xe5, REG}},
     {{'\0'},        pmulhw,      {rm, rr},   RM,  VECTOR,         NA,  NA,  4,  {REX, 0x0f, 0xe5, REG}},
-    
     {"pmulld",      pmulld,      {vm, vv},   RM,  VECTOR,         NA,  NA,  6,  {0x66, REX, 0x0f, 0x38, 0x40, REG}},
     {"pmuldq",      pmuldq,      {vm, vv},   RM,  VECTOR,         NA,  NA,  6,  {0x66, REX, 0x0f, 0x38, 0x28, REG}},
     {"pmullw",      pmullw,      {vm, vv},   RM,  VECTOR,         NA,  NA,  5,  {0x66, REX, 0x0f, 0xd5, REG}},
@@ -252,10 +247,12 @@ const struct instr_table INSTR_TABLE[] = {
     {"vperm2f128",  vperm2f128,  {yymi,yyyi},RVM, VECTOR_AVX,     NA,  NA,  4,  {VEX(NDS,B256,X66,X0F3A,W0), 0x06, REG, ib}},
     {"vpmuldq",     vpmuldq,     {yym, yyy}, RVM, VECTOR_AVX,     NA,  NA,  3,  {VEX(NDS,B256,X66,X0F38,W0), 0x28, REG}},
     {{'\0'},        vpmuldq,     {vvm, vvv}, RVM, VECTOR_AVX,     NA,  NA,  3,  {VEX(NDS,B128,X66,X0F38,W0), 0x28, REG}},
-    {"vpmulhw",     vpmulhw,     {yym, yyy}, RVM, VECTOR_AVX,     NA,  NA,  3,  {VEX(NDS,B256,X66,X0F,WIG), 0xe5, REG}},
-    {{'\0'},        vpmulhw,     {vvm, vvv}, RVM, VECTOR_AVX,     NA,  NA,  3,  {VEX(NDS,B128,X66,X0F,WIG), 0xe5, REG}},
+    {"vpmulhrsw",   vpmulhrsw,   {yym, yyy}, RVM, VECTOR_AVX,     NA,  NA,  3,  {VEX(NDS,B256,X66,X0F38,W0), 0x0b, REG}},
+    {{'\0'},        vpmulhrsw,   {vvm, vvv}, RVM, VECTOR_AVX,     NA,  NA,  3,  {VEX(NDS,B128,X66,X0F38,W0), 0x0b, REG}},
     {"vpmulhuw",    vpmulhuw,    {yym, yyy}, RVM, VECTOR_AVX,     NA,  NA,  3,  {VEX(NDS,B256,X66,X0F,WIG), 0xe4, REG}},
     {{'\0'},        vpmulhuw,    {vvm, vvv}, RVM, VECTOR_AVX,     NA,  NA,  3,  {VEX(NDS,B128,X66,X0F,WIG), 0xe4, REG}},
+    {"vpmulhw",     vpmulhw,     {yym, yyy}, RVM, VECTOR_AVX,     NA,  NA,  3,  {VEX(NDS,B256,X66,X0F,WIG), 0xe5, REG}},
+    {{'\0'},        vpmulhw,     {vvm, vvv}, RVM, VECTOR_AVX,     NA,  NA,  3,  {VEX(NDS,B128,X66,X0F,WIG), 0xe5, REG}},
     {"vpmulld",     vpmulld,     {yym, yyy}, RVM, VECTOR_AVX,     NA,  NA,  3,  {VEX(NDS,B256,X66,X0F38,W0), 0x40, REG}},
     {{'\0'},        vpmulld,     {vvm, vvv}, RVM, VECTOR_AVX,     NA,  NA,  3,  {VEX(NDS,B128,X66,X0F38,W0), 0x40, REG}},
     {"vpmullw",     vpmullw,     {yym, yyy}, RVM, VECTOR_AVX,     NA,  NA,  3,  {VEX(NDS,B256,X66,X0F,WIG), 0xd5, REG}},
