@@ -87,7 +87,7 @@ LDADD = libassemblyline.la
 
 #todo move that to man-dir
 dist_man1_MANS = tools/asmline.1
-dist_man2_MANS = src/libassemblyline.2
+dist_man3_MANS = src/libassemblyline.3
 
 ##############################################################################################
 ##############################################################################################
