@@ -80,6 +80,10 @@ unsigned int get_rex_prefix(struct instr *all_instr, asm_reg m, asm_reg r) {
   return NONE;
 }
 
+uint8_t get_reg(struct instr *instruc, int m, int r) {
+  return instruc->mod_disp | ((VALUE_MASK & r) << 3) | (VALUE_MASK & m);
+}
+
 unsigned int get_mem_prefix(asm_reg s, asm_reg m, asm_reg r) {
 
   unsigned int prefix_hex = rex_w;

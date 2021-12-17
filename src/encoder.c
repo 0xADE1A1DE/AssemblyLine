@@ -59,14 +59,6 @@ void encode_offset(struct instr *instruc) {
 }
 
 /**
- * returns the register opcode given the operand at @param m and @param r
- * position given and instance of @param instruc
- */
-static uint8_t get_reg(struct instr *instruc, int m, int r) {
-  return instruc->mod_disp | ((VALUE_MASK & r) << 3) | (VALUE_MASK & m);
-}
-
-/**
  * determines whether a zero byte is required for @param instruc depending on
  * the @param m register position
  */

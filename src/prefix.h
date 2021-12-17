@@ -30,6 +30,12 @@ based on instruction operands*/
 unsigned int get_rex_prefix(struct instr *all_instr, asm_reg m, asm_reg r);
 
 /**
+ * returns the register opcode given the operand at @param m and @param r
+ * position given and instance of @param instruc
+ */
+uint8_t get_reg(struct instr *instruc, int m, int r);
+
+/**
  * takes in 3 operands @param s, @param m, and @param r, and returns the rex
  * prefix value. note: used for "reg, [reg+reg]" syntax
  */
