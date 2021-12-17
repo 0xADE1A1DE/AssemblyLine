@@ -1,7 +1,7 @@
 .TH ASSEMBLYLINE 3 2021-09-19 GNU
 
 .SH NAME
-assemblyline \- C library for generating machine code of x86_64 assembly language and  
+assemblyline \- C library functions for generating machine code of x86_64 assembly language and  
 .br
                executing on the fly without invoking another compiler, assembler or linker 
 
@@ -20,7 +20,7 @@ Obtain command-line instructions for generating an ELF binary file from assembly
 
 .TP
 .BR assemblyline_t " "asm_create_instance(uint8_t " "*\fIbuffer\fR, " "int " "\fIlen\fR);
-allocates an instance of assemblyline_t and attaches a pointer to a memory \fIbuffer\fR
+Allocates an instance of assemblyline_t and attaches a pointer to a memory \fIbuffer\fR
 .br
 where machine code will be written to. Buffer length will be specified by \fIlen\fR.
 .br
@@ -30,29 +30,29 @@ NOTE: \fIbuffer\fR could also be set to NULL for internal memory allocation.
 
 .TP
 .BR int " "asm_destroy_instance(assemblyline_t " "\fIinstance\fR);
-frees all memory associated with instance \fIinstance\fR
+Frees all memory associated with instance \fIinstance\fR.
 
 .TP
 .BR int " "assemble_str(assemblyline_t " "\fIal\fR, " "const " "char " "*\fIassembly_str\fR);
-assembles the given string \fIassembly_str\fR containing valid x64 assembly code with instance \fIal\fR
+Assembles the given string \fIassembly_str\fR containing valid x64 assembly code with instance \fIal\fR.
 .br
 It writes the corresponding machine code to the memory location specified by al->buffer.
 
 .TP
 .BR int " "assemble_file(assemblyline_t " "\fIal\fR, " "char " "*\fIasm_file\fR);
-assembles the given file path \fIasm_file\fR containing valid x64 assembly code with instance \fIal\fR
+Assembles the given file path \fIasm_file\fR containing valid x64 assembly code with instance \fIal\fR.
 .br
 It writes the corresponding machine code to the memory location specified by al->buffer.
 
 .TP
 .BR int " "assemble_string_counting_chunks(assemblyline_t " "\fIal\fR, " "char " "*\fIstr\fR, " "int " "\fIchunk_size\fR, " "int " "*\fIdest\fR);
-assembles the given null-terminated @param string with instance \fIal\fR.
+Assembles the given null-terminated @param string with instance \fIal\fR.
 .br
 It counts the number of instructions that break the chunk boundary of size
 .br
-\fIchunk_size\fR and saves it to \fIdest\fR It does not nop-pad
+\fIchunk_size\fR and saves it to \fIdest\fR. It does not nop-pad necessarily, 
 .br
-necessarily, depends on the instance \fIal\fR (you can nop-pad and count different chunk breaks).
+depends on the instance \fIal\fR (you can nop-pad and count different chunk breaks).
 .br
 NOTE: you cannot pass const char* as \fIstr\fR, it will segfault, because
 .br
@@ -60,7 +60,7 @@ string will be altered.
 
 .TP
 .BR void " "asm_set_chunk_size(assemblyline_t " "\fIal\fR, " "size_t " "\fIchunk_size\fR);
-sets a given chunk size boundary \fIchunk_size\fR in bytes with instance \fIal\fR. 
+Sets a given chunk size boundary \fIchunk_size\fR in bytes with instance \fIal\fR. 
 .br
 When called before assemble_str() or assemble_file() assemblyline will ensure no 
 .br
@@ -68,21 +68,22 @@ instruction opcode will cross the specified  \fIchunk_size\fR boundary via nop p
 .br
 NOTE: \fIchunk_size\fR must be greater than 2 in order to
 .br
-      be classified as a valid memory chunk boundary
+      be classified as a valid memory chunk boundary size.
 
 .TP
 .BR void " "asm_set_debug(assemblyline_t " "\fIal\fR, " "bool " "\fIdebug\fR);
-set debug flag \fIdebug\fR to true or false with instance \fIal\fR. When is set \fIdebug\fR to true 
+Set debug flag \fIdebug\fR to true or false with instance \fIal\fR. When is set \fIdebug\fR to true 
 .br
 machine code represented in hexidecimal will be printed to stdout.
 
 .TP
 .BR void " "asm_get_offset(assemblyline_t " "\fIal\fR);
-returns the offset associated with \fIal\fR
+Returns the offset associated with \fIal\fR.
 
 .TP
 .BR void " "asm_set_offset(assemblyline_t " "\fIal\fR, " "int " "\fIoffset\fR);
-sets a memory \fIoffset\fR to specify exact location in memory block for writting
+Sets a memory \fIoffset\fR to specify exact location in memory block for writting
+.br
 machine code with instance \fIal\fR\.
 .br
 NOTE: \fIoffset\fR could be set to 0 for the resulting memory block.
@@ -95,11 +96,11 @@ function pointer format.
 
 .TP
 .BR uint8_t " "*asm_get_buffer(assemblyline_t " "\fIal\fR);
-returns the buffer associated with \fIal\fR
+Returns the buffer associated with \fIal\fR.
 
 .TP
 .BR void " "strict_mov_imm_handling(assemblyline_t " "\fIal\fR);
-disables nasm-style mov-immediate register-size optimization.
+Disables nasm-style mov-immediate register-size optimization.
 .br
 ex: even if immediate size for mov is less than or equal to max signed 32 bit assemblyline 
 .br
@@ -111,7 +112,7 @@ That is: "mov rax,0x7fffffff" as "mov rax,0x000000007fffffff"
 
 .TP
 .BR void " "nasm_mov_imm_handling(assemblyline_t " "\fIal\fR);
-enables nasm-style mov-immediate register-size optimization.
+Enables nasm-style mov-immediate register-size optimization.
 .br
 ex: if immediate size for mov is less than or equal to max signed 32 bit assemblyline 
 .br
@@ -121,7 +122,7 @@ That is: "mov rax, 0x7fffffff" as "mov eax, 0x7fffffff" -> b8 ff ff ff 7f
 
 .TP
 .BR void " "smart_mov_imm_handling(assemblyline_t " "\fIal\fR);
-assemblyline will check the immediate value for leading 0's and thus allows manual
+Assemblyline will check the immediate value for leading 0's and thus allows manual
 .br 
 optimizations. This is currently set as default.
 .br
