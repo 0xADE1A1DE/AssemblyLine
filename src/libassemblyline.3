@@ -1,18 +1,21 @@
 .TH ASSEMBLYLINE 3 2021-09-19 GNU
 
 .SH NAME
-assemblyline \- C library functions for generating machine code of x86_64 assembly language and  
+assemblyline \- C library functions for generating machine code of intel x86_64 assembly language   
 .br
-               executing on the fly without invoking another compiler, assembler or linker 
+               without invoking another compiler, assembler or linker 
 
 .SH DESCRIPTION
-.B asmline 
-Generates machine code from a file or stdin containing x64 assembly instructions. 
-
+This library provides a method to generate machine code from intel x86_64 assembly instructions  
 .br
-Machine code could be executed directly without the need for an executable file format. 
+on-the-fly. Machine code can be written to a buffer passed as argument for 
+.B asm_create_instance(3) 
 .br
-Obtain command-line instructions for generating an ELF binary file from assembly code.
+or an interal dynamically allocated buffer within assemblyline. An external buffer must be 
+.br
+greater than 20 bytes. An error will the thrown if written length exceeds (buffer length - 20).
+.br
+There is no size limit when using an internal buffer.
 
 .SH SYNOPSIS
 .TP
@@ -50,9 +53,9 @@ Assembles the given null-terminated @param string with instance \fIal\fR.
 .br
 It counts the number of instructions that break the chunk boundary of size
 .br
-\fIchunk_size\fR and saves it to \fIdest\fR. It does not nop-pad necessarily, 
+\fIchunk_size\fR and saves it to \fIdest\fR. It does not nop-pad by default, 
 .br
-depends on the instance \fIal\fR (you can nop-pad and count different chunk breaks).
+depends on instance \fIal\fR (you can nop-pad and count different chunk breaks).
 .br
 NOTE: you cannot pass const char* as \fIstr\fR, it will segfault, because
 .br
