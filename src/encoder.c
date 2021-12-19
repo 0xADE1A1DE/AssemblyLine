@@ -85,7 +85,7 @@ static void encode_three_opds(struct instr *instruc, int r, int m, int v) {
     set_zero_byte(instruc, m);
   instruc->hex.reg = get_reg(instruc, instruc->opd[m].reg, instruc->opd[r].reg);
   if (instruc->mem_disp && (instruc->opd[m].reg & VALUE_MASK) == spl)
-    instruc->sib = true;
+    instruc->is_sib = true;
 }
 
 /**
@@ -102,7 +102,7 @@ static void encode_two_opds(struct instr *instruc, int r, int m) {
     instruc->hex.reg =
         get_reg(instruc, instruc->opd[m].reg, instruc->opd[r].reg);
     if (instruc->mem_disp && (instruc->opd[m].reg & VALUE_MASK) == spl)
-      instruc->sib = true;
+      instruc->is_sib = true;
   } else {
     instruc->hex.rex = get_mem_prefix(instruc->opd[r].reg, instruc->opd[m].reg,
                                       instruc->opd[m].reg_mem);
@@ -134,7 +134,7 @@ static void encode_special_opd(struct instr *instruc, int m, int i) {
     instruc->hex.reg = get_reg(instruc, instruc->opd[m].reg,
                                INSTR_TABLE[instruc->key].single_reg_r);
     if (instruc->mem_disp && (instruc->opd[m].reg & VALUE_MASK) == spl)
-      instruc->sib = true;
+      instruc->is_sib = true;
     break;
 
   case O:
