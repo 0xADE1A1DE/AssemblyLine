@@ -25,7 +25,6 @@ int find_add_mem(char *mem, bool *neg, int *base) {
   // printf("mem = %s\n", mem);
   bool first_num = false;
   // find the index of the memory displacement followed by '+' or '-' character
-  /*
   for (int i = 1; i < strlen(mem); i++) {
     if (IN_RANGE(mem[i], '0', '9') && (mem[i - 1] == '-' || mem[i - 1] == '+'))
       first_num = true;
@@ -37,26 +36,6 @@ int find_add_mem(char *mem, bool *neg, int *base) {
     } else if (first_num && mem[i - 1] == '+')
       return i;
     first_num = false;
-  }
-  return NA;
-  */
-  for (int i = 1; i < strlen(mem); i++) {
-    if (mem[i] == '-' && IN_RANGE(mem[i + 1], '0', '9'))
-      *neg = true;
-    // memory displacement represented in hex
-    if (mem[i] == '0' && (mem[i - 1] == '-' || mem[i - 1] == '+')) {
-      if (mem[i + 1] == 'x')
-        return i;
-      // memory displacement represented in decimal
-    } else if (IN_RANGE(mem[i], '1', '9') &&
-               (mem[i - 1] == '-' || mem[i - 1] == '+')) {
-      if (mem[i - 1] == '-' || mem[i - 1] == '+') {
-        if (mem[i + 1] != 'x') {
-          *base = 10;
-          return i;
-        }
-      }
-    }
   }
   return NA;
 }
