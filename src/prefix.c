@@ -52,28 +52,32 @@ unsigned int get_vector_rex_prefix(struct instr *all_instr, asm_reg m,
   return prefix_hex;
 }
 
-unsigned int get_rex_prefix(struct instr *all_instr, asm_reg m, asm_reg r) {
+unsigned int get_rex_prefix(struct instr *all_instr, struct operand *m,
+                            struct operand *r) {
 
   int rex_prefix = 0;
+  unsigned int rm = m->reg;
   // preprocess vex paremeters
   all_instr->hex.is_w0 = true;
-  if ((m & MODE_MASK) < reg64)
+  if ((m->reg & MODE_MASK) < reg64)
     all_instr->hex.is_w0 = false;
-  if ((m & MODE_MASK) == mmx64 || (r & MODE_MASK) == mmx64)
-    return get_vector_rex_prefix(all_instr, m, r);
+  if ((m->reg & MODE_MASK) == mmx64 || (r->reg & MODE_MASK) == mmx64)
+    return get_vector_rex_prefix(all_instr, m->reg, r->reg);
   if (all_instr->keyword.is_byte)
-    m = m & SET_BYTE;
-  else if (!(m & reg_none) && !(m & MODE_MASK) && m >= spl)
+    rm = rm & SET_BYTE;
+  else if (!(rm & reg_none) && !(rm & MODE_MASK) && rm >= spl)
     rex_prefix |= rex_;
-  if (!(r & reg_none) && !(r & MODE_MASK) && r >= spl)
+  if (!(r->reg & reg_none) && !(r->reg & MODE_MASK) && r->reg >= spl)
     rex_prefix |= rex_;
   // r or m operand is part of the x64 extended set
-  if (r & REG_RB)
+  if (r->reg & REG_RB)
     rex_prefix |= rex_r;
-  if (m & REG_RB)
+  if (rm & REG_RB)
     rex_prefix |= rex_b;
+  if (m->reg_mem & REG_RB)
+    rex_prefix |= rex_x;
   // register r or m is 64 bits wide
-  if ((m & reg64) || (r & reg64))
+  if ((rm & reg64) || (r->reg & reg64))
     rex_prefix |= rex_w;
   if (rex_prefix & REX_W_RXB)
     return rex_ | rex_prefix;
@@ -82,17 +86,4 @@ unsigned int get_rex_prefix(struct instr *all_instr, asm_reg m, asm_reg r) {
 
 uint8_t get_reg(struct instr *instruc, int m, int r) {
   return instruc->mod_disp | ((VALUE_MASK & r) << 3) | (VALUE_MASK & m);
-}
-
-unsigned int get_mem_prefix(asm_reg s, asm_reg m, asm_reg r) {
-
-  unsigned int prefix_hex = rex_w;
-  // registers s, m, or r is part of the 64bit x64 extended set
-  if ((s & MODE_MASK) == ext64)
-    prefix_hex += rex_r;
-  if ((m & MODE_MASK) == ext64)
-    prefix_hex += rex_b;
-  if ((r & MODE_MASK) == ext64)
-    prefix_hex += rex_x;
-  return prefix_hex;
 }
