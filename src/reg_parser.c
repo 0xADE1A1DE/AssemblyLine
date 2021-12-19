@@ -22,7 +22,24 @@
 #include <string.h>
 
 int find_add_mem(char *mem, bool *neg, int *base) {
+  // printf("mem = %s\n", mem);
+  bool first_num = false;
   // find the index of the memory displacement followed by '+' or '-' character
+  /*
+  for (int i = 1; i < strlen(mem); i++) {
+    if (IN_RANGE(mem[i], '0', '9') && (mem[i - 1] == '-' || mem[i - 1] == '+'))
+      first_num = true;
+    if (first_num && IN_RANGE(mem[i + 1], '0', '9'))
+      *base = 10;
+    if (first_num && mem[i - 1] == '-') {
+      *neg = true;
+      return i;
+    } else if (first_num && mem[i - 1] == '+')
+      return i;
+    first_num = false;
+  }
+  return NA;
+  */
   for (int i = 1; i < strlen(mem); i++) {
     if (mem[i] == '-' && IN_RANGE(mem[i + 1], '0', '9'))
       *neg = true;
