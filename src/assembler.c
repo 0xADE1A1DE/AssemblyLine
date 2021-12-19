@@ -245,7 +245,7 @@ static int assemble_instr(struct instr *instruc, unsigned char ptr[]) {
     opcode_pos++;
   }
   // fix later
-  if (instruc->hex.mem != NONE)
+  if (instruc->hex.mem != NO_BYTE)
     ptr[ptr_pos++] = instruc->hex.mem;
   return ptr_pos;
 }

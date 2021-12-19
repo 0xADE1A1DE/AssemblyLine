@@ -56,6 +56,7 @@
 #define C5H 0xc5
 #define C4H 0xc4
 #define NONE 0x0
+#define NO_BYTE 0x100
 
 // RXB bits in front of mmmm corresponds to !(rex_r), !(rex_x), and !(rex_b)
 // Obtained from get_rex_prefix()

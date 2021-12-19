@@ -95,7 +95,7 @@ static int line_to_instr(struct instr *instr_data, char *filtered_asm_str) {
   // values will be determined during encoding
   instr_data->hex.reg = NONE;
   instr_data->hex.rex = NONE;
-  instr_data->hex.mem = NONE;
+  instr_data->hex.mem = NO_BYTE;
   // checks if the registers are valid
   FAIL_IF_VAR(check_registers(instr_data),
               "Invalid register for instruction: %s\n",
