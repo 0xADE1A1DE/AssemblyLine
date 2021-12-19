@@ -50,7 +50,7 @@ struct prefix {
   unsigned int vvvv : 4;
   bool is_w0 : 1;
   // fix later if possible
-  unsigned int mem;
+  unsigned int sib;
 };
 
 struct operand {
@@ -61,7 +61,7 @@ struct operand {
   // enum representation of register
   asm_reg reg;
   // stores the 2nd register in a memory reference
-  char mem[MAX_REG_LEN];
+  char sib[MAX_REG_LEN];
   // enum representation of 2nd register in
   // a memory reference
   asm_reg reg_mem;

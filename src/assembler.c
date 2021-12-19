@@ -139,7 +139,7 @@ static int assemble_mem(struct instr *instruc, unsigned char ptr[]) {
   // check if there is a memory reference
   if (instruc->mem_disp) {
     if (instruc->is_sib)
-      ptr[ptr_pos++] = SIB;
+      ptr[ptr_pos++] = SIB_CONST;
     if (instruc->mod_disp == MOD8) {
       ptr[ptr_pos++] = instruc->mem_offset;
     } else if (instruc->mod_disp == MOD16) {
@@ -245,8 +245,8 @@ static int assemble_instr(struct instr *instruc, unsigned char ptr[]) {
     opcode_pos++;
   }
   // fix later
-  if (instruc->hex.mem != NO_BYTE)
-    ptr[ptr_pos++] = instruc->hex.mem;
+  if (instruc->hex.sib != NO_BYTE)
+    ptr[ptr_pos++] = instruc->hex.sib;
   return ptr_pos;
 }
 

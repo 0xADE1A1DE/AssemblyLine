@@ -88,14 +88,14 @@ static int line_to_instr(struct instr *instr_data, char *filtered_asm_str) {
   instr_data->key += instr_data->keyword.is_short;
   // convert register string to enum representation
   instr_data->opd[0].reg = str_to_reg(instr_data->opd[0].str);
-  instr_data->opd[0].reg_mem = str_to_reg(instr_data->opd[0].mem);
+  instr_data->opd[0].reg_mem = str_to_reg(instr_data->opd[0].sib);
   instr_data->opd[1].reg = str_to_reg(instr_data->opd[1].str);
-  instr_data->opd[1].reg_mem = str_to_reg(instr_data->opd[1].mem);
+  instr_data->opd[1].reg_mem = str_to_reg(instr_data->opd[1].sib);
   instr_data->opd[2].reg = str_to_reg(instr_data->opd[2].str);
   // values will be determined during encoding
   instr_data->hex.reg = NONE;
   instr_data->hex.rex = NONE;
-  instr_data->hex.mem = NO_BYTE;
+  instr_data->hex.sib = NO_BYTE;
   // checks if the registers are valid
   FAIL_IF_VAR(check_registers(instr_data),
               "Invalid register for instruction: %s\n",

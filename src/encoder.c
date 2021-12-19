@@ -103,7 +103,7 @@ static void encode_two_opds(struct instr *instrc, int r, int m) {
       instrc->is_sib = true;
   } else {
     instrc->hex.reg = rex_r + (((instrc->opd[r].reg & VALUE_MASK)) * 0x8);
-    instrc->hex.mem =
+    instrc->hex.sib =
         get_reg(instrc, instrc->opd[m].reg, instrc->opd[m].reg_mem);
     unsigned int bitMRm = instrc->opd[m].reg & MODE_MASK;
     if (bitMRm > ext16 && bitMRm < mmx64 &&

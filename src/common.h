@@ -142,7 +142,7 @@
 #define MOD24 0b11000000
 
 // scaled indexed addressing
-#define SIB 0x24
+#define SIB_CONST 0x24
 
 // operand position
 #define FIRST_OPERAND 0
