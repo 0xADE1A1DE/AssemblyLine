@@ -61,8 +61,12 @@ void encode_offset(struct instr *instrc) {
  * the @param m register position
  */
 static void encode_mem(struct instr *instrc, int m) {
+
+  if (!instrc->mem_disp)
+    return;
   // if r/m value is a memory reference and is the spl register
-  if (instrc->mem_disp && (instrc->opd[m].reg & VALUE_MASK) == spl)
+  if ((instrc->opd[m].reg & VALUE_MASK) == spl &&
+      instrc->opd[m].reg_mem == reg_none)
     instrc->is_sib = true;
   if (!instrc->mem_disp || instrc->mem_offset)
     return;
@@ -70,8 +74,41 @@ static void encode_mem(struct instr *instrc, int m) {
   unsigned int reg_opd = instrc->opd[m].reg & MODE_MASK;
   if (reg_opd > ext16 && reg_opd < mmx64 &&
       (instrc->opd[m].reg & VALUE_MASK) == bpl) {
-    instrc->mod_disp = MOD8;
-    instrc->zero_byte = true;
+    if (!instrc->mem_offset) {
+      instrc->mod_disp = MOD8;
+      instrc->zero_byte = true;
+    }
+    if (instrc->opd[m].reg_mem != reg_none)
+      instrc->hex.reg |= rex_;
+  }
+}
+
+/**
+ * determines register and prefix opcode of @param instrc with 2 operands:
+ * @param r and @param m used for MR or RM encoding
+ */
+static void encode_two_opds(struct instr *instrc, int r, int m) {
+  // check if a second register exist in memory reference ex: [rax+rcx]
+  instrc->hex.rex = get_rex_prefix(instrc, &instrc->opd[m], &instrc->opd[r]);
+  encode_mem(instrc, m);
+  if (instrc->opd[m].reg_mem == reg_none) {
+    encode_mem(instrc, m);
+    instrc->hex.reg = get_reg(instrc, instrc->opd[m].reg, instrc->opd[r].reg);
+  } else {
+    instrc->hex.reg |= rex_r | (((instrc->opd[r].reg & VALUE_MASK)) << 3);
+    instrc->hex.sib =
+        get_sib(instrc, instrc->opd[m].reg, instrc->opd[m].reg_mem);
+    /*
+    unsigned int bitMRm = instrc->opd[m].reg & MODE_MASK;
+    if (bitMRm > ext16 && bitMRm < mmx64 &&
+        (instrc->opd[m].reg & VALUE_MASK) == bpl) {
+      if (!instrc->mem_offset)
+        instrc->zero_byte = true;
+      instrc->hex.reg |= rex_;
+    }
+    */
+
+    // instrc->mem_disp = false;
   }
 }
 
@@ -89,32 +126,8 @@ static void encode_three_opds(struct instr *instrc, int r, int m, int v) {
 }
 
 /**
- * determines register and prefix opcode of @param instrc with 2 operands:
- * @param r and @param m used for MR or RM encoding
- */
-static void encode_two_opds(struct instr *instrc, int r, int m) {
-  // check if a second register exist in memory reference ex: [rax+rcx]
-  instrc->hex.rex = get_rex_prefix(instrc, &instrc->opd[m], &instrc->opd[r]);
-  if (instrc->opd[m].reg_mem == reg_none) {
-    encode_mem(instrc, m);
-    instrc->hex.reg = get_reg(instrc, instrc->opd[m].reg, instrc->opd[r].reg);
-  } else {
-    instrc->hex.reg = rex_r | (((instrc->opd[r].reg & VALUE_MASK)) << 3);
-    instrc->hex.sib =
-        get_sib(instrc, instrc->opd[m].reg, instrc->opd[m].reg_mem);
-    unsigned int bitMRm = instrc->opd[m].reg & MODE_MASK;
-    if (bitMRm > ext16 && bitMRm < mmx64 &&
-        (instrc->opd[m].reg & VALUE_MASK) == bpl) {
-      if (!instrc->mem_offset)
-        instrc->zero_byte = true;
-      instrc->hex.reg |= rex_;
-    }
-    // instrc->mem_disp = false;
-  }
-}
-
-/**
- * determines register and prefix opcode of @param instrc with a single operand
+ * determines register and prefix opcode of @param instrc with a single
+ * operand
  * @param m or special predefined encoding I with 2 operands:
  * @param m and @param i
  */

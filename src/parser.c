@@ -48,7 +48,7 @@ static int check_registers(struct instr *check_instr) {
  * tokenize and parse @param filtered_asm_str to fill in @param instr_data
  */
 static int line_to_instr(struct instr *instr_data, char *filtered_asm_str) {
-  // default mod displacement value
+  // default mod displacement value r/m is register
   instr_data->mod_disp = MOD24;
   // clear the least significant bit
   if (instr_data->imm_handling & SMART)
@@ -92,7 +92,9 @@ static int line_to_instr(struct instr *instr_data, char *filtered_asm_str) {
   instr_data->opd[1].reg = str_to_reg(instr_data->opd[1].str);
   instr_data->opd[1].reg_mem = str_to_reg(instr_data->opd[1].sib);
   instr_data->opd[2].reg = str_to_reg(instr_data->opd[2].str);
+  instr_data->opd[2].reg_mem = str_to_reg(instr_data->opd[2].sib);
   // values will be determined during encoding
+  // printf("instr_data->mem_offset = 0x%x\n", instr_data->mem_offset);
   instr_data->hex.reg = NONE;
   instr_data->hex.rex = NONE;
   instr_data->hex.sib = NO_BYTE;
