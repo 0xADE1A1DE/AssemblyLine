@@ -56,12 +56,9 @@ static int line_to_instr(struct instr *instr_data, char *filtered_asm_str) {
   // tokenize filtered instruction for mapping to instr internal structure
   FAIL_IF_MSG(instr_tok(instr_data, filtered_asm_str), "syntax error\n");
   // convert operand format from string to enum representation
-  char opd_type[5];
-  opd_type[0] = instr_data->opd[0].type;
-  opd_type[1] = instr_data->opd[1].type;
-  opd_type[2] = instr_data->opd[2].type;
-  opd_type[3] = instr_data->opd[3].type;
-  opd_type[4] = '\0';
+  char opd_type[5] = {'\0'};
+  for (int i = 0; i < NUM_OF_OPD; i++)
+    opd_type[i] = instr_data->opd[i].type;
   operand_format opd_format = get_opd_format(opd_type);
   FAIL_IF_VAR(opd_format == opd_error, "illegal operand format: %s\n", opd_type)
   // jcc [MEM] no register
@@ -87,14 +84,11 @@ static int line_to_instr(struct instr *instr_data, char *filtered_asm_str) {
   // find the encoding for a short jump instruction if applicable
   instr_data->key += instr_data->keyword.is_short;
   // convert register string to enum representation
-  instr_data->opd[0].reg = str_to_reg(instr_data->opd[0].str);
-  instr_data->opd[0].reg_mem = str_to_reg(instr_data->opd[0].sib);
-  instr_data->opd[1].reg = str_to_reg(instr_data->opd[1].str);
-  instr_data->opd[1].reg_mem = str_to_reg(instr_data->opd[1].sib);
-  instr_data->opd[2].reg = str_to_reg(instr_data->opd[2].str);
-  instr_data->opd[2].reg_mem = str_to_reg(instr_data->opd[2].sib);
+  for (int i = 0; i < FOURTH_OPERAND; i++)
+    instr_data->opd[i].reg = str_to_reg(instr_data->opd[i].str);
+  for (int i = 0; i < FOURTH_OPERAND; i++)
+    instr_data->opd[i].reg_mem = str_to_reg(instr_data->opd[i].sib);
   // values will be determined during encoding
-  // printf("instr_data->mem_offset = 0x%x\n", instr_data->mem_offset);
   instr_data->hex.reg = NONE;
   instr_data->hex.rex = NONE;
   instr_data->hex.sib = NO_BYTE;
