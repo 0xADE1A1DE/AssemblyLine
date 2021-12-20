@@ -4099,11 +4099,11 @@ bextr rbp, rbp, rsi
 bextr rbp, rbp, rbp
 
 
-bextr rax, [rsi], r8
-bextr rax, [rsi], r9
-bextr rax, [rsi], r10
-bextr rax, [rsi], r11
-bextr rax, [rsi], r12
+bextr rax, [rsi+ r11 + 0x0], r8
+bextr rax, [rsi+ r15 + 0x1], r9
+bextr rax, [rsi+ r8 + 0x7f], r10
+bextr rax, [rsi+ rbp + 0x80], r11
+bextr rax, [rsi+ rax + 0xfff], r12
 bextr rax, [rsi], r13
 bextr rax, [rsi], r14
 bextr rax, [rsi], r15

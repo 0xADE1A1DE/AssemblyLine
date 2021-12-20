@@ -4184,14 +4184,14 @@ mulx rax, rbx, r14
 mulx rax, rdi, r13
 mulx rbp, r12, [ rsi + 0x8 ]
 mulx rbp, r8, rcx
-mulx rbp, r9, [ r12 + 0x0 ]
+mulx rbp, r9, [ r12 + rbp + 0x0 ]
 mulx rbp, r9, rax
 mulx rbp, r9, [ rsi + 0x8 ]
 mulx rbp, rcx, rbp
 mulx rbx, r10, rbx
 mulx rbx, r15, rbx
 mulx rbx, rdx, rbx
-mulx rcx, r13, [ rsi + 0x10 ]
+mulx rcx, r13, [ rsi + r15 + 0x10 ]
 mulx rcx, r14, r9
 mulx rcx, r14, rdi
 mulx rcx, r15, r13
