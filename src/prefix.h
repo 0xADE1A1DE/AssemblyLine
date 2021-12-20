@@ -34,7 +34,7 @@ unsigned int get_rex_prefix(struct instr *all_instr, struct operand *m,
  * returns the register opcode given the operand at @param m and @param r
  * position given and instance of @param instruc
  */
-uint8_t get_reg(struct instr *instruc, int m, int r);
+uint8_t get_reg(struct instr *instruc, struct operand *m, int r);
 
 /**
  * returns the sib opcode given the operand at @param m and @param r
