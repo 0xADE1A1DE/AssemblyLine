@@ -21,6 +21,8 @@ mov r10, rcx
 mov r10, rdi
 mov r10, rdx
 mov r10, rsi
+mov r13, [rbp+0x7f]
+mov r13, [rbp+0x80]
 mov r10, [ rsi + 0x68 ]
 mov r10, [ rsi + 0xc0 ]
 mov r10, [ rsp + 0x108 ]
