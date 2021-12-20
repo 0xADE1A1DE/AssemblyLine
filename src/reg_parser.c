@@ -79,24 +79,27 @@ void get_reg_str(char *opd_str, char *reg) {
       return;
   }
 }
-static unsigned int check_sib_disp(char *mem, int i) {
-  if (mem[i - 1] != '+')
-    return 0;
-  switch (mem[i]) {
+static unsigned int check_sib_disp(char *mem, int scale_i, int next_i) {
+  // scale can only be a 1 digit decimal number
+  if (mem[next_i] != ']' && mem[next_i] != '+' && mem[next_i] != '-')
+    exit(1);
+  // return SIB_ERROR;
+  switch (mem[scale_i]) {
   case '1':
-    // printf("1\n");
-    return 0;
+    return SIB1;
+
   case '2':
-    // printf("2\n");
-    return 0b01000000;
+    return SIB2;
+
   case '4':
-    // printf("4\n");
-    return 0b10000000;
+    return SIB4;
+
   case '8':
-    // printf("8\n");
-    return 0b11000000;
+    return SIB8;
+
   default:
-    return 0;
+    // return SIB_ERROR;
+    exit(1);
   }
 }
 unsigned int get_index_reg(char *mem, char *reg) {
@@ -105,8 +108,8 @@ unsigned int get_index_reg(char *mem, char *reg) {
   bool plus = false;
   bool multiply = false;
   unsigned long len = strlen(mem);
-  // defaults to zero;
-  unsigned int sib_disp = 0;
+  // default sib_disp;
+  unsigned int sib_disp = SIB;
   // copies the register from mem to reg ex: "[rcx+rax+0x16]" -> "rax"
   for (i = 0; i < len; i++) {
     if ((multiply || plus) && IN_RANGE(mem[i], 'a', 'z')) {
@@ -115,13 +118,18 @@ unsigned int get_index_reg(char *mem, char *reg) {
       while (((IN_RANGE(mem[j], 'a', 'x')) || (IN_RANGE(mem[j], '0', '9'))) &&
              k < 5)
         reg[k++] = mem[j++];
+      // might seg fault here given case [rax + rcx*] or [rax + rcx*
+      if (!sib_disp && mem[j] == '*')
+        return check_sib_disp(mem, j + 1, j + 2);
+      else if (sib_disp && mem[j] == '*')
+        return SIB_ERROR;
       return sib_disp;
     }
     if (mem[i] == '+')
       plus = true;
     else if (mem[i] == '*' && i > 1) {
       multiply = true;
-      sib_disp = check_sib_disp(mem, i - 1);
+      sib_disp = check_sib_disp(mem, i - 1, i - 2);
     } else
       plus = false;
   }

@@ -83,3 +83,5 @@ lea eax, [ebp + eax+0xff]
 lea eax, [ebp + eax+0xff]
 lea eax, [ebp + 4*eax+0xff]
 lea eax, [r15d + 4*eax+0xff]
+
+lea eax, [r15d + eax*4+0xff]
