@@ -89,6 +89,7 @@ uint8_t get_reg(struct instr *instruc, struct operand *m, int r) {
     return instruc->mod_disp | ((r & VALUE_MASK) << 3) | (m->reg & VALUE_MASK);
   instruc->is_sib = true;
   // TODO: add sib_disp later (4*rcx)
-  instruc->hex.sib = ((m->index & VALUE_MASK) << 3) | (m->reg & VALUE_MASK);
+  instruc->hex.sib = instruc->sib_disp | ((m->index & VALUE_MASK) << 3) |
+                     (m->reg & VALUE_MASK);
   return instruc->mod_disp | ((r & VALUE_MASK) << 3) | rex_r;
 }

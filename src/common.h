@@ -137,9 +137,22 @@
 #define SHORT_LEN 5
 
 // mod values for the ModR/M Byte
-#define MOD8 0b1000000
+
+#define MOD8 0b01000000
 #define MOD16 0b10000000
 #define MOD24 0b11000000
+/*
+#define SIB 0b000000000
+#define SIB1 0b100000000
+#define SIB2 0b101000000
+#define SIB4 0b110000000
+#define SIB8 0b111000000
+*/
+#define SIB 0b000000000
+#define SIB1 0b000000000
+#define SIB2 0b001000000
+#define SIB4 0b010000000
+#define SIB8 0b011000000
 
 // scaled indexed addressing
 #define SIB_CONST 0x24

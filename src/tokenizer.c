@@ -65,7 +65,7 @@ static void mem_tok(struct instr *instr_buffer, char *mem, int opd_pos) {
   int base = 16;
   // find the index position of the memory displacement string
   int index = find_add_mem(mem, &neg, &base);
-  get_index_reg(mem, instr_buffer->opd[opd_pos].sib);
+  instr_buffer->sib_disp = get_index_reg(mem, instr_buffer->opd[opd_pos].sib);
   instr_buffer->mem_offset = 0;
   // convert string to unsigned long for memory displacement representation
   if (index != NA) {

@@ -100,6 +100,7 @@ struct instr {
   // displacement for modRM64_m variable based on
   // value of op_en and size of mem_disp
   int mod_disp;
+  int sib_disp;
   // uses operand_encoding to get value
   // operand and prefix values
   struct prefix hex;
