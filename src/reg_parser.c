@@ -82,8 +82,7 @@ void get_reg_str(char *opd_str, char *reg) {
 static unsigned int check_sib_disp(char *mem, int scale_i, int next_i) {
   // scale can only be a 1 digit decimal number
   if (mem[next_i] != ']' && mem[next_i] != '+' && mem[next_i] != '-')
-    exit(1);
-  // return SIB_ERROR;
+    return SIB_ERROR;
   switch (mem[scale_i]) {
   case '1':
     return SIB1;
@@ -98,8 +97,7 @@ static unsigned int check_sib_disp(char *mem, int scale_i, int next_i) {
     return SIB8;
 
   default:
-    // return SIB_ERROR;
-    exit(1);
+    return SIB_ERROR;
   }
 }
 unsigned int get_index_reg(char *mem, char *reg) {
