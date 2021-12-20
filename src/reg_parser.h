@@ -41,10 +41,10 @@ void get_reg_str(char *opd_str, char *reg);
 uint32_t process_neg_disp(uint32_t neg_num);
 
 /**
- * finds 2nd register in @param mem and copies the characters to @param reg
+ * finds the index register in @param mem and copies characters to @param reg
  * ex: "[rax+rbp]" -> "rbp"
  */
-void get_second_reg(char *mem, char *reg);
+void get_index_reg(char *mem, char *reg);
 
 /**
  * finds the addition sign in @param mem and returns the index of memory

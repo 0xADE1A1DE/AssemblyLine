@@ -75,7 +75,7 @@ void get_reg_str(char *opd_str, char *reg) {
   }
 }
 
-void get_second_reg(char *mem, char *reg) {
+void get_index_reg(char *mem, char *reg) {
 
   int i;
   bool plus = false;
