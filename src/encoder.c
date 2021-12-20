@@ -72,14 +72,10 @@ static void encode_mem(struct instr *instrc, int m) {
     return;
   // check for an additional zero byte when memory displace is zer
   unsigned int reg_opd = instrc->opd[m].reg & MODE_MASK;
-  if (reg_opd > ext16 && reg_opd < mmx64 &&
+  if (reg_opd > ext16 && reg_opd < mmx64 && !instrc->mem_offset &&
       (instrc->opd[m].reg & VALUE_MASK) == bpl) {
-    if (!instrc->mem_offset) {
-      instrc->mod_disp = MOD8;
-      instrc->zero_byte = true;
-    }
-    if (instrc->opd[m].reg_mem != reg_none)
-      instrc->hex.reg |= rex_;
+    instrc->mod_disp = MOD8;
+    instrc->zero_byte = true;
   }
 }
 
@@ -91,7 +87,7 @@ static void encode_two_opds(struct instr *instrc, int r, int m) {
   // check if a second register exist in memory reference ex: [rax+rcx]
   instrc->hex.rex = get_rex_prefix(instrc, &instrc->opd[m], &instrc->opd[r]);
   encode_mem(instrc, m);
-  instrc->hex.reg |= get_reg(instrc, &instrc->opd[m], instrc->opd[r].reg);
+  instrc->hex.reg = get_reg(instrc, &instrc->opd[m], instrc->opd[r].reg);
 }
 
 /**
