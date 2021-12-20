@@ -58,7 +58,7 @@ static void get_mod_disp(struct instr *instr_buffer, bool neg) {
  * Given an instance of @param instr_buffer convert a memory displacement string
  * representation @param mem into its equivalent unsigned long representation
  */
-static void mem_tok(struct instr *instr_buffer, char *mem, int opd_pos) {
+static int mem_tok(struct instr *instr_buffer, char *mem, int opd_pos) {
 
   instr_buffer->mem_disp = true;
   bool neg = false;
@@ -66,6 +66,7 @@ static void mem_tok(struct instr *instr_buffer, char *mem, int opd_pos) {
   // find the index position of the memory displacement string
   int index = find_add_mem(mem, &neg, &base);
   instr_buffer->sib_disp = get_index_reg(mem, instr_buffer->opd[opd_pos].sib);
+  FAIL_IF_MSG((instr_buffer->sib_disp & MEM_ERROR), "invalid memory syntax\n");
   instr_buffer->mem_offset = 0;
   // convert string to unsigned long for memory displacement representation
   if (index != NA) {
@@ -75,6 +76,7 @@ static void mem_tok(struct instr *instr_buffer, char *mem, int opd_pos) {
       instr_buffer->mem_offset = process_neg_disp(instr_buffer->mem_offset);
   }
   get_mod_disp(instr_buffer, neg);
+  return EXIT_SUCCESS;
 }
 
 /**
@@ -152,7 +154,7 @@ static int check_operand_type(struct instr *instr_buffer, char *all_opd,
   case 'm':
     get_reg_str(all_opd, instr_buffer->opd[opd_pos].str);
     if (instr_buffer->opd[opd_pos].type == 'm')
-      mem_tok(instr_buffer, all_opd, opd_pos);
+      return mem_tok(instr_buffer, all_opd, opd_pos);
     return EXIT_SUCCESS;
   // operand type is not found
   default:

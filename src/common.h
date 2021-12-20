@@ -147,7 +147,7 @@
 #define SIB2 0b101000000
 #define SIB4 0b110000000
 #define SIB8 0b111000000
-#define MEM_ERROR 0b1000000000
+#define MEM_ERROR 0b10000000000
 
 // scaled indexed addressing
 #define SIB_CONST 0x24

@@ -106,6 +106,7 @@ unsigned int get_index_reg(char *mem, char *reg) {
   bool plus = false;
   bool multiply = false;
   unsigned long len = strlen(mem);
+
   if (mem[len - 1] != ']')
     return MEM_ERROR;
   // default sib_disp;
@@ -118,7 +119,6 @@ unsigned int get_index_reg(char *mem, char *reg) {
       while (((IN_RANGE(mem[j], 'a', 'x')) || (IN_RANGE(mem[j], '0', '9'))) &&
              k < 5)
         reg[k++] = mem[j++];
-      // might seg fault here given case [rax + rcx*] or [rax + rcx*
       if (!sib_disp && mem[j] == '*')
         return check_sib_disp(mem, j + 1, j + 2);
       else if (sib_disp && mem[j] == '*')
