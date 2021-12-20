@@ -86,8 +86,8 @@ unsigned int get_rex_prefix(struct instr *all_instr, struct operand *m,
 
 uint8_t get_reg(struct instr *instruc, struct operand *m, int r) {
   if (m->reg_mem == reg_none)
-    return instruc->mod_disp | ((VALUE_MASK & r) << 3) | (VALUE_MASK & m->reg);
+    return instruc->mod_disp | ((r & VALUE_MASK) << 3) | (m->reg & VALUE_MASK);
   // TODO: add sib_disp later (4*rcx)
-  instruc->hex.sib = ((VALUE_MASK & m->reg_mem) << 3) | (VALUE_MASK & m->reg);
+  instruc->hex.sib = ((m->reg_mem & VALUE_MASK) << 3) | (m->reg & VALUE_MASK);
   return instruc->mod_disp | ((r & VALUE_MASK) << 3) | rex_r;
 }
