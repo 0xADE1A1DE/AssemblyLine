@@ -122,7 +122,6 @@ TEST_ASM = \
 		  test/adox.asm \
 		  test/and.asm \
 		  test/bextr.asm \
-		  test/bzhi.asm \
 		  test/clc.asm \
 		  test/high_low_xmm.asm \
 		  test/imul.asm \
