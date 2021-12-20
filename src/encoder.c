@@ -62,6 +62,12 @@ void encode_offset(struct instr *instrc) {
  * the @param m register position
  */
 static void set_zero_byte(struct instr *instrc, int m) {
+  // if r/m value is a memory reference and is the spl register
+  if (instrc->mem_disp && (instrc->opd[m].reg & VALUE_MASK) == spl)
+    instrc->is_sib = true;
+  if (!instrc->mem_disp || instrc->mem_offset)
+    return;
+  // check for an addtiional zero byte when memory displace is zer
   unsigned int reg_opd = instrc->opd[m].reg & MODE_MASK;
   if (reg_opd > ext16 && reg_opd < mmx64 &&
       (instrc->opd[m].reg & VALUE_MASK) == bpl) {
@@ -79,11 +85,8 @@ static void encode_three_opds(struct instr *instrc, int r, int m, int v) {
   instrc->hex.rex = get_rex_prefix(instrc, &instrc->opd[m], &instrc->opd[r]);
   // get vvvv parameter
   instrc->hex.vvvv = instrc->opd[v].reg & 0xf;
-  if (instrc->mem_disp && !instrc->mem_offset)
-    set_zero_byte(instrc, m);
+  set_zero_byte(instrc, m);
   instrc->hex.reg = get_reg(instrc, instrc->opd[m].reg, instrc->opd[r].reg);
-  if (instrc->mem_disp && (instrc->opd[m].reg & VALUE_MASK) == spl)
-    instrc->is_sib = true;
 }
 
 /**
@@ -94,11 +97,8 @@ static void encode_two_opds(struct instr *instrc, int r, int m) {
   // check if a second register exist in memory reference ex: [rax+rcx]
   instrc->hex.rex = get_rex_prefix(instrc, &instrc->opd[m], &instrc->opd[r]);
   if (instrc->opd[m].reg_mem == reg_none) {
-    if (instrc->mem_disp && !instrc->mem_offset)
-      set_zero_byte(instrc, m);
+    set_zero_byte(instrc, m);
     instrc->hex.reg = get_reg(instrc, instrc->opd[m].reg, instrc->opd[r].reg);
-    if (instrc->mem_disp && (instrc->opd[m].reg & VALUE_MASK) == spl)
-      instrc->is_sib = true;
   } else {
     instrc->hex.reg = rex_r + (((instrc->opd[r].reg & VALUE_MASK)) << 3);
     instrc->hex.sib =
@@ -125,12 +125,9 @@ static void encode_special_opd(struct instr *instrc, int m, int i) {
   switch (INSTR_TABLE[instrc->key].encode_operand) {
   case M:
     instrc->hex.rex = get_rex_prefix(instrc, &instrc->opd[m], &no_register);
-    if (instrc->mem_disp && !instrc->mem_offset)
-      set_zero_byte(instrc, m);
+    set_zero_byte(instrc, m);
     instrc->hex.reg = get_reg(instrc, instrc->opd[m].reg,
                               INSTR_TABLE[instrc->key].single_reg_r);
-    if (instrc->mem_disp && (instrc->opd[m].reg & VALUE_MASK) == spl)
-      instrc->is_sib = true;
     break;
 
   case O:
