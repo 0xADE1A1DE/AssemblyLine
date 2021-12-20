@@ -22,10 +22,11 @@
 #include <string.h>
 
 int find_add_mem(char *mem, bool *neg, int *base) {
-  // printf("mem = %s\n", mem);
+
   bool first_num = false;
+  unsigned long len = strlen(mem);
   // find the index of the memory displacement followed by '+' or '-' character
-  for (int i = 1; i < strlen(mem); i++) {
+  for (int i = 1; i < len; i++) {
     if (IN_RANGE(mem[i], '0', '9') && (mem[i - 1] == '-' || mem[i - 1] == '+'))
       first_num = true;
     if (first_num && IN_RANGE(mem[i + 1], '0', '9'))
@@ -60,8 +61,9 @@ int get_opcode_offset(asm_reg reg_value) {
 void get_reg_str(char *opd_str, char *reg) {
 
   int j = 0;
+  unsigned long len = strlen(opd_str);
   // copies the register from mem to reg ex: "rax ," -> "rax"
-  for (int i = 0; i < strlen(opd_str); i++) {
+  for (int i = 0; i < len; i++) {
     if (j > 0 && IN_RANGE(opd_str[i], 'a', 'z'))
       reg[j++] = opd_str[i];
     else if (j > 0 && IN_RANGE(opd_str[i], '0', '9'))
@@ -79,8 +81,9 @@ void get_index_reg(char *mem, char *reg) {
 
   int i;
   bool plus = false;
+  unsigned long len = strlen(mem);
   // copies the register from mem to reg ex: "[rax+0x16]" -> "rax"
-  for (i = 0; i < strlen(mem); i++) {
+  for (i = 0; i < len; i++) {
     if (plus && IN_RANGE(mem[i], 'a', 'z')) {
       int j = i;
       int k = 0;
