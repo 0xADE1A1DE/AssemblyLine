@@ -82,7 +82,7 @@ void get_reg_str(char *opd_str, char *reg) {
 static unsigned int check_sib_disp(char *mem, int scale_i, int next_i) {
   // scale can only be a 1 digit decimal number
   if (mem[next_i] != ']' && mem[next_i] != '+' && mem[next_i] != '-')
-    return SIB_ERROR;
+    return MEM_ERROR;
   switch (mem[scale_i]) {
   case '1':
     return SIB1;
@@ -97,7 +97,7 @@ static unsigned int check_sib_disp(char *mem, int scale_i, int next_i) {
     return SIB8;
 
   default:
-    return SIB_ERROR;
+    return MEM_ERROR;
   }
 }
 unsigned int get_index_reg(char *mem, char *reg) {
@@ -107,7 +107,7 @@ unsigned int get_index_reg(char *mem, char *reg) {
   bool multiply = false;
   unsigned long len = strlen(mem);
   if (mem[len - 1] != ']')
-    return SIB_ERROR;
+    return MEM_ERROR;
   // default sib_disp;
   unsigned int sib_disp = SIB;
   // copies the register from mem to reg ex: "[rcx+rax+0x16]" -> "rax"
@@ -122,7 +122,7 @@ unsigned int get_index_reg(char *mem, char *reg) {
       if (!sib_disp && mem[j] == '*')
         return check_sib_disp(mem, j + 1, j + 2);
       else if (sib_disp && mem[j] == '*')
-        return SIB_ERROR;
+        return MEM_ERROR;
       return sib_disp;
     }
     if (mem[i] == '+')
