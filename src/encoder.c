@@ -92,10 +92,6 @@ static void encode_two_opds(struct instr *instrc, int r, int m) {
   instrc->hex.rex = get_rex_prefix(instrc, &instrc->opd[m], &instrc->opd[r]);
   encode_mem(instrc, m);
   instrc->hex.reg |= get_reg(instrc, &instrc->opd[m], instrc->opd[r].reg);
-  if (instrc->opd[m].reg_mem != reg_none) {
-    instrc->hex.sib =
-        get_sib(instrc, instrc->opd[m].reg, instrc->opd[m].reg_mem);
-  }
 }
 
 /**
