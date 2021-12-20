@@ -23,8 +23,6 @@ as well process any offsets or immediate operands*/
 #include "reg_parser.h"
 #include <stdlib.h>
 
-struct operand no_register = {NULL, {'\0'}, reg_none, {'\0'}, reg_none, 0};
-
 /**
  * sets the register size to 8 bits if the instruction referenced by
  * @param instrc only support 8-bit registers
@@ -102,16 +100,17 @@ static void encode_two_opds(struct instr *instrc, int r, int m) {
     if (instrc->mem_disp && (instrc->opd[m].reg & VALUE_MASK) == spl)
       instrc->is_sib = true;
   } else {
-    instrc->hex.reg = rex_r + (((instrc->opd[r].reg & VALUE_MASK)) * 0x8);
+    instrc->hex.reg = rex_r + (((instrc->opd[r].reg & VALUE_MASK)) << 3);
     instrc->hex.sib =
-        get_reg(instrc, instrc->opd[m].reg, instrc->opd[m].reg_mem);
+        get_sib(instrc, instrc->opd[m].reg, instrc->opd[m].reg_mem);
     unsigned int bitMRm = instrc->opd[m].reg & MODE_MASK;
     if (bitMRm > ext16 && bitMRm < mmx64 &&
         (instrc->opd[m].reg & VALUE_MASK) == bpl) {
-      instrc->zero_byte = true;
+      if (!instrc->mem_offset)
+        instrc->zero_byte = true;
       instrc->hex.reg += rex_;
     }
-    instrc->mem_disp = false;
+    // instrc->mem_disp = false;
   }
 }
 
@@ -122,6 +121,7 @@ static void encode_two_opds(struct instr *instrc, int r, int m) {
  */
 static void encode_special_opd(struct instr *instrc, int m, int i) {
 
+  struct operand no_register = {NULL, {'\0'}, reg_none, {'\0'}, reg_none, 0};
   switch (INSTR_TABLE[instrc->key].encode_operand) {
   case M:
     instrc->hex.rex = get_rex_prefix(instrc, &instrc->opd[m], &no_register);
@@ -152,7 +152,7 @@ static void encode_special_opd(struct instr *instrc, int m, int i) {
 }
 
 void encode_operands(struct instr *instrc) {
-  // xchg instrction with RM operand encoding using rax or al register
+  // xchg instruction with RM operand encoding using rax or al register
   if (INSTR_TABLE[instrc->key].name == xchg &&
       INSTR_TABLE[instrc->key].encode_operand == RM) {
     if ((reg64 & instrc->opd[0].reg) && (REG_MASK & instrc->opd[0].reg) == al) {
@@ -209,11 +209,11 @@ static void nasm_register_size_optimize(struct instr *instrc) {
 }
 
 void encode_imm(struct instr *instrc) {
-  // ignore imm value if instrction is a branch type
+  // ignore imm value if instruction is a branch type
   if ((INSTR_TABLE[instrc->key].type == SHIFT && instrc->cons == 1) ||
       INSTR_TABLE[instrc->key].type == CONTROL_FLOW)
     instrc->imm = false;
-  // used for shift instrction with an 8bit imm rather than one
+  // used for shift instruction with an 8bit imm rather than one
   else if (INSTR_TABLE[instrc->key].type == SHIFT && instrc->cons > 1)
     instrc->key++;
   // change op offset based on reg and imm size
@@ -226,7 +226,7 @@ void encode_imm(struct instr *instrc) {
         ((instrc->opd[0].reg & REG_MASK) == al &&
          IN_RANGE(instrc->cons, MAX_SIGNED_8BIT + 1, NEG64BIT - 1)))
       sp_instr = to_special_instr_key(instrc->key);
-    // return if instrction has special encoding
+    // return if instruction has special encoding
     if (sp_instr)
       instrc->key = sp_instr;
   }
