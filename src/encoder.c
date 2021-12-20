@@ -53,7 +53,6 @@ void encode_offset(struct instr *instrc) {
     return;
   // set opcode offset
   if (INSTR_TABLE[instrc->key].type != CONTROL_FLOW && !instrc->keyword.is_byte)
-
     instrc->op_offset = get_opcode_offset(instrc->opd[0].reg);
 }
 
@@ -61,13 +60,13 @@ void encode_offset(struct instr *instrc) {
  * determines whether a zero byte is required for @param instrc depending on
  * the @param m register position
  */
-static void set_zero_byte(struct instr *instrc, int m) {
+static void encode_mem(struct instr *instrc, int m) {
   // if r/m value is a memory reference and is the spl register
   if (instrc->mem_disp && (instrc->opd[m].reg & VALUE_MASK) == spl)
     instrc->is_sib = true;
   if (!instrc->mem_disp || instrc->mem_offset)
     return;
-  // check for an addtiional zero byte when memory displace is zer
+  // check for an additional zero byte when memory displace is zer
   unsigned int reg_opd = instrc->opd[m].reg & MODE_MASK;
   if (reg_opd > ext16 && reg_opd < mmx64 &&
       (instrc->opd[m].reg & VALUE_MASK) == bpl) {
@@ -85,7 +84,7 @@ static void encode_three_opds(struct instr *instrc, int r, int m, int v) {
   instrc->hex.rex = get_rex_prefix(instrc, &instrc->opd[m], &instrc->opd[r]);
   // get vvvv parameter
   instrc->hex.vvvv = instrc->opd[v].reg & 0xf;
-  set_zero_byte(instrc, m);
+  encode_mem(instrc, m);
   instrc->hex.reg = get_reg(instrc, instrc->opd[m].reg, instrc->opd[r].reg);
 }
 
@@ -97,10 +96,10 @@ static void encode_two_opds(struct instr *instrc, int r, int m) {
   // check if a second register exist in memory reference ex: [rax+rcx]
   instrc->hex.rex = get_rex_prefix(instrc, &instrc->opd[m], &instrc->opd[r]);
   if (instrc->opd[m].reg_mem == reg_none) {
-    set_zero_byte(instrc, m);
+    encode_mem(instrc, m);
     instrc->hex.reg = get_reg(instrc, instrc->opd[m].reg, instrc->opd[r].reg);
   } else {
-    instrc->hex.reg = rex_r + (((instrc->opd[r].reg & VALUE_MASK)) << 3);
+    instrc->hex.reg = rex_r | (((instrc->opd[r].reg & VALUE_MASK)) << 3);
     instrc->hex.sib =
         get_sib(instrc, instrc->opd[m].reg, instrc->opd[m].reg_mem);
     unsigned int bitMRm = instrc->opd[m].reg & MODE_MASK;
@@ -108,7 +107,7 @@ static void encode_two_opds(struct instr *instrc, int r, int m) {
         (instrc->opd[m].reg & VALUE_MASK) == bpl) {
       if (!instrc->mem_offset)
         instrc->zero_byte = true;
-      instrc->hex.reg += rex_;
+      instrc->hex.reg |= rex_;
     }
     // instrc->mem_disp = false;
   }
@@ -125,7 +124,7 @@ static void encode_special_opd(struct instr *instrc, int m, int i) {
   switch (INSTR_TABLE[instrc->key].encode_operand) {
   case M:
     instrc->hex.rex = get_rex_prefix(instrc, &instrc->opd[m], &no_register);
-    set_zero_byte(instrc, m);
+    encode_mem(instrc, m);
     instrc->hex.reg = get_reg(instrc, instrc->opd[m].reg,
                               INSTR_TABLE[instrc->key].single_reg_r);
     break;
@@ -253,7 +252,7 @@ void encode_imm(struct instr *instrc) {
   } else if (INSTR_TABLE[instrc->key].type == DATA_TRANSFER) {
     // calculate value for +rd and +rw
     instrc->rd_offset = instrc->opd[0].reg & VALUE_MASK;
-    // only condition for mov with M operand encoding implemenation
+    // only condition for mov with M operand encoding implementation
     // check if immediate operand is a negative 32 bit value
     if (IN_RANGE(instrc->cons, NEG32BIT + 1, NEG64BIT) &&
         (instrc->cons & NEG32BIT_CHECK) && (instrc->opd[0].reg & reg64)) {
@@ -267,7 +266,7 @@ void encode_imm(struct instr *instrc) {
     } else if (instrc->cons <= MAX_UNSIGNED_32BIT) {
       if (instrc->imm_handling & NASM)
         nasm_register_size_optimize(instrc);
-      // ensure instrction does not default to movabs
+      // ensure instruction does not default to movabs
       else if (instrc->cons < NEG32BIT_CHECK &&
                (instrc->opd[0].reg & MODE_MASK) >= reg64)
         instrc->key++;
