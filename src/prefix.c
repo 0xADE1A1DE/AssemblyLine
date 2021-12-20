@@ -74,7 +74,7 @@ unsigned int get_rex_prefix(struct instr *all_instr, struct operand *m,
     rex_prefix |= rex_r;
   if (rm & REG_RB)
     rex_prefix |= rex_b;
-  if (m->reg_mem & REG_RB)
+  if (m->index & REG_RB)
     rex_prefix |= rex_x;
   // register r or m is 64 bits wide
   if ((rm & reg64) || (r->reg & reg64))
@@ -85,10 +85,10 @@ unsigned int get_rex_prefix(struct instr *all_instr, struct operand *m,
 }
 
 uint8_t get_reg(struct instr *instruc, struct operand *m, int r) {
-  if (m->reg_mem == reg_none)
+  if (m->index == reg_none)
     return instruc->mod_disp | ((r & VALUE_MASK) << 3) | (m->reg & VALUE_MASK);
   instruc->is_sib = true;
   // TODO: add sib_disp later (4*rcx)
-  instruc->hex.sib = ((m->reg_mem & VALUE_MASK) << 3) | (m->reg & VALUE_MASK);
+  instruc->hex.sib = ((m->index & VALUE_MASK) << 3) | (m->reg & VALUE_MASK);
   return instruc->mod_disp | ((r & VALUE_MASK) << 3) | rex_r;
 }

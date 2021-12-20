@@ -64,7 +64,7 @@ struct operand {
   char sib[MAX_REG_LEN];
   // enum representation of 2nd register in
   // a memory reference
-  asm_reg reg_mem;
+  asm_reg index;
   // operand typecould be: r,m, or i
   char type;
 };
