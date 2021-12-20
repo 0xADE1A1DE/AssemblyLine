@@ -91,25 +91,10 @@ static void encode_two_opds(struct instr *instrc, int r, int m) {
   // check if a second register exist in memory reference ex: [rax+rcx]
   instrc->hex.rex = get_rex_prefix(instrc, &instrc->opd[m], &instrc->opd[r]);
   encode_mem(instrc, m);
-  if (instrc->opd[m].reg_mem == reg_none) {
-    encode_mem(instrc, m);
-    instrc->hex.reg = get_reg(instrc, instrc->opd[m].reg, instrc->opd[r].reg);
-  } else {
-    instrc->hex.reg |=
-        instrc->mod_disp | rex_r | (((instrc->opd[r].reg & VALUE_MASK)) << 3);
+  instrc->hex.reg |= get_reg(instrc, &instrc->opd[m], instrc->opd[r].reg);
+  if (instrc->opd[m].reg_mem != reg_none) {
     instrc->hex.sib =
         get_sib(instrc, instrc->opd[m].reg, instrc->opd[m].reg_mem);
-    /*
-    unsigned int bitMRm = instrc->opd[m].reg & MODE_MASK;
-    if (bitMRm > ext16 && bitMRm < mmx64 &&
-        (instrc->opd[m].reg & VALUE_MASK) == bpl) {
-      if (!instrc->mem_offset)
-        instrc->zero_byte = true;
-      instrc->hex.reg |= rex_;
-    }
-    */
-
-    // instrc->mem_disp = false;
   }
 }
 
@@ -123,7 +108,7 @@ static void encode_three_opds(struct instr *instrc, int r, int m, int v) {
   // get vvvv parameter
   instrc->hex.vvvv = instrc->opd[v].reg & 0xf;
   encode_mem(instrc, m);
-  instrc->hex.reg = get_reg(instrc, instrc->opd[m].reg, instrc->opd[r].reg);
+  instrc->hex.reg = get_reg(instrc, &instrc->opd[m], instrc->opd[r].reg);
 }
 
 /**
@@ -139,16 +124,16 @@ static void encode_special_opd(struct instr *instrc, int m, int i) {
   case M:
     instrc->hex.rex = get_rex_prefix(instrc, &instrc->opd[m], &no_register);
     encode_mem(instrc, m);
-    instrc->hex.reg = get_reg(instrc, instrc->opd[m].reg,
-                              INSTR_TABLE[instrc->key].single_reg_r);
+    instrc->hex.reg =
+        get_reg(instrc, &instrc->opd[m], INSTR_TABLE[instrc->key].single_reg_r);
     break;
 
   case O:
     if ((MODE_MASK & instrc->opd[m].reg) == ext64)
       instrc->hex.rex = rex_ + rex_b;
     instrc->rd_offset = (instrc->opd[m].reg & VALUE_MASK);
-    instrc->hex.reg = get_reg(instrc, instrc->opd[m].reg,
-                              INSTR_TABLE[instrc->key].single_reg_r);
+    instrc->hex.reg =
+        get_reg(instrc, &instrc->opd[m], INSTR_TABLE[instrc->key].single_reg_r);
     break;
 
   case I:
@@ -262,7 +247,7 @@ void encode_imm(struct instr *instrc) {
       instrc->cons &= MAX_UNSIGNED_32BIT;
       instrc->reduced_imm = true;
     }
-    // special condition for to mov instrction
+    // special condition for to mov instruction
   } else if (INSTR_TABLE[instrc->key].type == DATA_TRANSFER) {
     // calculate value for +rd and +rw
     instrc->rd_offset = instrc->opd[0].reg & VALUE_MASK;

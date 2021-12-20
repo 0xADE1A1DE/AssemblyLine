@@ -84,8 +84,10 @@ unsigned int get_rex_prefix(struct instr *all_instr, struct operand *m,
   return NONE;
 }
 
-uint8_t get_reg(struct instr *instruc, int m, int r) {
-  return instruc->mod_disp | ((VALUE_MASK & r) << 3) | (VALUE_MASK & m);
+uint8_t get_reg(struct instr *instruc, struct operand *m, int r) {
+  if (m->reg_mem != reg_none)
+    return instruc->mod_disp | ((r & VALUE_MASK) << 3) | rex_r;
+  return instruc->mod_disp | ((VALUE_MASK & r) << 3) | (VALUE_MASK & m->reg);
 }
 
 uint8_t get_sib(struct instr *instruc, int m, int r) {
