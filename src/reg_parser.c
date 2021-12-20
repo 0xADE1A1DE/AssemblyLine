@@ -106,6 +106,8 @@ unsigned int get_index_reg(char *mem, char *reg) {
   bool plus = false;
   bool multiply = false;
   unsigned long len = strlen(mem);
+  if (mem[len - 1] != ']')
+    return SIB_ERROR;
   // default sib_disp;
   unsigned int sib_disp = SIB;
   // copies the register from mem to reg ex: "[rcx+rax+0x16]" -> "rax"
