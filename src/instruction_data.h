@@ -94,6 +94,7 @@ struct instr {
   unsigned long cons;
   bool zero_byte : 1;
   bool mem_disp : 1;
+  bool is_sib_const : 1;
   bool is_sib : 1;
   uint32_t mem_offset;
   // displacement for modRM64_m variable based on

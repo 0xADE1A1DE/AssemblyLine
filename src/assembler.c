@@ -138,7 +138,7 @@ static int assemble_mem(struct instr *instruc, unsigned char ptr[]) {
   }
   // check if there is a memory reference
   if (instruc->mem_disp) {
-    if (instruc->is_sib)
+    if (instruc->is_sib_const)
       ptr[ptr_pos++] = SIB_CONST;
     if (instruc->mod_disp == MOD8) {
       ptr[ptr_pos++] = instruc->mem_offset;
@@ -196,7 +196,8 @@ static int assemble_instr(struct instr *instruc, unsigned char ptr[]) {
   int opcode_pos = 0;
   int new_vex = 0;
   // 67h - address size overwrite prefix
-  if ((INSTR_TABLE[instruc->key].type & VECTOR) && instruc->mem_disp)
+  if (((INSTR_TABLE[instruc->key].type & VECTOR) && instruc->mem_disp) ||
+      instruc->is_sib)
     if ((instruc->opd[0].reg & BIT_MASK) == BIT_32 ||
         (instruc->opd[1].reg & BIT_MASK) == BIT_32 ||
         (instruc->opd[2].reg & BIT_MASK) == BIT_32)

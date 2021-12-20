@@ -67,7 +67,7 @@ static void encode_mem(struct instr *instrc, int m) {
   // if r/m value is a memory reference and is the spl register
   if ((instrc->opd[m].reg & VALUE_MASK) == spl &&
       instrc->opd[m].reg_mem == reg_none)
-    instrc->is_sib = true;
+    instrc->is_sib_const = true;
   if (!instrc->mem_disp || instrc->mem_offset)
     return;
   // check for an additional zero byte when memory displace is zer
