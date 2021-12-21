@@ -26,7 +26,10 @@ const char *const testStrings[] = {
     "mov [rax],[rbx]; cannot mov mem to mem",
     "shrd rax, [rsp], 9; arg2 must be a register.",
     "invalid rax,1",
-};
+    "lea rax, [rsp+*4*r14*4]; invalid syntax",
+    "lea rax, [rsp+*r14 ; invlaid syntax",
+    "lea rax, [rsp+r14*9] ; invlaid syntax",
+    "lea rax, [rsp+42*r14] ; invlaid syntax"};
 
 int main(int argc, char **argv) {
   if (argc > 1) {
