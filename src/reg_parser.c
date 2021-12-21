@@ -79,39 +79,41 @@ void get_reg_str(char *opd_str, char *reg) {
       return;
   }
 }
-static unsigned int check_sib_disp(char *mem, int scale_i, int next_i) {
+static unsigned int check_sib_disp(struct instr *instruc, char scale,
+                                   char next) {
   // scale can only be a 1 digit decimal number
-  if (mem[next_i] != ']' && mem[next_i] != '+' && mem[next_i] != '-')
-    return MEM_ERROR;
-  switch (mem[scale_i]) {
+  if (next != ']' && next != '+' && next != '-')
+    return EXIT_FAILURE;
+  switch (scale) {
   case '1':
-    return SIB1;
-
+    instruc->sib_disp = SIB1;
+    break;
   case '2':
-    return SIB2;
-
+    instruc->sib_disp = SIB2;
+    break;
   case '4':
-    return SIB4;
-
+    instruc->sib_disp = SIB4;
+    break;
   case '8':
-    return SIB8;
-
+    instruc->sib_disp = SIB8;
+    break;
   default:
-    return MEM_ERROR;
+    return EXIT_FAILURE;
   }
+  return EXIT_SUCCESS;
 }
-unsigned int get_index_reg(char *mem, char *reg) {
+unsigned int get_index_reg(struct instr *instruc, char *mem, char *reg) {
 
   int i;
   bool plus = false;
   bool multiply = false;
   unsigned long len = strlen(mem);
-
+  // check closing bracket
   if (mem[len - 1] != ']')
-    return MEM_ERROR;
+    return EXIT_FAILURE;
   // default sib_disp;
-  unsigned int sib_disp = SIB;
-  // copies the register from mem to reg ex: "[rcx+rax+0x16]" -> "rax"
+  instruc->sib_disp = SIB;
+  // copies the index register from mem to reg ex: "[rcx+rax+0x16]" -> "rax"
   for (i = 0; i < len; i++) {
     if ((multiply || plus) && IN_RANGE(mem[i], 'a', 'z')) {
       int j = i;
@@ -119,21 +121,21 @@ unsigned int get_index_reg(char *mem, char *reg) {
       while (((IN_RANGE(mem[j], 'a', 'x')) || (IN_RANGE(mem[j], '0', '9'))) &&
              k < 5)
         reg[k++] = mem[j++];
-      if (!sib_disp && mem[j] == '*')
-        return check_sib_disp(mem, j + 1, j + 2);
-      else if (sib_disp && mem[j] == '*')
-        return MEM_ERROR;
-      return sib_disp;
+      if (!instruc->sib_disp && mem[j] == '*') {
+        FAIL_IF(check_sib_disp(instruc, mem[j + 1], mem[j + 2]));
+      } else if (instruc->sib_disp && mem[j] == '*')
+        return EXIT_FAILURE;
+      return EXIT_SUCCESS;
     }
     if (mem[i] == '+')
       plus = true;
     else if (mem[i] == '*' && i > 1) {
       multiply = true;
-      sib_disp = check_sib_disp(mem, i - 1, i - 2);
+      FAIL_IF(check_sib_disp(instruc, mem[i - 1], mem[i - 2]));
     } else
       plus = false;
   }
-  return sib_disp;
+  return EXIT_SUCCESS;
 }
 
 char get_operand_type(char *operand) {
