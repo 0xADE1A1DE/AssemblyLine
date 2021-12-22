@@ -134,6 +134,7 @@ typedef enum {
   cmovnc,
   cmovne,
   cmovng,
+  cmovno,
   cmovnp,
   cmovns,
   cmovnz,
