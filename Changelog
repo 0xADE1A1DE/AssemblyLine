@@ -1,3 +1,18 @@
+version 1.1.0-release (2021-12-24)
+
+	- added support for scaled index addressing mode
+	- added support for MMX, SSE2, AVX, and AVX2 instruction sets  
+	- added different modes of register size handling for 
+	  "mov, register, immediate" instruction 
+	- improved 32-bit register supportability
+	- improved intel x86_46 instruction supportability
+	- simplified the process for adding new instructions
+	- FIX bug where the fourth operand would be missing
+	- code maintenance
+	- updated documentation
+	- improvements to autotools
+
+
 version 1.0.5-release (2021-09-29)
 
 	- FIX another bug where 'mov reg, imm' results in a wrong instruction
