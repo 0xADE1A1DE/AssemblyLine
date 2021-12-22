@@ -50,7 +50,7 @@ struct prefix {
   unsigned int vvvv : 4;
   bool is_w0 : 1;
   // fix later if possible
-  unsigned int mem;
+  unsigned int sib;
 };
 
 struct operand {
@@ -61,10 +61,10 @@ struct operand {
   // enum representation of register
   asm_reg reg;
   // stores the 2nd register in a memory reference
-  char mem[MAX_REG_LEN];
+  char sib[MAX_REG_LEN];
   // enum representation of 2nd register in
   // a memory reference
-  asm_reg reg_mem;
+  asm_reg index;
   // operand typecould be: r,m, or i
   char type;
 };
@@ -94,11 +94,13 @@ struct instr {
   unsigned long cons;
   bool zero_byte : 1;
   bool mem_disp : 1;
+  bool is_sib_const : 1;
   bool is_sib : 1;
   uint32_t mem_offset;
   // displacement for modRM64_m variable based on
   // value of op_en and size of mem_disp
   int mod_disp;
+  int sib_disp;
   // uses operand_encoding to get value
   // operand and prefix values
   struct prefix hex;

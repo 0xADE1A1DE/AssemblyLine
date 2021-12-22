@@ -27,13 +27,14 @@ based on instruction operands*/
  * takes in 2 operands @param m @param r, as well as a pointer to @param instr
  * and returns the rex prefix value.
  */
-unsigned int get_rex_prefix(struct instr *all_instr, asm_reg m, asm_reg r);
+unsigned int get_rex_prefix(struct instr *all_instr, struct operand *m,
+                            struct operand *r);
 
 /**
  * returns the register opcode given the operand at @param m and @param r
  * position given and instance of @param instruc
  */
-uint8_t get_reg(struct instr *instruc, int m, int r);
+uint8_t get_reg(struct instr *instruc, struct operand *m, int r);
 
 /**
  * takes in 3 operands @param s, @param m, and @param r, and returns the rex

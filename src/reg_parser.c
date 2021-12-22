@@ -22,24 +22,24 @@
 #include <string.h>
 
 int find_add_mem(char *mem, bool *neg, int *base) {
+
+  bool first_num = false;
+  unsigned long len = strlen(mem);
   // find the index of the memory displacement followed by '+' or '-' character
-  for (int i = 1; i < strlen(mem); i++) {
-    if (mem[i] == '-' && IN_RANGE(mem[i + 1], '0', '9'))
+  for (int i = 1; i < len; i++) {
+    if (IN_RANGE(mem[i], '0', '9') && (mem[i - 1] == '-' || mem[i - 1] == '+'))
+      first_num = true;
+    if (first_num && IN_RANGE(mem[i + 1], '0', '9'))
+      *base = 10;
+    // assemblyline does not support memory displacement arithmetic
+    if (first_num && mem[i + 1] == '*')
+      first_num = false;
+    if (first_num && mem[i - 1] == '-') {
       *neg = true;
-    // memory displacement represented in hex
-    if (mem[i] == '0' && (mem[i - 1] == '-' || mem[i - 1] == '+')) {
-      if (mem[i + 1] == 'x')
-        return i;
-      // memory displacement represented in decimal
-    } else if (IN_RANGE(mem[i], '1', '9') &&
-               (mem[i - 1] == '-' || mem[i - 1] == '+')) {
-      if (mem[i - 1] == '-' || mem[i - 1] == '+') {
-        if (mem[i + 1] != 'x') {
-          *base = 10;
-          return i;
-        }
-      }
-    }
+      return i;
+    } else if (first_num && mem[i - 1] == '+')
+      return i;
+    first_num = false;
   }
   return NA;
 }
@@ -64,8 +64,9 @@ int get_opcode_offset(asm_reg reg_value) {
 void get_reg_str(char *opd_str, char *reg) {
 
   int j = 0;
+  unsigned long len = strlen(opd_str);
   // copies the register from mem to reg ex: "rax ," -> "rax"
-  for (int i = 0; i < strlen(opd_str); i++) {
+  for (int i = 0; i < len; i++) {
     if (j > 0 && IN_RANGE(opd_str[i], 'a', 'z'))
       reg[j++] = opd_str[i];
     else if (j > 0 && IN_RANGE(opd_str[i], '0', '9'))
@@ -78,26 +79,63 @@ void get_reg_str(char *opd_str, char *reg) {
       return;
   }
 }
-
-void get_second_reg(char *mem, char *reg) {
+static unsigned int check_sib_disp(struct instr *instruc, char scale,
+                                   char next) {
+  // scale can only be a 1 digit decimal number
+  if (next != ']' && next != '+' && next != '-')
+    return EXIT_FAILURE;
+  switch (scale) {
+  case '1':
+    instruc->sib_disp = SIB1;
+    break;
+  case '2':
+    instruc->sib_disp = SIB2;
+    break;
+  case '4':
+    instruc->sib_disp = SIB4;
+    break;
+  case '8':
+    instruc->sib_disp = SIB8;
+    break;
+  default:
+    return EXIT_FAILURE;
+  }
+  return EXIT_SUCCESS;
+}
+unsigned int get_index_reg(struct instr *instruc, char *mem, char *reg) {
 
   int i;
   bool plus = false;
-  // copies the register from mem to reg ex: "[rax+0x16]" -> "rax"
-  for (i = 0; i < strlen(mem); i++) {
-    if (plus && IN_RANGE(mem[i], 'a', 'z')) {
+  bool multiply = false;
+  unsigned long len = strlen(mem);
+  // check closing bracket
+  if (mem[len - 1] != ']')
+    return EXIT_FAILURE;
+  // default sib_disp;
+  instruc->sib_disp = SIB;
+  // copies the index register from mem to reg ex: "[rcx+rax+0x16]" -> "rax"
+  for (i = 0; i < len; i++) {
+    if ((multiply || plus) && IN_RANGE(mem[i], 'a', 'z')) {
       int j = i;
       int k = 0;
       while (((IN_RANGE(mem[j], 'a', 'x')) || (IN_RANGE(mem[j], '0', '9'))) &&
              k < 5)
         reg[k++] = mem[j++];
-      return;
+      if (!instruc->sib_disp && mem[j] == '*') {
+        FAIL_IF(check_sib_disp(instruc, mem[j + 1], mem[j + 2]));
+      } else if (instruc->sib_disp && mem[j] == '*')
+        return EXIT_FAILURE;
+      return EXIT_SUCCESS;
     }
     if (mem[i] == '+')
       plus = true;
-    else if (mem[i] != ' ')
+    else if (mem[i] == '*' && i > 1) {
+      multiply = true;
+      FAIL_IF(check_sib_disp(instruc, mem[i - 1], mem[i - 2]));
+    } else
       plus = false;
   }
+  return EXIT_SUCCESS;
 }
 
 char get_operand_type(char *operand) {

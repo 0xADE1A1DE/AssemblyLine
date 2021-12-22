@@ -36,11 +36,11 @@ representation*/
 static int check_registers(struct instr *check_instr) {
 
   FAIL_IF((check_instr->opd[0].reg & reg_error) == reg_error);
-  FAIL_IF((check_instr->opd[0].reg_mem & reg_error) == reg_error);
+  FAIL_IF((check_instr->opd[0].index & reg_error) == reg_error);
   FAIL_IF((check_instr->opd[1].reg & reg_error) == reg_error);
-  FAIL_IF((check_instr->opd[1].reg_mem & reg_error) == reg_error);
+  FAIL_IF((check_instr->opd[1].index & reg_error) == reg_error);
   FAIL_IF((check_instr->opd[2].reg & reg_error) == reg_error);
-  FAIL_IF((check_instr->opd[2].reg_mem & reg_error) == reg_error);
+  FAIL_IF((check_instr->opd[2].index & reg_error) == reg_error);
   return EXIT_SUCCESS;
 }
 
@@ -48,7 +48,7 @@ static int check_registers(struct instr *check_instr) {
  * tokenize and parse @param filtered_asm_str to fill in @param instr_data
  */
 static int line_to_instr(struct instr *instr_data, char *filtered_asm_str) {
-  // default mod displacement value
+  // default mod displacement value r/m is register
   instr_data->mod_disp = MOD24;
   // clear the least significant bit
   if (instr_data->imm_handling & SMART)
@@ -56,12 +56,9 @@ static int line_to_instr(struct instr *instr_data, char *filtered_asm_str) {
   // tokenize filtered instruction for mapping to instr internal structure
   FAIL_IF_MSG(instr_tok(instr_data, filtered_asm_str), "syntax error\n");
   // convert operand format from string to enum representation
-  char opd_type[5];
-  opd_type[0] = instr_data->opd[0].type;
-  opd_type[1] = instr_data->opd[1].type;
-  opd_type[2] = instr_data->opd[2].type;
-  opd_type[3] = instr_data->opd[3].type;
-  opd_type[4] = '\0';
+  char opd_type[5] = {'\0'};
+  for (int i = 0; i < NUM_OF_OPD; i++)
+    opd_type[i] = instr_data->opd[i].type;
   operand_format opd_format = get_opd_format(opd_type);
   FAIL_IF_VAR(opd_format == opd_error, "illegal operand format: %s\n", opd_type)
   // jcc [MEM] no register
@@ -87,15 +84,14 @@ static int line_to_instr(struct instr *instr_data, char *filtered_asm_str) {
   // find the encoding for a short jump instruction if applicable
   instr_data->key += instr_data->keyword.is_short;
   // convert register string to enum representation
-  instr_data->opd[0].reg = str_to_reg(instr_data->opd[0].str);
-  instr_data->opd[0].reg_mem = str_to_reg(instr_data->opd[0].mem);
-  instr_data->opd[1].reg = str_to_reg(instr_data->opd[1].str);
-  instr_data->opd[1].reg_mem = str_to_reg(instr_data->opd[1].mem);
-  instr_data->opd[2].reg = str_to_reg(instr_data->opd[2].str);
+  for (int i = 0; i < FOURTH_OPERAND; i++)
+    instr_data->opd[i].reg = str_to_reg(instr_data->opd[i].str);
+  for (int i = 0; i < FOURTH_OPERAND; i++)
+    instr_data->opd[i].index = str_to_reg(instr_data->opd[i].sib);
   // values will be determined during encoding
   instr_data->hex.reg = NONE;
   instr_data->hex.rex = NONE;
-  instr_data->hex.mem = NO_BYTE;
+  instr_data->hex.sib = NO_BYTE;
   // checks if the registers are valid
   FAIL_IF_VAR(check_registers(instr_data),
               "Invalid register for instruction: %s\n",
