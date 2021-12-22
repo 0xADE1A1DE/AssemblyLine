@@ -85,9 +85,49 @@ LDADD = libassemblyline.la
 ##############################################################################################
 ##############################################################################################
 
+methods = \
+		 asm_create_instance.3 \
+		 asm_destroy_instance.3 \
+		 assemble_str.3 \
+		 assemble_file.3 \
+		 assemble_string_counting_chunks.3 \
+		 asm_set_chunk_size.3 \
+		 asm_set_debug.3 \
+		 asm_get_offset.3 \
+		 asm_set_offset.3 \
+		 asm_get_buffer.3 \
+		 asm_get_code.3 \
+		 strict_mov_imm_handling.3 \
+		 nasm_mov_imm_handling.3 \
+		 smart_mov_imm_handling.3
+
 #todo move that to man-dir
 dist_man1_MANS = tools/asmline.1
-dist_man3_MANS = src/libassemblyline.3
+dist_man3_MANS = src/libassemblyline.3 
+
+
+install-exec-hook:
+	cd $(mandir)/man3 && \
+	rm -f -- $(methods) && \
+	$(LN_S) libassemblyline.3 asm_create_instance.3 && \
+	$(LN_S) libassemblyline.3 asm_destroy_instance.3 && \
+	$(LN_S) libassemblyline.3 assemble_str.3 && \
+	$(LN_S) libassemblyline.3 assemble_file.3 && \
+	$(LN_S) libassemblyline.3 assemble_string_counting_chunks.3 && \
+	$(LN_S) libassemblyline.3 asm_set_chunk_size.3 && \
+	$(LN_S) libassemblyline.3 asm_set_debug.3 && \
+	$(LN_S) libassemblyline.3 asm_get_offset.3 && \
+	$(LN_S) libassemblyline.3 asm_set_offset.3 && \
+	$(LN_S) libassemblyline.3 asm_get_buffer.3 && \
+	$(LN_S) libassemblyline.3 asm_get_code.3 && \
+	$(LN_S) libassemblyline.3 strict_mov_imm_handling.3 && \
+	$(LN_S) libassemblyline.3 nasm_mov_imm_handling.3 && \
+	$(LN_S) libassemblyline.3 smart_mov_imm_handling.3
+
+uninstall-local:
+	cd $(mandir)/man3 && \
+	rm -f -- $(methods) 
+
 
 ##############################################################################################
 ##############################################################################################
