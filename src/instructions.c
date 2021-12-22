@@ -60,6 +60,7 @@ const struct instr_table INSTR_TABLE[] = {
     {"cmovnc",      cmovnc,      {rr, rm},   RM,  DATA_TRANSFER,  NA,  NA,  4,  {REX, 0x0f, 0x43, REG}},
     {"cmovne",      cmovne,      {rr, rm},   RM,  DATA_TRANSFER,  NA,  NA,  4,  {REX, 0x0f, 0x45, REG}},
     {"cmovng",      cmovng,      {rr, rm},   RM,  DATA_TRANSFER,  NA,  NA,  4,  {REX, 0x0f, 0x4e, REG}},
+    {"cmovnp",      cmovnp,      {rr, rm},   RM,  DATA_TRANSFER,  NA,  NA,  4,  {REX, 0x0f, 0x4b, REG}},
     {"cmovns",      cmovns,      {rr, rm},   RM,  DATA_TRANSFER,  NA,  NA,  4,  {REX, 0x0f, 0x49, REG}},
     {"cmovnz",      cmovnz,      {rr, rm},   RM,  DATA_TRANSFER,  NA,  NA,  4,  {REX, 0x0f, 0x45, REG}},
     {"cmovo",       cmovo,       {rr, rm},   RM,  DATA_TRANSFER,  NA,  NA,  4,  {REX, 0x0f, 0x40, REG}},    
