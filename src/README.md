@@ -60,7 +60,7 @@ struct INSTR_TABLE[] {
    * REX VEX, and REG are placeholders for prefix and register values for encoding of
    * VEX prefix please refer to the intel manual section 2.3.5 as well as common.h
    * '#define VEX(vvvv,L,pp,mmmmm,WIG)' and enums.h 'opcode_encoding'.
-   * '+rd' refers '+rb, +rw, +rd, +ro' in the intel manual section 3.1.1.1
+   * '+rd' refers to '+rb, +rw, +rd, +ro' in intel manual section 3.1.1.1
    */
   unsigned int opcode[MAX_OPCODE_LEN];                 
 }
