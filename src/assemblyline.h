@@ -96,6 +96,7 @@ void asm_set_offset(assemblyline_t al, int offset);
 
 /**
  * returns the buffer associated with @param al
+ * (DEPRECATED: use asm_get_code() instead)
  */
 uint8_t *asm_get_buffer(assemblyline_t al);
 
