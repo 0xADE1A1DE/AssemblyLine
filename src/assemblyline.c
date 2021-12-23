@@ -167,6 +167,4 @@ void strict_mov_imm_handling(assemblyline_t al) {
 
 void nasm_mov_imm_handling(assemblyline_t al) { al->mov_imm_handling = NASM; }
 
-void smart_mov_imm_handling(assemblyline_t al) {
-  al->mov_imm_handling = SMART;
-}
+void smart_mov_imm_handling(assemblyline_t al) { al->mov_imm_handling = SMART; }
