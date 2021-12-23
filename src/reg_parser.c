@@ -86,7 +86,7 @@ static unsigned int check_sib_disp(struct instr *instruc, char scale,
     return EXIT_FAILURE;
   switch (scale) {
   case '1':
-    instruc->sib_disp = SIB1;
+    instruc->sib_disp = SIB;
     break;
   case '2':
     instruc->sib_disp = SIB2;

@@ -20,6 +20,7 @@
 #include "common.h"
 #include "instructions.h"
 #include "registers.h"
+#include <stdlib.h>
 
 unsigned int get_vector_rex_prefix(struct instr *all_instr, asm_reg m,
                                    asm_reg r) {
@@ -84,11 +85,20 @@ unsigned int get_rex_prefix(struct instr *all_instr, struct operand *m,
   return NONE;
 }
 
-uint8_t get_reg(struct instr *instruc, struct operand *m, int r) {
-  if (m->index == reg_none)
-    return instruc->mod_disp | ((r & VALUE_MASK) << 3) | (m->reg & VALUE_MASK);
-  instruc->is_sib = true;
-  instruc->hex.sib = instruc->sib_disp | ((m->index & VALUE_MASK) << 3) |
-                     (m->reg & VALUE_MASK);
-  return instruc->mod_disp | ((r & VALUE_MASK) << 3) | rex_r;
+uint8_t get_reg(struct instr *instrc, struct operand *m, int r) {
+  // check for index register
+  if (m->index == reg_none) {
+    instrc->hex.reg =
+        instrc->mod_disp | ((r & VALUE_MASK) << 3) | (m->reg & VALUE_MASK);
+    return EXIT_SUCCESS;
+  } else if ((instrc->imm_handling & (NASM | SMART)) &&
+             (m->index & REG_MASK) == spl) {
+    FAIL_IF_MSG((m->reg & REG_MASK) == spl || instrc->sib_disp,
+                "error stack pointer register is not scalable\n");
+  }
+  instrc->is_sib = true;
+  instrc->hex.sib =
+      instrc->sib_disp | ((m->index & VALUE_MASK) << 3) | (m->reg & VALUE_MASK);
+  instrc->hex.reg = instrc->mod_disp | ((r & VALUE_MASK) << 3) | rex_r;
+  return EXIT_SUCCESS;
 }

@@ -32,9 +32,9 @@ unsigned int get_rex_prefix(struct instr *all_instr, struct operand *m,
 
 /**
  * returns the register opcode given the operand at @param m and @param r
- * position given and instance of @param instruc
+ * position given and instance of @param instrc
  */
-uint8_t get_reg(struct instr *instruc, struct operand *m, int r);
+uint8_t get_reg(struct instr *instrc, struct operand *m, int r);
 
 /**
  * takes in 3 operands @param s, @param m, and @param r, and returns the rex
