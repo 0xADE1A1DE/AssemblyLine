@@ -17,6 +17,9 @@ version 1.1.0-release (2021-12-24)
 	- improved intel x86_64 instruction supportability:
 	  source code is now more inline with the intel manual, therefore
 	  more instructions can be supported in the near future
+
+	- added a new command-line option in asmline for printing 
+	  machine code output to a file using '$ asmline -p' 
 	
 	- simplified the process for adding new instructions
 	
