@@ -41,7 +41,7 @@ void err_print_usage(char *error_msg) {
       "  -p, --print\n"
       "\tThe corresponding machine code will be printed to stdout in hex "
       "form.\n"
-      "\tThis output is similar to `objdump`: Byte-wise delimited by space and "
+      "\tOutput is similar to `objdump`: Byte-wise delimited by space and "
       "linebreaks after 7 bytes.\n\tIf -c is given, the chunks are "
       "delimited by '|' and each chunk is on one line.\n\n"
       "  -P, --printfile FILENAME\n"
