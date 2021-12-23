@@ -1,15 +1,25 @@
 version 1.1.0-release (2021-12-24)
 
 	- added support for scaled index addressing mode
+	  with syntax [base + scale*index + offset] or
+	  [base + index*scale + offset]
+	  ex: "add rax, [rcx+4*rbp+0x8]" or "add rax, [rcx+rbp*4+0x8]"
+
 	- added support for MMX, SSE2, AVX, and AVX2 instruction sets  
+	
 	- added different modes of register size handling for 
-	  "mov, register, immediate" instruction 
-	- improved 32-bit register supportability
-	- improved intel x86_46 instruction supportability
+	  "mov register, immediate" instruction 
+	
+	- improved 32-bit register supportability:
+	  using eax-r15b for memory addressing in vector extension now 
+	  produces the correct prefix (67H)
+	
+	- improved intel x86_64 instruction supportability:
+	  source code is now more inline with the intel manual, therefore
+	  more instructions can be supported in the near future
+	
 	- simplified the process for adding new instructions
-	- FIX bug where the fourth operand would be missing
-	- code maintenance
-	- updated documentation
+	
 	- improvements to autotools
 
 
@@ -20,31 +30,41 @@ version 1.0.5-release (2021-09-29)
 version 1.0.4-release (2021-09-27)
 	
 	- FIX bug where 'mov reg, imm' is interpreted as  movntqda
+	
 	- updated documentation
+	
 	- implemented register size optimization for mov instruction 
 	  to match nasm assembly style
+	
 	- added man page
+	
 	- added -v -h options to asmline
 
 
 version 1.0.3-release (2021-09-16)
 
 	- FIX rdtsc
+
 	- ADD rdtscp,
+	
 	- ADD ror (ri encoding only for now)
+	
 	- code maintenance
+	
 	- added library versioning
 
 
 version 1.0.2-release (2021-09-09)
 
 	- added support for the prefetch instruction
+	
 	- added support for all registers (prefetch)
 
 
 version 1.0.1-release (2021-09-09)
 
 	- added support for the rorx instruction
+	
 	- updated documentation
 
 
