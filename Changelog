@@ -8,8 +8,8 @@ version 1.1.0-release (2021-12-24)
 	- added support for MMX, SSE2, AVX, and AVX2 instruction sets  
 	
 	- added different modes of register size handling for 
-	  "mov register, immediate" instruction 
-	
+	  "mov register, immediate" instruction: NASM, STRICT, SMART
+
 	- improved 32-bit register supportability:
 	  using eax-r15b for memory addressing in vector extension now 
 	  produces the correct prefix (67H)
@@ -18,9 +18,29 @@ version 1.1.0-release (2021-12-24)
 	  source code is now more inline with the intel manual, therefore
 	  more instructions can be supported in the near future
 
-	- added a new command-line option in asmline for printing 
-	  machine code output to a file using '$ asmline -p' 
-	
+	- added a command-line option in asmline for setting 
+	  assembly mode to NASM '$ asmline -n' where:
+	  if immediate size for mov is less than or equal to max signed 32-bit
+	  asmline will emit code to mov to 32-bit register rather than 64-bit.
+	  That is: "mov rax, 0x7fffffff" as "mov eax, 0x7fffffff" -> b8 ff ff ff 7f
+	  note: rax got optimized to eax for faster immediate to register transfer and
+            produces a shorter instruction. 
+
+	- added a command-line option in asmline for setting 
+	  assembly mode to STRICT '$ asmline -t' where:  
+	  ex: even if immediate size for mov is less than or equal to max signed 32-bit
+      will pad the immediate to fit 64bit.
+	  That is: "mov rax,0x7fffffff" as "mov rax,0x000000007fffffff" 
+               -> 48 b8 ff ff ff 7f 00 00 00 00
+
+	- added a command-line option in asmline for setting  
+	  assembly mode to SMART '$ asmline -s' where:  
+	  asmline will check the immediate value for leading 0's and thus allows manual
+	  optimizations. Immediate must be zero padded to 64-bits exactly to ensure 
+	  it will not optimize. This is currently set as default.
+	  ex: "mov rax, 0x000000007fffffff" ->  48 b8 ff ff ff 7f 00 00 00 00
+          "mov rax, 0x7fffffff" -> b8 ff ff ff 7f
+
 	- simplified the process for adding new instructions
 	
 	- improvements to autotools

@@ -55,8 +55,8 @@ DESCRIPTION:
             Sets a given CHUNK_SIZE boundary in bytes. Nop padding will be used to 
             ensure no instruction opcode crosses the specified CHUNK_SIZE boundary.
     ```
-1. A specific chunk size within a memory block could be specified (chunk sizes less must be greater than 1),
-1. Then a chunk size is given, assemblyline will ensure no instruction opcode crosses the chunk boundary by applying nop padding
+1. A specific chunk size could be specified for instruction alignment (chunk sizes must be greater than 1),
+1. Assemblyline will ensure no instruction opcode crosses the chunk size boundary by applying nop padding
 
 #### Set assembly mode to NASM
 
@@ -66,7 +66,9 @@ DESCRIPTION:
             Enables nasm-style mov-immediate register-size optimization.
             ex: if immediate size for mov is less than or equal to max signed 32 bit assemblyline
                 will emit code to mov to the 32-bit register rather than 64-bit.
-            That is: "mov rax,0x7fffffff" as "mov eax,0x7fffffff" -> b8 ff ff ff 7f 
+            That is: "mov rax,0x7fffffff" as "mov eax,0x7fffffff" -> b8 ff ff ff 7f
+            note: rax got optimized to eax for faster immediate to register transfer and
+                  produces a shorter instruction. 
     ```
 
 #### Set assembly mode to STRICT
@@ -79,6 +81,8 @@ DESCRIPTION:
                 will pad the immediate to fit 64-bit
             That is: "mov rax,0x7fffffff" as "mov rax,0x000000007fffffff"
                       -> 48 b8 ff ff ff 7f 00 00 00 00
+            note: rax got optimized to eax for faster immediate to register transfer
+                  and produces a shorter instruction.
     ```
 
 #### Set assembly mode to SMART
@@ -88,7 +92,8 @@ disable nasm mode.
     ```
     -s, --smart
             The immediate value will be checked for leading 0's.
-            If immediate is exactly 64-bits, it will not optimize.
+            Immediate must be zero padded to 64-bits exactly to ensure it will not optimize.
+            This is currently set as default.
             ex: "mov rax, 0x000000007fffffff" ->  48 b8 ff ff ff 7f 00 00 00 00
                 "mov rax, 0x7fffffff" -> b8 ff ff ff 7f
     ```

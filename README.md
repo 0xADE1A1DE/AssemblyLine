@@ -109,7 +109,7 @@ then run `$ make clean check`. Finally, add `Makefile.am` and `sub.asm` to git.<
 
 ## Command-line tool: asmline
 
-Please refer to: [src/README.md](https://github.com/0xADE1A1DE/AssemblyLine/blob/main/tools/README.md)<br><br>     
+Please refer to: [tools/README.md](https://github.com/0xADE1A1DE/AssemblyLine/blob/main/tools/README.md)<br><br>     
   
 ## Adding new instructions
 

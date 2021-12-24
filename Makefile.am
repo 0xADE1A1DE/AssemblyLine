@@ -56,13 +56,6 @@ libassemblyline_la_SOURCES = \
 include_HEADERS = src/assemblyline.h
 
 
-oudated = \
-		 libassemblyline.so.1.0.4 \
-		 libassemblyline.so.1.0.3 \
-		 libassemblyline.so.1.0.2 \
-		 libassemblyline.so.1.0.1 \
-		 libassemblyline.so.1.0.0 
-
 # from  7.3 https://www.gnu.org/software/libtool/manual/html_node/Versioning.html#Versioning
 # -version-info accepts ‘current[:revision[:age]]’
 
@@ -115,8 +108,6 @@ dist_man3_MANS = src/libassemblyline.3
 
 
 install-exec-hook:
-	cd $(libdir) && \
-	rm -f -- $(oudated) && \
 	cd $(mandir)/man3 && \
 	rm -f -- $(methods) && \
 	$(LN_S) libassemblyline.3 asm_create_instance.3 && \
