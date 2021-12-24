@@ -34,7 +34,7 @@ DESCRIPTION:
             Output is similar to `objdump`: Byte-wise delimited by space and linebreaks after 7 bytes.
             If -c is given, the chunks are delimited by '|' and each chunk is on one line.
     ```
-1. The above call will output some machine code in the hexadecimal format given `path/to/file.asm`.
+1. The above call will output machine code in the hexadecimal format given `path/to/file.asm`.
 
 #### Print assembled machine code to a file
 
@@ -44,7 +44,7 @@ DESCRIPTION:
             The corresponding machine code will be printed to FILENAME in binary form.
             Can be set to '/dev/stdout' to write to stdout.
     ```
-1. The above call will output some machine code in the hexadecimal format to FILENAME given `path/to/file.asm`.
+1. The above call will output machine code in the hexadecimal format to FILENAME given `path/to/file.asm`.
 
 #### Chunk size fitting
 
