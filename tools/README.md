@@ -41,8 +41,8 @@ DESCRIPTION:
     ```bash
     $ objcopy --input-target=binary --redefine-sym _binary_jump_bin_start=jump --rename-section .data=.text --output-target=elf64-x86-64 jump.bin jump.o 
     ```    
-2. Now we can run objdump on jump.o to see the symbols in the ELF file  
-**NOTE:** the starting label `jump` is going to be linked within a driver function that uses this ELF file  
+2. Now we can run `$ objdump` on jump.o to see the symbols in the ELF file  
+**NOTE:** the starting label `0000000000000000 g       .text	0000000000000000 jump` is going to be linked within a driver function  
     ```bash
     $ objdump -t jump.o
     jump.o:     file format elf64-x86-64
