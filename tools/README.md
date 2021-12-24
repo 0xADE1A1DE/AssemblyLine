@@ -8,7 +8,6 @@ USAGE:
 DESCRIPTION:
 	Generates machine code from a file or stdin containing x64 assembly instructions. 
         Machine code could be executed directly without the need for an executable file format. 
-        Obtain command-line instructions for generating an ELF binary file from assembly code.
 ```
 ### Features:
 
