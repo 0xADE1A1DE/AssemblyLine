@@ -58,6 +58,16 @@ DESCRIPTION:
 1. A specific chunk size could be specified for instruction alignment (chunk sizes must be greater than 1),
 1. Assemblyline will ensure no instruction opcode crosses the chunk size boundary by applying nop padding
 
+#### Executing machine code directly from memory
+
+1. `$ asmline --return path/to/file.asm` to directly execute `path/to/file.asm` given the following options: 
+    ```
+    -r --return
+            Executes assembly code and prints out the contents of the 
+            rax register (return value register).
+    ```
+1. `-r` executes assembly program specified by `path/to/file.asm` and print out the return value of that program
+
 #### Set assembly mode to NASM
 
 1. `$ asmline -n path/to/file.asm` to ensure the generated machine code from `file.asm` matches nasm 
@@ -70,6 +80,9 @@ DESCRIPTION:
             note: rax got optimized to eax for faster immediate to register transfer and
                   produces a shorter instruction. 
     ```
+### Different modes of assembly
+When moving immediate values to a 64-bit register, if immediate value is less than or equal to 0x7fffffff (max signed 32-bit)
+nasm will interpret mov rax, IMM as mov eax, IMM. The following three settings allow the user to control this behavior.
 
 #### Set assembly mode to STRICT
 
@@ -97,13 +110,3 @@ disable nasm mode.
             ex: "mov rax, 0x000000007fffffff" ->  48 b8 ff ff ff 7f 00 00 00 00
                 "mov rax, 0x7fffffff" -> b8 ff ff ff 7f
     ```
-
-#### Executing machine code directly from memory
-
-1. `$ asmline --return path/to/file.asm` to directly execute `path/to/file.asm` given the following options: 
-    ```
-    -r --return
-            Executes assembly code and prints out the contents of the 
-            rax register (return value register).
-    ```
-1. `-r` executes assembly program specified by `path/to/file.asm` and print out the return value of that program<br><br> 
