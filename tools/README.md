@@ -22,8 +22,6 @@ DESCRIPTION:
 1. The above call will generate a binary file FILENAME.bin and the command below could be used to create an ELF file.
     ```bash
     $ objcopy --input-target=binary --globalize-symbol=FILENAME --rename-section .data=.text --output-target=elf64-x86-64 FILENAME.bin FILENAME.o
-    # link the elf object file with a c program
-    $ gcc -o executable link_to_FILENAME.c FILENAME.o
     ```
 #### Print assembled machine code to stdout
 
