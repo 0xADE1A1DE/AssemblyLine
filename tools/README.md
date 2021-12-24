@@ -42,7 +42,7 @@ DESCRIPTION:
             The corresponding machine code will be printed to FILENAME in binary form.
             Can be set to '/dev/stdout' to write to stdout.
     ```
-1. The above call will output machine code in the hexadecimal format to FILENAME given `path/to/file.asm`.
+1. The above call will output machine code in binary format to FILENAME given `path/to/file.asm`.
 
 #### Chunk size fitting
 
