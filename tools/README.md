@@ -11,7 +11,7 @@ DESCRIPTION:
 ```
 ### Features:
 
-#### Create ELF file from assembly code
+#### Create binary file from assembly code
 
 1. `$ asmline -o FILENAME path/to/file.asm` to output the generated machine code into a binary file (FILENAME.bin)
     ```
@@ -23,6 +23,37 @@ DESCRIPTION:
     ```bash
     $ objcopy --input-target=binary --globalize-symbol=FILENAME --rename-section .data=.text --output-target=elf64-x86-64 FILENAME.bin FILENAME.o
     ```
+**Generating an ELF file from `FILENAME.bin` example:**
+1. Create an assembly program
+    ```bash
+    $ cat jump.asm
+    mov rcx, 0x123
+    jmp 0x4
+    add rcx, 1
+    mov rax, rcx
+    ret
+    ```
+1. Generate bin file with asmline
+    ```bash
+    $ asmline -o jump path/to/jump.asm 
+    ```
+1. Generate a jump.o file from jump.bin
+    ```bash
+    $ objcopy --input-target=binary --redefine-sym _binary_jump_bin_start=jump --rename-section .data=.text --output-target=elf64-x86-64 jump.bin jump.o 
+    ```    
+2. Now we can run objdump on jump.o to see the symbols in the ELF file  
+**NOTE:** the starting label `jump` is going to be linked within a driver function that uses this ELF file  
+    ```bash
+    $ objdump -t jump.o
+    jump.o:     file format elf64-x86-64
+
+    SYMBOL TABLE:
+    0000000000000000 l    d  .text	0000000000000000 .text
+    0000000000000000 g       .text	0000000000000000 jump
+    000000000000000f g       .text	0000000000000000 _binary_jump_bin_end
+    000000000000000f g       *ABS*	0000000000000000 _binary_jump_bin_size
+    ```   
+    
 #### Print assembled machine code to stdout
 
 1. `$ asmline -p path/to/file.asm` to write the generated machine code from `file.asm` to stdout
@@ -33,6 +64,7 @@ DESCRIPTION:
             If -c is given, the chunks are delimited by '|' and each chunk is on one line.
     ```
 1. The above call will output machine code in the hexadecimal format given `path/to/file.asm`.
+
 
 #### Print assembled machine code to a file
 
