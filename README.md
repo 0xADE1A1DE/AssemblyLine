@@ -1,6 +1,17 @@
 # Assemblyline
 
-A C library and binary for generating machine code of x86\_64 assembly language and executing on the fly without invoking another compiler, assembler or linker. <br><br> 
+An ultra-lightweight C library and binary for generating machine code of x86\_64 assembly language and executing on the fly without invoking another compiler, assembler or linker. <br> 
+* Support for MMX, SSE2, AVX, and AVX2 instruction sets.
+* Supports Scaled Index addressing mode (SIB) with the following syntax:  
+`[base + index*scale +\- offset]` or `[base + scale*index +\- offset]` 
+* Memory chunk alignment by using nop-padding.
+* Different modes for assembling instructions.  
+`NASM`: binary output will match that of nasm as closely as possible.  
+`STRICT`: binary output will be in an 'as is' state.  
+`SMART`: intructions could be manipulated to ensure binary output matches nasm (default).  
+please refer to [src/README.md](https://github.com/0xADE1A1DE/AssemblyLine/blob/main/tools/README.md) for more information
+* Easy to use command-line tool `asmline` (refer to [src/README.md](https://github.com/0xADE1A1DE/AssemblyLine/blob/main/tools/README.md)) 
+* High instruction compatibility and easy to add new instructions (refer to [src/README.md](https://github.com/0xADE1A1DE/AssemblyLine/blob/main/src/README.md))   
 ## How to use
 
 ***note: refer to [/src/instructions.c](https://github.com/0xADE1A1DE/AssemblyLine/tree/main/src/instructions.c) for a complete list of supported instructions***
@@ -12,7 +23,7 @@ A C library and binary for generating machine code of x86\_64 assembly language 
 
 ## Example
 
-***note: refer to [/src/assemblyline.h](https://github.com/0xADE1A1DE/AssemblyLine/tree/main/src/assemblyline.h) for more information***
+***note: refer to [/src/assemblyline.h](https://github.com/0xADE1A1DE/AssemblyLine/tree/main/src/assemblyline.h) or run `$ man libassemblyline` for more information***
 
 1. Include the required header files and preprocessors
     ```c
@@ -25,7 +36,7 @@ A C library and binary for generating machine code of x86\_64 assembly language 
     ```c
     // the machince code will be written to this location
     uint8_t *mybuffer = mmap(NULL, sizeof(uint8_t) * BUFFER_SIZE,
-    	PROT_READ | PROT_WRITE | PROT_EXEC, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
+        PROT_READ | PROT_WRITE | PROT_EXEC, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
     ```
 1. Create an instance of assemblyline_t and attach `mybuffer` or set it to NULL for internal memory allocation (will `realloc` if it was too small)
     ```c
@@ -53,7 +64,7 @@ A C library and binary for generating machine code of x86\_64 assembly language 
     ```
 1. Get the start address of the buffer containing the start of the assembly program
     ```c
-    void (*func)() =(void (*)())(asm_get_code(al));
+    void (*func)() = asm_get_code(al);
     // you can then call the function
     int result = func();
     ```
@@ -69,7 +80,7 @@ A C library and binary for generating machine code of x86\_64 assembly language 
     #define BUFFER_SIZE 300
     
     uint8_t *mybuffer = mmap(NULL, sizeof(uint8_t) * BUFFER_SIZE,
-    	PROT_READ | PROT_WRITE | PROT_EXEC, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
+        PROT_READ | PROT_WRITE | PROT_EXEC, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
     
     assemblyline_t al = asm_create_instance(mybuffer, BUFFER_SIZE); 
     
@@ -78,7 +89,7 @@ A C library and binary for generating machine code of x86\_64 assembly language 
     assemble_str(al, "mov rax, 0x0\nadd rax, 0x2; adds two");
     assemble_str(al, "sub rax, 0x1; subs one\nret");
  
-    void (*func)() =(void (*)())(asm_get_code(al));
+    void (*func)() = asm_get_code(al);
     
     int result = func();
     printf("The result is: %d\n", result); 
@@ -93,67 +104,12 @@ A C library and binary for generating machine code of x86\_64 assembly language 
 
 * To run only one testsuite `TESTS=seto.asm make -e check`, then check `./test/seto.log`
 * Or run the `./al_nasm_compare.sh seto.asm` in the `test` directory
-* Adding a new test: add the testfile e.g. `sub.asm` to the directory and add `sub.asm` to the `TESTS`-variable in `./test/Makefile.am`
+* Adding a new test: add the testfile e.g. `sub.asm` to the directory and add `sub.asm` to the `TESTS`-variable in `./Makefile.am`
 then run `$ make clean check`. Finally, add `Makefile.am` and `sub.asm` to git.<br><br> 
 
 ## Command-line tool: asmline
 
-***note: run `$ asmline` or `$ asmline --help` to view usage information***
-```
-USAGE:
-	asmline [-r] [-p] [-c CHUNK_SIZE>1] [-o ELF_FILENAME_NO_EXT] [-h] [-v] path/to/file.asm
-
-DESCRIPTION:
-	Generates machine code from a file or stdin containing x64 assembly instructions. 
-        Machine code could be executed directly without the need for an executable file format. 
-        Obtain command-line instructions for generating an ELF binary file from assembly code.
-```
-### Features:
-
-#### Create ELF file from assembly code
-
-1. `$ asmline -o FILENAME path/to/file.asm` to output the generated machine code into a binary file (FILENAME.bin)
-    ```
-    -o --object FILENAME
-            Generates a binary file from path/to/file.asm called FILENAME.bin in 
-            the current directory.
-    ```
-1. The above call will generate a binary file FILENAME.bin and the command below could be used to create an ELF file.
-    ```bash
-    $ objcopy --input-target=binary --globalize-symbol=FILENAME --rename-section .data=.text --output-target=elf64-x86-64 FILENAME.bin FILENAME.o
-    # link the elf object file with a c program
-    $ gcc -o linker linker.c FILENAME.o
-    ```
-#### Print assembled machine code to stdout
-
-1. `$ asmline -p path/to/file.asm` to write the generated machine code from `file.asm` to stdout
-    ```
-    -p --print
-            When assembling path/to/file.asm the corresponding machine code 
-            will be printed to stdout.
-    ```
-1. The above call will output some machine code in the hexadecimal format given `path/to/file.asm`.
-
-#### Chunk size fitting
-
-1. `$ asmline -c CHUNK_SIZE>1 path/to/file.asm` to appy chunk size fitting when assembling `path/to/file.asm`.
-    ```
-    -c --chunk CHUNK_SIZE>1
-            Sets a given CHUNK_SIZE boundary in bytes. Nop padding will be used to 
-            ensure no instruction opcode crosses the specified CHUNK_SIZE boundary.
-    ```
-1. A specific chunk size within a memory block could be specified (chunk sizes less must be greater than 1),
-1. Then a chunk size is given, assemblyline will ensure no instruction opcode crosses the chunk boundary by applying nop padding
-
-#### Executing machine code directly from memory
-
-1. `$ asmline --return path/to/file.asm` to directly execute `path/to/file.asm` given the following options: 
-    ```
-    -r --return
-            Executes assembly code and prints out the contents of the 
-            rax register (return value register).
-    ```
-1. `-r` executes assembly program specified by `path/to/file.asm` and print out the return value of that program<br><br>   
+Please refer to: [tools/README.md](https://github.com/0xADE1A1DE/AssemblyLine/blob/main/tools/README.md)<br><br>     
   
 ## Adding new instructions
 

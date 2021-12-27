@@ -64,6 +64,13 @@ static void encode_mem(struct instr *instrc, int m) {
 
   if (!instrc->mem_disp)
     return;
+  // auto correct SIB syntax in nasm and smart mode
+  if ((instrc->imm_handling & (SMART | NASM)) &&
+      (instrc->opd[m].index & REG_MASK) == spl && !instrc->sib_disp) {
+    asm_reg swap = instrc->opd[m].index;
+    instrc->opd[m].index = instrc->opd[m].reg;
+    instrc->opd[m].reg = swap;
+  }
   // if r/m value is a memory reference and is the spl register
   if ((instrc->opd[m].reg & VALUE_MASK) == spl &&
       instrc->opd[m].index == reg_none)
@@ -83,24 +90,28 @@ static void encode_mem(struct instr *instrc, int m) {
  * determines register and prefix opcode of @param instrc with 2 operands:
  * @param r and @param m used for MR or RM encoding
  */
-static void encode_two_opds(struct instr *instrc, int r, int m) {
+static int encode_two_opds(struct instr *instrc, int r, int m) {
+
+  encode_mem(instrc, m);
   // check if a second register exist in memory reference ex: [rax+rcx]
   instrc->hex.rex = get_rex_prefix(instrc, &instrc->opd[m], &instrc->opd[r]);
-  encode_mem(instrc, m);
-  instrc->hex.reg = get_reg(instrc, &instrc->opd[m], instrc->opd[r].reg);
+  FAIL_IF(get_reg(instrc, &instrc->opd[m], instrc->opd[r].reg));
+  return EXIT_SUCCESS;
 }
 
 /**
  * determines register and prefix opcode of @param instrc with 3 operands:
  * @param r, @param m, and @param v used for RMV or RVM encoding
  */
-static void encode_three_opds(struct instr *instrc, int r, int m, int v) {
+static int encode_three_opds(struct instr *instrc, int r, int m, int v) {
+
+  encode_mem(instrc, m);
   // used for RXB and R
   instrc->hex.rex = get_rex_prefix(instrc, &instrc->opd[m], &instrc->opd[r]);
   // get vvvv parameter
   instrc->hex.vvvv = instrc->opd[v].reg & 0xf;
-  encode_mem(instrc, m);
-  instrc->hex.reg = get_reg(instrc, &instrc->opd[m], instrc->opd[r].reg);
+  FAIL_IF(get_reg(instrc, &instrc->opd[m], instrc->opd[r].reg));
+  return EXIT_SUCCESS;
 }
 
 /**
@@ -109,23 +120,23 @@ static void encode_three_opds(struct instr *instrc, int r, int m, int v) {
  * @param m or special predefined encoding I with 2 operands:
  * @param m and @param i
  */
-static void encode_special_opd(struct instr *instrc, int m, int i) {
+static int encode_special_opd(struct instr *instrc, int m, int i) {
 
   struct operand no_register = {NULL, {'\0'}, reg_none, {'\0'}, reg_none, 0};
   switch (INSTR_TABLE[instrc->key].encode_operand) {
   case M:
-    instrc->hex.rex = get_rex_prefix(instrc, &instrc->opd[m], &no_register);
     encode_mem(instrc, m);
-    instrc->hex.reg =
-        get_reg(instrc, &instrc->opd[m], INSTR_TABLE[instrc->key].single_reg_r);
+    instrc->hex.rex = get_rex_prefix(instrc, &instrc->opd[m], &no_register);
+    FAIL_IF(get_reg(instrc, &instrc->opd[m],
+                    INSTR_TABLE[instrc->key].single_reg_r));
     break;
 
   case O:
     if ((MODE_MASK & instrc->opd[m].reg) == ext64)
       instrc->hex.rex = rex_ + rex_b;
     instrc->rd_offset = (instrc->opd[m].reg & VALUE_MASK);
-    instrc->hex.reg =
-        get_reg(instrc, &instrc->opd[m], INSTR_TABLE[instrc->key].single_reg_r);
+    FAIL_IF(get_reg(instrc, &instrc->opd[m],
+                    INSTR_TABLE[instrc->key].single_reg_r));
     break;
 
   case I:
@@ -136,9 +147,10 @@ static void encode_special_opd(struct instr *instrc, int m, int i) {
     // do nothing
     break;
   }
+  return EXIT_SUCCESS;
 }
 
-void encode_operands(struct instr *instrc) {
+int encode_operands(struct instr *instrc) {
   // xchg instruction with RM operand encoding using rax or al register
   if (INSTR_TABLE[instrc->key].name == xchg &&
       INSTR_TABLE[instrc->key].encode_operand == RM) {
@@ -158,24 +170,21 @@ void encode_operands(struct instr *instrc) {
   // get register value and prefix for each operand encoding type
   switch (INSTR_TABLE[instrc->key].encode_operand) {
   case MR:
-    encode_two_opds(instrc, SECOND_OPERAND, FIRST_OPERAND);
-    break;
+    return encode_two_opds(instrc, SECOND_OPERAND, FIRST_OPERAND);
 
   case RM:
-    encode_two_opds(instrc, FIRST_OPERAND, SECOND_OPERAND);
-    break;
+    return encode_two_opds(instrc, FIRST_OPERAND, SECOND_OPERAND);
 
   case RVM:
-    encode_three_opds(instrc, FIRST_OPERAND, THIRD_OPERAND, SECOND_OPERAND);
-    break;
+    return encode_three_opds(instrc, FIRST_OPERAND, THIRD_OPERAND,
+                             SECOND_OPERAND);
 
   case RMV:
-    encode_three_opds(instrc, FIRST_OPERAND, SECOND_OPERAND, THIRD_OPERAND);
-    break;
+    return encode_three_opds(instrc, FIRST_OPERAND, SECOND_OPERAND,
+                             THIRD_OPERAND);
 
   default:
-    encode_special_opd(instrc, FIRST_OPERAND, SECOND_OPERAND);
-    break;
+    return encode_special_opd(instrc, FIRST_OPERAND, SECOND_OPERAND);
   }
 }
 

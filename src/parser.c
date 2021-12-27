@@ -107,7 +107,7 @@ static int line_to_instr(struct instr *instr_data, char *filtered_asm_str) {
     // cleans up immediate
     encode_imm(instr_data);
     // finds the operand and prefix hex values
-    encode_operands(instr_data);
+    FAIL_IF(encode_operands(instr_data));
   }
   return EXIT_SUCCESS;
 }

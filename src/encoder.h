@@ -30,7 +30,7 @@ void encode_offset(struct instr *instruc);
 /**
  * determines register and prefix opcode of @param instruc
  */
-void encode_operands(struct instr *instruc);
+int encode_operands(struct instr *instruc);
 
 /**
  * preprocess the immediate for @param instruc

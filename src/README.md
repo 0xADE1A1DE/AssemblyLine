@@ -2,7 +2,7 @@
 
 1. Get the instruction opcode layout and operand encoding format (please refer to the [intel manual](https://www.intel.com/content/dam/www/public/us/en/documents/manuals/64-ia-32-architectures-software-developer-instruction-set-reference-manual-325383.pdf)).
 1. Add the new instruction to the asm\_instr enumerator set found in the [/src/enums.h](https://github.com/0xADE1A1DE/AssemblyLine/tree/main/src/enums.h).
-1. Add a new entry to INSTR\_TABLE[] [/src/instructions.h](https://github.com/0xADE1A1DE/AssemblyLine/tree/main/src/enums.h) while maintaining alphabetical order  
+1. Add a new entry to INSTR\_TABLE[] [/src/instructions.c](https://github.com/0xADE1A1DE/AssemblyLine/tree/main/src/instructions.c) while maintaining alphabetical order  
 
 #### Instruction table format: 
 ```c
@@ -60,7 +60,7 @@ struct INSTR_TABLE[] {
    * REX VEX, and REG are placeholders for prefix and register values for encoding of
    * VEX prefix please refer to the intel manual section 2.3.5 as well as common.h
    * '#define VEX(vvvv,L,pp,mmmmm,WIG)' and enums.h 'opcode_encoding'.
-   * '+rd' refers '+rb, +rw, +rd, +ro' in the intel manual section 3.1.1.1
+   * '+rd' refers to '+rb, +rw, +rd, +ro' in intel manual section 3.1.1.1
    */
   unsigned int opcode[MAX_OPCODE_LEN];                 
 }

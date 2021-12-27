@@ -55,6 +55,7 @@ libassemblyline_la_SOURCES = \
 
 include_HEADERS = src/assemblyline.h
 
+
 # from  7.3 https://www.gnu.org/software/libtool/manual/html_node/Versioning.html#Versioning
 # -version-info accepts ‘current[:revision[:age]]’
 
@@ -127,7 +128,6 @@ install-exec-hook:
 uninstall-local:
 	cd $(mandir)/man3 && \
 	rm -f -- $(methods) 
-
 
 ##############################################################################################
 ##############################################################################################
