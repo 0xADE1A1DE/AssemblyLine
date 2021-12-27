@@ -97,6 +97,10 @@ DESCRIPTION:
     ```
 1. `-r` executes assembly program specified by `path/to/file.asm` and print out the return value of that program
 
+### Different modes of assembly
+When moving immediate values to a 64-bit register, if immediate value is less than or equal to 0x7fffffff (max signed 32-bit)
+nasm will interpret 'mov rax, IMM' as 'mov eax, IMM'. The following three settings allow the user to control this behavior.
+
 #### Set assembly mode to NASM
 
 1. `$ asmline -n path/to/file.asm` to ensure the generated machine code from `file.asm` matches nasm 
@@ -109,9 +113,6 @@ DESCRIPTION:
             note: rax got optimized to eax for faster immediate to register transfer and
                   produces a shorter instruction. 
     ```
-### Different modes of assembly
-When moving immediate values to a 64-bit register, if immediate value is less than or equal to 0x7fffffff (max signed 32-bit)
-nasm will interpret mov rax, IMM as mov eax, IMM. The following three settings allow the user to control this behavior.
 
 #### Set assembly mode to STRICT
 
@@ -130,7 +131,7 @@ nasm will interpret mov rax, IMM as mov eax, IMM. The following three settings a
 #### Set assembly mode to SMART
 
 1. `$ asmline -s path/to/file.asm` to ensure the generated machine code from `file.asm` can manually be set to  
-disable nasm mode. 
+disable nasm mode (this is enabled by default). 
     ```
     -s, --smart
             The immediate value will be checked for leading 0's.
