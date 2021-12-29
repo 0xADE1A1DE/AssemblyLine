@@ -19,11 +19,11 @@
 #define REGISTERS_H
 
 #include "common.h"
-/*stores all string representation of registers along 
-  with their corresponding generic type*/
 #include "enums.h"
 #include <stdint.h>
 
+/*stores all string representation of registers along 
+  with their corresponding generic type*/
 const static struct {
   // generic register type
   asm_reg gen_reg;
