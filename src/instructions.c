@@ -20,6 +20,30 @@
 #include <inttypes.h>
 #include "instructions.h"
 
+
+const struct opd_format_table OPD_FORMAT_TABLE[] = {
+                        // first operand does not exist or is an immediate
+                        {n,   {'\0'}}, {n,   "i"},    
+                        // first operand is a memory reference
+                        {m,   "m"},   {mi,  "mi"},      {mr,  "mr"},   
+                        {mri, "mri"}, {mrr, "mrr"}, {mv,   "mv"},    
+                        {my,  "my"}, 
+                        // first operand is a register
+                        {r,   "r"},   {ri,  "ri"},  {rm,  "rm"},   
+                        {rmi, "rmi"}, {rmr, "rmr"}, {rr,  "rr"},    
+                        {rri, "rri"}, {rrm, "rrm"}, {rrr, "rrr"},  
+                        {rv,  "rv"},  
+                        // first operand is a xmm register 
+                        {vi,  "vi"},  {vr,  "vr"},  {vm,  "vm"},   
+                        {vv,  "vv"},  {vvm, "vvm"}, {vvmi,"vvmi"}, 
+                        {vvv, "vvv"}, {vvvi,"vvvi"},
+                        // first operand is a ymm register 
+                        {ym,  "ym"},   {yy,  "yy"},  {yym, "yym"},  
+                        {yymi,"yymi"}, {yyy, "yyy"}, {yyyi,"yyyi"}, 
+                        // operand format not found
+                        {opd_error, "error"}};
+
+
 const struct instr_table INSTR_TABLE[] = {
     {{'\0'},        EOI,         {NA, NA},   NA,  OTHER,          NA,  NA,  0,  {0}},
     {{'\0'},        LABEL,       {NA, NA},   NA,  OTHER,          NA,  NA,  0,  {0}},

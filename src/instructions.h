@@ -22,25 +22,14 @@
 #include "enums.h"
 #include <inttypes.h>
 
-
-// operand format string to enum mapping 
-const static struct {
+// table for storing register string to enum mapping
+struct opd_format_table{
+  // enum representation of register
   operand_format val;
+  // string representation of register
   const char str[OPERAND_FORMAT_LEN];
   
-} OPD_FORMAT_TABLE[] = {{n,   {'\0'}},  {n,   "i"},    {m,   "m"},
-                        {r,   "r"},     {mr,  "mr"},   {rm,  "rm"},
-                        {rr,  "rr"},    {ri,  "ri"},   {mi,  "mi"},
-                        {rrr, "rrr"},   {rri, "rri"},  {rmi, "rmi"},
-                        {rrm, "rrm"},   {rmr, "rmr"},  {vr,  "vr"},
-                        {rv, "rv"},     {vv,  "vv"},   {yy,  "yy"}, 
-                        {vi,  "vi"},    {vm, "vm"},    {mv, "mv"},   
-                        {ym, "ym"},     {my, "my"},    {vvv, "vvv"}, 
-                        {yyy, "yyy"},   {mri, "mri"},  {vvm, "vvm"},  
-                        {vvmi,"vvmi"},  {yym, "yym"},  {yymi,"yymi"}, 
-                        {vvvi,"vvvi"},  {yyyi,"yyyi"}, {mrr, "mrr"},  
-                        {opd_error, "error"}};
-
+};
 
 // defines opcode layout of each supported instruction
 struct instr_table{
@@ -97,6 +86,7 @@ struct instr_table{
 
 }; 
 
+extern const struct opd_format_table OPD_FORMAT_TABLE[];
 extern const struct instr_table INSTR_TABLE[];
 extern int instr_table_index[26];
 #endif
