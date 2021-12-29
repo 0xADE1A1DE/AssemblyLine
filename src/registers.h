@@ -20,7 +20,6 @@
 
 #include "common.h"
 #include "enums.h"
-#include <stdint.h>
 
 /*stores all string representation of registers along 
   with their corresponding generic type*/
