@@ -50,6 +50,7 @@ libassemblyline_la_SOURCES = \
 							 src/reg_parser.c \
 							 src/reg_parser.h \
 							 src/registers.h \
+							 src/registers.c \
 							 src/tokenizer.c \
 							 src/tokenizer.h
 
