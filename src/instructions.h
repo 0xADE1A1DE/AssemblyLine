@@ -89,4 +89,5 @@ struct instr_table{
 extern const struct opd_format_table OPD_FORMAT_TABLE[];
 extern const struct instr_table INSTR_TABLE[];
 extern int instr_table_index[26];
+extern int opd_format_table_index[26];
 #endif

@@ -20,12 +20,11 @@
 #include <inttypes.h>
 #include "instructions.h"
 
-
 const struct opd_format_table OPD_FORMAT_TABLE[] = {
                         // first operand does not exist or is an immediate
                         {n,   {'\0'}}, {n,   "i"},    
                         // first operand is a memory reference
-                        {m,   "m"},   {mi,  "mi"},      {mr,  "mr"},   
+                        {m,   "m"},   {mi,  "mi"},  {mr,  "mr"},   
                         {mri, "mri"}, {mrr, "mrr"}, {mv,   "mv"},    
                         {my,  "my"}, 
                         // first operand is a register
@@ -313,4 +312,5 @@ const struct instr_table INSTR_TABLE[] = {
     {"xend",        xend,        {n,  n},    NA,  CONTROL_FLOW,   NA,  NA,  3,  {0x0f, 0x01, 0xd5}},
     {{'\0'},        NA,          {NA, NA},   NA,  OTHER,          NA,  NA,  0,  {0}}};
 
-int instr_table_index[26] = {NA};
+int instr_table_index[26] = {0};
+int opd_format_table_index[26] = {0};

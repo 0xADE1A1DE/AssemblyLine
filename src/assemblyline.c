@@ -33,17 +33,28 @@
  * INSTR_TABLE[] where the first occurrence of each letter of the alphabet to
  * instr_index_table for more efficient instruction lookup
  */
-static void asm_build_index_table(assemblyline_t al) {
-  int i = 3;
+static void asm_build_index_tables(assemblyline_t al) {
+  // INSTR_TABLE index starts at the SKIP entry
+  int i = 2;
   char previous_char = 'a' - 1;
-  while (INSTR_TABLE[i].name != NA) {
+  while (INSTR_TABLE[++i].name != NA) {
     if (INSTR_TABLE[i].instr_name[0] != '\0') {
       if (previous_char != INSTR_TABLE[i].instr_name[0])
         instr_table_index[INSTR_TABLE[i].instr_name[0] - 'a'] = i;
       previous_char = INSTR_TABLE[i].instr_name[0];
     }
-    i++;
   }
+  /*
+  // create an index table from OPD_FORMAT_TABLE
+  i = 0;
+  previous_char = '\0';
+  while (OPD_FORMAT_TABLE[++i].val != opd_error) {
+    if (previous_char != OPD_FORMAT_TABLE[i].str[0]) {
+      opd_format_table_index[OPD_FORMAT_TABLE[i].str[0] - 'a'] = i;
+      previous_char = OPD_FORMAT_TABLE[i].str[0];
+    }
+  }
+  */
 }
 
 assemblyline_t asm_create_instance(uint8_t *buffer, int len) {
@@ -74,7 +85,7 @@ assemblyline_t asm_create_instance(uint8_t *buffer, int len) {
   al->chunk_size++;
   al->debug = false;
   al->finalized = false;
-  asm_build_index_table(al);
+  asm_build_index_tables(al);
   return al;
 }
 

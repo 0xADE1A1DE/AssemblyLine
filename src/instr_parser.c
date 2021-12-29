@@ -25,6 +25,10 @@
 operand_format get_opd_format(char *opd_en) {
 
   int i = NA;
+  /*
+  if (opd_en[0] != '\0')
+    i = opd_format_table_index[opd_en[0] - 'a'] - 1;
+  */
   // find the correct operand format enum given the corresponding string
   while (OPD_FORMAT_TABLE[++i].val != opd_error) {
     if (!strcasecmp(opd_en, OPD_FORMAT_TABLE[i].str))
@@ -37,7 +41,7 @@ operand_format get_opd_format(char *opd_en) {
 
 int str_to_instr_key(char *instruction, operand_format opd_layout) {
 
-  int i = 20000;
+  int i = 0;
   // set index of INSTR_TABLE[] to the first letter of instruction
   if (IN_RANGE(instruction[0], 'a', 'z'))
     i = instr_table_index[instruction[0] - 'a'] - 1;
