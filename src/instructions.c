@@ -17,7 +17,6 @@
 /*declares all supported x86_64 assembly instructions*/
 #include "common.h"
 #include "enums.h"
-#include <inttypes.h>
 #include "instructions.h"
 
 const struct opd_format_table OPD_FORMAT_TABLE[] = {

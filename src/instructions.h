@@ -20,7 +20,6 @@
 
 #include "common.h"
 #include "enums.h"
-#include <inttypes.h>
 
 // table for storing register string to enum mapping
 struct opd_format_table{
