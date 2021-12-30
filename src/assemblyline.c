@@ -33,23 +33,35 @@
  * INSTR_TABLE[] where the first occurrence of each letter of the alphabet to
  * instr_index_table for more efficient instruction lookup
  */
-static void asm_build_index_table(assemblyline_t al) {
-  int i = 3;
+static void asm_build_index_tables(assemblyline_t al) {
+  // INSTR_TABLE index starts at the SKIP entry
+  int i = 2;
   char previous_char = 'a' - 1;
-  while (INSTR_TABLE[i].name != NA) {
+  while (INSTR_TABLE[++i].name != NA) {
     if (INSTR_TABLE[i].instr_name[0] != '\0') {
       if (previous_char != INSTR_TABLE[i].instr_name[0])
         instr_table_index[INSTR_TABLE[i].instr_name[0] - 'a'] = i;
       previous_char = INSTR_TABLE[i].instr_name[0];
     }
-    i++;
   }
+  /*
+  // create an index table from OPD_FORMAT_TABLE
+  i = 0;
+  previous_char = '\0';
+  while (OPD_FORMAT_TABLE[++i].val != opd_error) {
+    if (previous_char != OPD_FORMAT_TABLE[i].str[0]) {
+      opd_format_table_index[OPD_FORMAT_TABLE[i].str[0] - 'a'] = i;
+      previous_char = OPD_FORMAT_TABLE[i].str[0];
+    }
+  }
+  */
 }
 
 assemblyline_t asm_create_instance(uint8_t *buffer, int len) {
 
   assemblyline_t al = malloc(sizeof(struct assemblyline));
   al->offset = 0;
+  al->mov_imm_handling = SMART;
   // allocate buffer internally if not directly given
   if (buffer == NULL) {
     al->external = false;
@@ -69,11 +81,11 @@ assemblyline_t asm_create_instance(uint8_t *buffer, int len) {
     al->buffer = buffer;
   }
   al->assembly_mode = ASSEMBLE;
-  al->chunk_size = none;
+  al->chunk_size = NONE;
   al->chunk_size++;
   al->debug = false;
   al->finalized = false;
-  asm_build_index_table(al);
+  asm_build_index_tables(al);
   return al;
 }
 
@@ -88,6 +100,7 @@ int asm_destroy_instance(assemblyline_t instance) {
 
 // checks the minimum buffer length requirement 20 bytes at least
 static int check_buffer_len(int buffer_len) {
+
   FAIL_IF_MSG(buffer_len < BUFFER_TOLERANCE,
               "insufficient buffer size: ensure length of buffer is at least "
               "20 bytes\n");
@@ -158,3 +171,11 @@ void asm_set_offset(assemblyline_t al, int offset) { al->offset = offset; }
 uint8_t *asm_get_buffer(assemblyline_t al) { return al->buffer; }
 
 void *asm_get_code(assemblyline_t al) { return (void *)al->buffer; }
+
+void strict_mov_imm_handling(assemblyline_t al) {
+  al->mov_imm_handling = STRICT;
+}
+
+void nasm_mov_imm_handling(assemblyline_t al) { al->mov_imm_handling = NASM; }
+
+void smart_mov_imm_handling(assemblyline_t al) { al->mov_imm_handling = SMART; }

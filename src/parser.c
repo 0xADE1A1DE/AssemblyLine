@@ -25,6 +25,7 @@ representation*/
 #include "instructions.h"
 #include "reg_parser.h"
 #include "tokenizer.h"
+#include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/mman.h>
@@ -34,11 +35,12 @@ representation*/
  */
 static int check_registers(struct instr *check_instr) {
 
-  FAIL_IF((check_instr->opd[0] & reg_error) == reg_error);
-  FAIL_IF((check_instr->opd_mem[0] & reg_error) == reg_error);
-  FAIL_IF((check_instr->opd[1] & reg_error) == reg_error);
-  FAIL_IF((check_instr->opd_mem[1] & reg_error) == reg_error);
-  FAIL_IF((check_instr->opd[2] & reg_error) == reg_error);
+  FAIL_IF((check_instr->opd[0].reg & reg_error) == reg_error);
+  FAIL_IF((check_instr->opd[0].index & reg_error) == reg_error);
+  FAIL_IF((check_instr->opd[1].reg & reg_error) == reg_error);
+  FAIL_IF((check_instr->opd[1].index & reg_error) == reg_error);
+  FAIL_IF((check_instr->opd[2].reg & reg_error) == reg_error);
+  FAIL_IF((check_instr->opd[2].index & reg_error) == reg_error);
   return EXIT_SUCCESS;
 }
 
@@ -46,18 +48,23 @@ static int check_registers(struct instr *check_instr) {
  * tokenize and parse @param filtered_asm_str to fill in @param instr_data
  */
 static int line_to_instr(struct instr *instr_data, char *filtered_asm_str) {
-  // default mod displacement value
+  // default mod displacement value r/m is register
   instr_data->mod_disp = MOD24;
+  // clear the least significant bit
+  if (instr_data->imm_handling & SMART)
+    instr_data->imm_handling &= SMART;
   // tokenize filtered instruction for mapping to instr internal structure
   FAIL_IF_MSG(instr_tok(instr_data, filtered_asm_str), "syntax error\n");
   // convert operand format from string to enum representation
-  operand_format opd_format = get_opd_format(instr_data->opd_type);
-  FAIL_IF_VAR(opd_format == opd_error, "illegal operand format: %s\n",
-              instr_data->opd_type)
+  char opd_type[5] = {'\0'};
+  for (int i = 0; i < NUM_OF_OPD; i++)
+    opd_type[i] = instr_data->opd[i].type;
+  operand_format opd_format = get_opd_format(opd_type);
+  FAIL_IF_VAR(opd_format == opd_error, "illegal operand format: %s\n", opd_type)
   // jcc [MEM] no register
-  if (opd_format == m && instr_data->op_cpy[0][0] == '\0') {
+  if (opd_format == m && instr_data->opd[0].str[0] == '\0') {
     instr_data->mod_disp &= MOD16;
-    instr_data->is_short = true;
+    instr_data->keyword.is_short = true;
   }
   // convert instruction string to enum representation
   instr_data->key = str_to_instr_key(instr_data->instruction, opd_format);
@@ -66,28 +73,25 @@ static int line_to_instr(struct instr *instr_data, char *filtered_asm_str) {
               instr_data->instruction);
   if (instr_data->imm && INSTR_TABLE[instr_data->key].type == CONTROL_FLOW) {
     if (IN_RANGE(instr_data->cons, 0xffffff80, 0xffffffff))
-      instr_data->is_short = true;
-    else if (IN_RANGE(instr_data->cons, 0, 0x7f) && !instr_data->is_long)
-      instr_data->is_short = true;
+      instr_data->keyword.is_short = true;
+    else if (IN_RANGE(instr_data->cons, 0, 0x7f) &&
+             !instr_data->keyword.is_long)
+      instr_data->keyword.is_short = true;
     else
-      FAIL_IF_MSG(instr_data->cons > 0x7f && instr_data->is_short,
+      FAIL_IF_MSG(instr_data->cons > 0x7f && instr_data->keyword.is_short,
                   "cannot set a long jump to short\n");
   }
   // find the encoding for a short jump instruction if applicable
-  instr_data->key += instr_data->is_short;
-
+  instr_data->key += instr_data->keyword.is_short;
   // convert register string to enum representation
-  instr_data->opd[0] = str_to_reg(instr_data->op_cpy[0]);
-  instr_data->opd_mem[0] = str_to_reg(instr_data->op_mem_cpy[0]);
-  instr_data->opd[1] = str_to_reg(instr_data->op_cpy[1]);
-  instr_data->opd_mem[1] = str_to_reg(instr_data->op_mem_cpy[1]);
-  instr_data->opd[2] = str_to_reg(instr_data->op_cpy[2]);
+  for (int i = 0; i < FOURTH_OPERAND; i++)
+    instr_data->opd[i].reg = str_to_reg(instr_data->opd[i].str);
+  for (int i = 0; i < FOURTH_OPERAND; i++)
+    instr_data->opd[i].index = str_to_reg(instr_data->opd[i].sib);
   // values will be determined during encoding
-  instr_data->reg_hex = NO_PREFIX;
-  instr_data->prefix_hex = NO_PREFIX;
-  instr_data->vex_prefix_hex = NO_PREFIX;
-  instr_data->w0_hex = NO_PREFIX;
-  instr_data->mem_hex = NO_PREFIX;
+  instr_data->hex.reg = NONE;
+  instr_data->hex.rex = NONE;
+  instr_data->hex.sib = NO_BYTE;
   // checks if the registers are valid
   FAIL_IF_VAR(check_registers(instr_data),
               "Invalid register for instruction: %s\n",
@@ -97,13 +101,13 @@ static int line_to_instr(struct instr *instr_data, char *filtered_asm_str) {
       IN_RANGE(instr_data->cons, NEG32BIT + 1, NEG64BIT))
     instr_data->cons &= 0xffffffff;
   // encode for the reg_hex value and op_offset for instruction
-  if (instr_data->opd[0] != reg_none) {
+  if (instr_data->opd[0].reg != reg_none) {
     // gets all offsets
     encode_offset(instr_data);
     // cleans up immediate
     encode_imm(instr_data);
     // finds the operand and prefix hex values
-    encode_operands(instr_data);
+    FAIL_IF(encode_operands(instr_data));
   }
   return EXIT_SUCCESS;
 }
@@ -124,21 +128,21 @@ static int filter_assembly_str_fsa(const char unfiltered_str[],
     switch (filter_state) {
     case BEGIN:
       if (unfiltered_str[i] >= 'A' && unfiltered_str[i] <= 'z') {
-        filter_str[j++] = unfiltered_str[i];
+        filter_str[j++] = tolower(unfiltered_str[i]);
         filter_state = FIRST_CH;
       }
       break;
     case FIRST_CH:
       if (unfiltered_str[i] > '!')
-        filter_str[j++] = unfiltered_str[i];
+        filter_str[j++] = tolower(unfiltered_str[i]);
       else if (unfiltered_str[i] == ' ') {
-        filter_str[j++] = unfiltered_str[i];
+        filter_str[j++] = tolower(unfiltered_str[i]);
         filter_state = SPACE_FOUND;
       }
       break;
     case SPACE_FOUND:
       if (unfiltered_str[i] > '!')
-        filter_str[j++] = unfiltered_str[i];
+        filter_str[j++] = tolower(unfiltered_str[i]);
       break;
     }
     // last printable ascii character
@@ -163,12 +167,10 @@ static int str_to_instr(struct instr *instr_data, const char unfiltered_str[],
     ch_pos++;
   if (unfiltered_str[ch_pos] == '\n' || unfiltered_str[ch_pos] == '\r')
     ch_pos++;
-  // for debugging purposes to check the filtered instruction
-  // printf("filter = {%s}\n", filter);
   *read_len = ch_pos;
-  // map filter_str to instr_data if not it is not a label
-  if (filter_str[0] != '\0' && strstr(filter_str, "SECTION") == NULL &&
-      strstr(filter_str, "GLOBAL") == NULL && strchr(filter_str, ':') == NULL)
+  // map filter_str to instr_data if not it is not a label or header
+  if (filter_str[0] != '\0' && strstr(filter_str, "section") == NULL &&
+      strstr(filter_str, "global") == NULL && strchr(filter_str, ':') == NULL)
     return line_to_instr(instr_data, filter_str);
   // set to skip and return EXIT_SUCCESS
   instr_data->key = SKIP;
@@ -194,7 +196,6 @@ static void debug_without_chunksize(int opcode_len, uint8_t *ptr) {
  */
 static void debug_with_chunksize(uint8_t *buf, int opcode_pos,
                                  size_t chunk_size) {
-
   for (int i = 0; i < opcode_pos; i++) {
     if (i % chunk_size == 0 && chunk_size > 1 && i != 0)
       printf("|\n");
@@ -206,7 +207,7 @@ static void debug_with_chunksize(uint8_t *buf, int opcode_pos,
 /**
  * checks if the buffer length has been exceeded
  */
-int check_len_or_resize(assemblyline_t al, int buf_pos) {
+static int check_len_or_resize(assemblyline_t al, int buf_pos) {
 
   if (buf_pos + BUFFER_TOLERANCE > al->buffer_len) {
     FAIL_IF_VAR(al->external,
@@ -301,6 +302,7 @@ int assemble_all(assemblyline_t al, const char *str, int *dest) {
   // read str and assemble instruction line by line
   while (*tokenizer != '\0') {
     struct instr new_instr = {0};
+    new_instr.imm_handling = al->mov_imm_handling;
     int chars_read = 0;
     FAIL_IF_ERR(str_to_instr(&new_instr, tokenizer, &chars_read));
     tokenizer += chars_read;

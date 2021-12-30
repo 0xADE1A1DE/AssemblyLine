@@ -2,6 +2,7 @@ SECTION .text
 GLOBAL test
 test:
 mov [rsp + 0x03f0 ], rax
+; mov [rsp + 0x03f0 ], rax
 mov byte [ rsp + 0xa0 ], r14b
 mov byte [ rsp + 0xa0 ], ah
 mov byte [ rsp + 0xa0 ], al
@@ -20,6 +21,8 @@ mov r10, rcx
 mov r10, rdi
 mov r10, rdx
 mov r10, rsi
+mov r13, [rbp+0x7f]
+mov r13, [rbp+0x80]
 mov r10, [ rsi + 0x68 ]
 mov r10, [ rsi + 0xc0 ]
 mov r10, [ rsp + 0x108 ]
@@ -1930,11 +1933,11 @@ mov rdx, [ rsp + 0xe8 ]
 mov rdx, [ rsp + 0xea8 ]
 mov rdx, [ rsp + 0xeb0 ]
 mov rdx, [ rsp + 0xfd0 ]
-mov [ rsi + 0x18 ], rdx
-mov [ rsi + 0x40 ], r10
-mov [ rsi + 0x78 ], r9
-mov [ rsi + 0x80 ], r10
-mov [ rsi + 0x90 ], r14
+mov [ rsi + rax + 0x18 ], rdx
+mov [ rsi +  rbp + 0x40 ], r10
+mov [ rsi +  r14 + 0x78 ], r9
+mov [ rsi +  r11 + 0x80 ], r10
+mov [ rsi +  r9 + 0x90 ], r14
 mov rsi, r10
 mov rsi, r11
 mov rsi, r12
@@ -4125,3 +4128,7 @@ mov [ rsp + 0xd8 ], rsi
 mov [ rsp + 0xe0 ], r13
 mov [ rsp + 0xe8 ], rcx
 mov [ rsp + 0xf8 ], r14
+mov eax, r15d
+mov eax, r15d
+mov ax, r15w
+mov al, r15b

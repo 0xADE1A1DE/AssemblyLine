@@ -58,14 +58,15 @@ static void get_mod_disp(struct instr *instr_buffer, bool neg) {
  * Given an instance of @param instr_buffer convert a memory displacement string
  * representation @param mem into its equivalent unsigned long representation
  */
-static void mem_tok(struct instr *instr_buffer, char *mem, int opd_pos) {
+static int mem_tok(struct instr *instr_buffer, char *mem, int opd_pos) {
 
   instr_buffer->mem_disp = true;
   bool neg = false;
   int base = 16;
   // find the index position of the memory displacement string
   int index = find_add_mem(mem, &neg, &base);
-  get_second_reg(mem, instr_buffer->op_mem_cpy[opd_pos]);
+  FAIL_IF_MSG(get_index_reg(instr_buffer, mem, instr_buffer->opd[opd_pos].sib),
+              "invalid memory syntax\n");
   instr_buffer->mem_offset = 0;
   // convert string to unsigned long for memory displacement representation
   if (index != NA) {
@@ -75,6 +76,7 @@ static void mem_tok(struct instr *instr_buffer, char *mem, int opd_pos) {
       instr_buffer->mem_offset = process_neg_disp(instr_buffer->mem_offset);
   }
   get_mod_disp(instr_buffer, neg);
+  return EXIT_SUCCESS;
 }
 
 /**
@@ -83,12 +85,16 @@ static void mem_tok(struct instr *instr_buffer, char *mem, int opd_pos) {
  */
 static void imm_tok(struct instr *instr_buffer, char *imme) {
 
+  size_t imme_str_len = strlen(imme);
   char *saved_saved;
   instr_buffer->imm = true;
   int base = 10;
   imme = strtok_r(imme, " ", &saved_saved);
-  if (imme[1] == 'x' || imme[2] == 'x')
+  if (imme[1] == 'x' || imme[2] == 'x') {
     base = 16;
+    if ((instr_buffer->imm_handling & SMART) && imme_str_len < 18)
+      instr_buffer->imm_handling |= NASM;
+  }
   // convert string to unsigned long for immediate representation
   instr_buffer->cons = strtoul(imme, NULL, base);
 }
@@ -100,39 +106,50 @@ static void imm_tok(struct instr *instr_buffer, char *imme) {
  */
 static void check_for_keyword(struct instr *instr_buffer, char *all_opd,
                               int opd_pos) {
-
-  char *find_byte = strstr(all_opd, "byte");
+  char *find_byte = NULL;
   char *find_short = NULL;
   char *find_long = NULL;
-  // short and long keyword can only appear in the first operand
-  if (opd_pos == FIRST_OPERAND) {
-    find_short = strstr(all_opd, "short");
-    find_long = strstr(all_opd, "long");
-  }
-  // check if the byte, long, or short keyword exist
-  if (find_byte != NULL) {
-    instr_buffer->is_byte = true;
+  switch (all_opd[0]) {
+  case 'b':
+    if (all_opd[1] == 'y')
+      find_byte = strstr(all_opd, "byte");
+    if (find_byte == NULL)
+      return;
+    instr_buffer->keyword.is_byte = true;
     clearstring(all_opd, BYTE_LEN);
-  } else if (find_short != NULL) {
-    instr_buffer->is_short = true;
-    instr_buffer->is_long = false;
+    break;
+  case 's':
+    if (opd_pos == FIRST_OPERAND && all_opd[1] == 'h')
+      find_short = strstr(all_opd, "short");
+    if (find_short == NULL)
+      return;
+    instr_buffer->keyword.is_short = true;
+    instr_buffer->keyword.is_long = false;
     clearstring(all_opd, SHORT_LEN);
-  } else if (find_long != NULL) {
-    instr_buffer->is_long = true;
-    instr_buffer->is_short = false;
+    break;
+  case 'l':
+    if (opd_pos == FIRST_OPERAND && all_opd[1] == 'o')
+      find_long = strstr(all_opd, "long");
+    if (find_long == NULL)
+      return;
+    instr_buffer->keyword.is_long = true;
+    instr_buffer->keyword.is_short = false;
     clearstring(all_opd, LONG_LEN);
+    break;
+  default:
+    return;
   }
 }
 
 /**
  * Given an instance of @param instr_buffer, checks the operand type of
- * @param opds at operand postion @param opd_pos to get the register if operand
- * is not an immediate.
+ * @param opds at operand postion @param opd_pos to get the register if
+ * operand is not an immediate.
  */
 static int check_operand_type(struct instr *instr_buffer, char *all_opd,
                               int opd_pos) {
   char *saved_opd;
-  switch (instr_buffer->opd_type[opd_pos]) {
+  switch (instr_buffer->opd[opd_pos].type) {
   // convert immediate to unsigned long
   case 'i':
     imm_tok(instr_buffer, all_opd);
@@ -143,10 +160,12 @@ static int check_operand_type(struct instr *instr_buffer, char *all_opd,
 
   // get register string from operand
   case 'r':
+  case 'v':
+  case 'y':
   case 'm':
-    get_reg_str(all_opd, instr_buffer->op_cpy[opd_pos]);
-    if (instr_buffer->opd_type[opd_pos] == 'm')
-      mem_tok(instr_buffer, all_opd, opd_pos);
+    get_reg_str(all_opd, instr_buffer->opd[opd_pos].str);
+    if (instr_buffer->opd[opd_pos].type == 'm')
+      return mem_tok(instr_buffer, all_opd, opd_pos);
     return EXIT_SUCCESS;
   // operand type is not found
   default:
@@ -155,26 +174,26 @@ static int check_operand_type(struct instr *instr_buffer, char *all_opd,
 }
 
 /**
- * Given an instance of @param instr_buffer, tokenize operand string @param opds
- * at operand postion @param opd_pos.
+ * Given an instance of @param instr_buffer, tokenize operand string @param
+ * opds at operand postion @param opd_pos.
  */
 static int operand_tok(struct instr *instr_buffer, char *opds, int opd_pos) {
 
   char *saved_opd;
   FAIL_IF(opds[0] == ',');
-  char *all_opd = instr_buffer->operand[opd_pos];
+  char *all_opd = instr_buffer->opd[opd_pos].ptr;
   // get the 1st operand
   all_opd = strtok_r(opds, ",", &saved_opd);
   check_for_keyword(instr_buffer, all_opd, opd_pos);
   // get the operand type can be 'i', 'r', or 'm'
-  instr_buffer->opd_type[opd_pos] = get_operand_type(all_opd);
+  instr_buffer->opd[opd_pos].type = get_operand_type(all_opd);
   FAIL_IF(check_operand_type(instr_buffer, all_opd, opd_pos));
   // get next operand
   char *next_operands = strtok_r(NULL, "", &saved_opd);
   if (next_operands == NULL)
     return EXIT_SUCCESS;
   // recursively call operand_tok to process next operand
-  if (opd_pos <= THIRD_OPERAND)
+  if (opd_pos <= FOURTH_OPERAND)
     return operand_tok(instr_buffer, next_operands, opd_pos + 1);
   else
     return EXIT_FAILURE;

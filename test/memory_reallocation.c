@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-/*test internal memory reallocation*/
 #include <assemblyline.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -22,21 +21,26 @@
 #include <string.h>
 #define DEFAULT_CHUNK_SIZE 0
 
+/**
+ * test internal memory reallocation, which happens, when more instructions are
+ * being assembled than the internal buffer could store when initially
+ * allocated.
+ */
 int main(int argc, char **argv) {
 
   // use internal memory allocation
-  assemblyline_t asm_realloc = asm_create_instance(NULL, 0);
+  assemblyline_t al = asm_create_instance(NULL, 0);
 
-  // assemble file twice to ensure the internal buffer is exceeded
-  if (assemble_file(asm_realloc, "mov.asm") == EXIT_FAILURE) {
-    fprintf(stderr, "failed to assemble %s\n", argv[1]);
-    return EXIT_FAILURE;
-  }
-  if (assemble_file(asm_realloc, "mov.asm") == EXIT_FAILURE) {
-    fprintf(stderr, "failed to assemble %s\n", argv[1]);
-    return EXIT_FAILURE;
+  char *long_asm_file_path = {
+      "./test/mov.asm"}; // also, this file is very long in itself
+  // assemble file multiple times to ensure the internal buffer is exceeded
+  for (int i = 0; i <= 1; i++) {
+    if (assemble_file(al, long_asm_file_path) == EXIT_FAILURE) {
+      fprintf(stderr, "failed to assemble %s\n", long_asm_file_path);
+      return EXIT_FAILURE;
+    }
   }
 
-  asm_destroy_instance(asm_realloc);
+  asm_destroy_instance(al);
   return 0;
 }

@@ -19,6 +19,7 @@
 #define REG_PARSER_H
 
 #include "enums.h"
+#include "instruction_data.h"
 #include "registers.h"
 #include <inttypes.h>
 #include <stdbool.h>
@@ -30,7 +31,7 @@ int get_opcode_offset(asm_reg reg_value);
 
 /**
  * finds the register in @param str and copies the characters to @param reg
- * ex: '[rax+0x8]' or 'rax ,'-> 'rax'
+ * ex: "[rax+0x8]" or "rax ," -> "rax"
  */
 void get_reg_str(char *opd_str, char *reg);
 
@@ -41,10 +42,10 @@ void get_reg_str(char *opd_str, char *reg);
 uint32_t process_neg_disp(uint32_t neg_num);
 
 /**
- * finds 2nd register in @param mem and copies the characters to @param reg
- * ex: '[rax+rbp]' -> 'rbp'
+ * finds the index register in @param mem and copies characters to @param reg
+ * ex: "[rax+rbp]" -> "rbp"
  */
-void get_second_reg(char *mem, char *reg);
+unsigned int get_index_reg(struct instr *instruc, char *mem, char *reg);
 
 /**
  * finds the addition sign in @param mem and returns the index of memory

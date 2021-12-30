@@ -18,6 +18,7 @@
  opcodes into a location allocated in memory*/
 #include "assembler.h"
 #include "assemblyline.h"
+#include "common.h"
 #include "encoder.h"
 #include "instructions.h"
 #include "parser.h"
@@ -41,10 +42,11 @@ const static uint8_t *FIXED_NOP_LENGTH[] = {
                 0x00}};
 
 /**
- * assembles the constant of a @param single_instr and writes the opcode to
+ * assembles a constant from @param instruc and writes the opcode to
  * pointer location @param ptr
  */
 static int assemble_const(unsigned long constant, unsigned char ptr[]) {
+
   int ptr_pos = 0;
   while (constant > 0) {
     ptr[ptr_pos++] = constant & 0xff;
@@ -54,88 +56,96 @@ static int assemble_const(unsigned long constant, unsigned char ptr[]) {
 }
 
 /**
- * assembles the immediate operand of a @param single_instr and writes the
+ * this function determines how the caller interprets an immediate between
+ * 0x80000000 and 0xffffffff(64 bits when NASM mode is disabled) by including
+ * or excluding an additional leading zero byte in the immediate given
+ * @param instruc, immediate @param saved_imm, and instruction type @param type
+ * ex: NASM mode disabled "mov rax, 0x80000000" -> 48,b8,00,00,00,80,00,00,00,00
+ * ex: NASM mode enabled "mov rax, 0x80000000" -> b8,00,00,00,80
+ */
+static bool check_zero(struct instr *instruc, unsigned long saved_imm,
+                       instr_type type) {
+  // check for signed 32bit overflow
+  if (IN_RANGE(saved_imm, NEG32BIT_CHECK, MAX_UNSIGNED_32BIT) &&
+      !instruc->reduced_imm && type != CONTROL_FLOW) {
+    // nasm immediate register handling disabled
+    if (!(instruc->imm_handling & NASM))
+      return true;
+    // nasm immediate register handling disabled
+    if (type != DATA_TRANSFER)
+      return true;
+  }
+  return false;
+}
+/**
+ * assembles the immediate operand of a @param instruc and writes the
  * opcode to pointer location @param ptr
  */
-static int assemble_imm(struct instr *single_instr, unsigned char ptr[]) {
+static int assemble_imm(struct instr *instruc, unsigned char ptr[]) {
 
   int ptr_pos = 0;
-  unsigned int bytes = 0;
-  instr_type single_instr_type = INSTR_TABLE[single_instr->key].type;
-  unsigned long saved_cons = single_instr->cons;
+  unsigned long imm_operand = instruc->cons;
+  instr_type type = INSTR_TABLE[instruc->key].type;
   // check is there is a constant in the instruction and if not, return
-  // immediately
-  if (!single_instr->imm)
+  if (!instruc->imm)
     return ptr_pos;
-
   // assemble the constant
-  int bytes_written = assemble_const(saved_cons, ptr + ptr_pos);
-  ptr_pos += bytes_written;
-  bytes += bytes_written;
-
-  // check if the zero byte is present?
-  if (saved_cons == 0 ||
-      (saved_cons > MAX_SIGNED_32BIT && saved_cons <= MAX_UNSIGNED_32BIT &&
-       !single_instr->reduced_imm && single_instr_type != CONTROL_FLOW &&
-       single_instr_type != DATA_TRANSFER)) {
+  unsigned int bytes = assemble_const(imm_operand, ptr + ptr_pos);
+  ptr_pos += bytes;
+  // check if the zero byte is present or needed?
+  if (imm_operand == 0 || check_zero(instruc, imm_operand, type)) {
     ptr[ptr_pos++] = 0x0;
     bytes++;
   }
   // no need to zero pad if the immediate operand has been reduced
-  if (single_instr->reduced_imm)
+  if (instruc->reduced_imm)
     return ptr_pos;
-
-  int opd0_mode = single_instr->opd[0] & MODE_MASK;
-
+  // get the register size for the first operand
+  int opd0_mode = instruc->opd[0].reg & MODE_MASK;
   // zero padding is required rarely.
   bool zero_pad =
-      ((single_instr_type != CONTROL_FLOW &&
-        single_instr_type != SHIFT &&   // it must not be SHIFT/CONTROL_FLOW
-        single_instr->op_offset != 3 && // and cannot have op_offset 3
-        !single_instr->is_byte) &&      // and cannot be a byte
-       opd0_mode > noext8) ||     // and op0 mode must be bigger than noext8
-      (!single_instr->is_short && // and  if its not short, it cannot be bigger
-       INSTR_TABLE[single_instr->key].encode_operand > I); // >I (i.e. O D S)
-
+      ((type != CONTROL_FLOW &&       // it must not be CONTROL_FLOW
+        instruc->op_offset != 3 &&    // and cannot have op_offset 3
+        !instruc->keyword.is_byte) && // and cannot be a byte
+       opd0_mode > noext8) ||         // and op0 mode must be bigger than noext8
+      (INSTR_TABLE[instruc->key].encode_operand > I); // >I (i.e. O D S)
+  // return if zero padding is not required
   if (!zero_pad)
     return ptr_pos;
-
   // now calculate the required amount of zero-bytes to pad
   bool opd0_is_16 = opd0_mode == reg16 || opd0_mode == ext16;
   if (bytes < 5 && !(bytes == 1 && opd0_is_16))
     bytes = 4 - bytes;
   else if (bytes > 4 && bytes < 9)
     bytes = 8 - bytes;
-
+  // pad zero byte
   for (int k = 0; k < bytes; k++)
     ptr[ptr_pos++] = 0x0;
-
   return ptr_pos;
 }
 
 /**
- * assembles the memory displacement of a @param single_instr and writes the
+ * assembles the memory displacement of a @param instruc and writes the
  * opcode to pointer location @param ptr
  */
-static int assemble_mem(struct instr *single_instr, unsigned char ptr[]) {
+static int assemble_mem(struct instr *instruc, unsigned char ptr[]) {
 
   int ptr_pos = 0;
-  int mbytes = 0;
   // check if zero byte is present
-  if (single_instr->zero_byte)
+  if (instruc->zero_byte) {
     ptr[ptr_pos++] = 0x0;
+    return ptr_pos;
+  }
   // check if there is a memory reference
-  if (single_instr->mem_disp) {
-    if (single_instr->sib)
-      ptr[ptr_pos++] = SIB;
-    if (single_instr->mod_disp == MOD8) {
-      ptr[ptr_pos++] = single_instr->mem_offset;
-    } else if (single_instr->mod_disp == MOD16) {
+  if (instruc->mem_disp) {
+    if (instruc->is_sib_const)
+      ptr[ptr_pos++] = SIB_CONST;
+    if (instruc->mod_disp == MOD8) {
+      ptr[ptr_pos++] = instruc->mem_offset;
+    } else if (instruc->mod_disp == MOD16) {
       // assemble memory displacement byte by byte using little endian format
-      int bytes_written =
-          assemble_const(single_instr->mem_offset, ptr + ptr_pos);
-      ptr_pos += bytes_written;
-      mbytes += bytes_written;
+      int mbytes = assemble_const(instruc->mem_offset, ptr + ptr_pos);
+      ptr_pos += mbytes;
       // zero pad memory displacement constant to 4 bytes
       mbytes = 4 - mbytes;
       for (int m = 0; m < mbytes; m++)
@@ -145,59 +155,98 @@ static int assemble_mem(struct instr *single_instr, unsigned char ptr[]) {
   return ptr_pos;
 }
 
+static int assemble_VEX(struct instr *instruc, unsigned char ptr[],
+                        unsigned int vex) {
+  int i = 0;
+  uint8_t vex_first_byte = C4H;
+  uint8_t RvvvvLpp = 0;
+  // set W bit depending on register size
+  if ((vex & W0_W1) == W0_W1 && !instruc->hex.is_w0)
+    vex &= ~W1;
+  // WIG is true therefore we could switch between C4H and C5H
+  else if ((vex & WIG) && !(vex & W1))
+    if (!(instruc->hex.rex & rex_b))
+      vex_first_byte = C5H;
+  // Byte 0 if VEX prefix
+  vex >>= 1;
+  ptr[i++] = vex_first_byte;
+  // set to RXBm-mmmm if vex if 3 bytes ie. C4H
+  if (vex_first_byte == C4H)
+    ptr[i++] = ((vex >> 8) | (~(instruc->hex.rex & 0b111) << 5)) & 0xff;
+  // last byte of the vex prefix
+  vex &= ~CLEARvvvv;
+  // W is predetermined therefore we do not want to overwrite it
+  if (vex_first_byte == C4H) {
+    // can be used for both RvvvvLpp and WvvvvLpp
+    ptr[i++] = ((~(instruc->hex.vvvv) << 3) & 0x7f) | (vex & 0xff);
+  } else if (vex_first_byte == C5H) {
+    RvvvvLpp = (vex & 0xff) | ((~(instruc->hex.rex & rex_r) << 5) & 0x80);
+    ptr[i++] = ((~(instruc->hex.vvvv) << 3) & 0x7f) | (RvvvvLpp & 0xff);
+  }
+  return i;
+}
+
 /**
- * assembles the prefix and opcode of a @param single_instr and writes the
+ * assembles the prefix and opcode of a @param instruc and writes the
  * opcode to pointer location @param ptr
  */
-static int assemble_instr(struct instr *single_instr, unsigned char ptr[]) {
+static int assemble_instr(struct instr *instruc, unsigned char ptr[]) {
 
   int ptr_pos = 0;
   int opcode_pos = 0;
+  int new_vex = 0;
+  // 67h - address size overwrite prefix
+  if (((INSTR_TABLE[instruc->key].type & VECTOR) && instruc->mem_disp) ||
+      instruc->is_sib)
+    if ((instruc->opd[0].reg & BIT_MASK) == BIT_32 ||
+        (instruc->opd[1].reg & BIT_MASK) == BIT_32 ||
+        (instruc->opd[2].reg & BIT_MASK) == BIT_32)
+      ptr[ptr_pos++] = 0x67;
   // 16 bit register prefix
-  if ((single_instr->opd[0] & BIT_MASK) == BIT_16)
+  if ((instruc->opd[0].reg & BIT_MASK) == BIT_16)
     ptr[ptr_pos++] = 0x66;
   // assemble all prefixes and instruction opcode
-  while (opcode_pos < INSTR_TABLE[single_instr->key].instr_size) {
-    switch (INSTR_TABLE[single_instr->key].opcode[opcode_pos]) {
-    case REX:
-      if (single_instr->prefix_hex != NO_PREFIX)
-        ptr[ptr_pos++] = single_instr->prefix_hex;
-      break;
+  while (opcode_pos < INSTR_TABLE[instruc->key].instr_size) {
+    unsigned char opc = INSTR_TABLE[instruc->key].opcode[opcode_pos] & 0xff;
+    // check if the byte in the opcode is fixed
+    if (!(INSTR_TABLE[instruc->key].opcode[opcode_pos] & (~0xff))) {
+      if (opcode_pos == INSTR_TABLE[instruc->key].op_offset_i)
+        opc += instruc->op_offset;
+      ptr[ptr_pos++] = opc;
+    } else {
+      switch (INSTR_TABLE[instruc->key].opcode[opcode_pos] & GET_EN) {
+      case REX:
+        if (instruc->hex.rex != NONE)
+          ptr[ptr_pos++] = instruc->hex.rex;
+        break;
 
-    case REG:
-      if (single_instr->reg_hex != NO_PREFIX)
-        ptr[ptr_pos++] = single_instr->reg_hex;
-      break;
+      case REG:
+        ptr[ptr_pos++] = instruc->hex.reg;
+        break;
 
-    case VEX:
-      if (single_instr->vex_prefix_hex != NO_PREFIX)
-        ptr[ptr_pos++] = single_instr->vex_prefix_hex;
-      break;
+      case VEX:
+        new_vex = ~GET_EN & INSTR_TABLE[instruc->key].opcode[opcode_pos];
+        ptr_pos += assemble_VEX(instruc, ptr + ptr_pos, new_vex);
+        break;
 
-    case EVEX:
-      if ((single_instr->opd[1] & BIT_MASK) == BIT_32)
-        ptr[ptr_pos++] = evex;
-      break;
+      case ib:
+        instruc->reduced_imm = true;
+        break;
 
-    case W0:
-      if (single_instr->w0_hex != NO_PREFIX)
-        ptr[ptr_pos++] = single_instr->w0_hex;
-      break;
+      case rd:
+        if (opcode_pos == INSTR_TABLE[instruc->key].op_offset_i)
+          opc += instruc->op_offset;
+        ptr[ptr_pos++] = opc + instruc->rd_offset;
+        break;
 
-    default:
-      if (INSTR_TABLE[single_instr->key].opcode[opcode_pos] < REG) {
-        unsigned char opc = INSTR_TABLE[single_instr->key].opcode[opcode_pos];
-        if (opcode_pos == INSTR_TABLE[single_instr->key].rd_offset_i)
-          opc += single_instr->rd_offset;
-        if (opcode_pos == INSTR_TABLE[single_instr->key].op_offset_i)
-          opc += single_instr->op_offset;
-        ptr[ptr_pos++] = opc;
+      default:
+        break;
       }
     }
     opcode_pos++;
   }
-  if (single_instr->mem_hex != NO_PREFIX)
-    ptr[ptr_pos++] = single_instr->mem_hex;
+  if (instruc->hex.sib != NO_BYTE)
+    ptr[ptr_pos++] = instruc->hex.sib;
   return ptr_pos;
 }
 
@@ -220,10 +269,10 @@ int nop_padding(uint8_t *buf, int nop_pad_len) {
 }
 
 /**
- * assembles a @param single_instr and write the opcode
+ * assembles a @param instruc and write the opcode
  * to pointer location @param ptr
  */
-int assemble_asm(struct instr *single_instr, uint8_t *dest) {
+int assemble_asm(struct instr *instruc, uint8_t *dest) {
 
   // dest index
   int ptr_pos = 0;
@@ -231,15 +280,14 @@ int assemble_asm(struct instr *single_instr, uint8_t *dest) {
   int instr_len = 0;
   int mem_len = 0;
   int imm_len = 0;
-
   // assemble instruction
-  instr_len = assemble_instr(single_instr, dest);
+  instr_len = assemble_instr(instruc, dest);
   ptr_pos += instr_len;
   // assemble memory displacemet
-  mem_len = assemble_mem(single_instr, dest + ptr_pos);
+  mem_len = assemble_mem(instruc, dest + ptr_pos);
   ptr_pos += mem_len;
   // assemble immediate
-  imm_len = assemble_imm(single_instr, dest + ptr_pos);
+  imm_len = assemble_imm(instruc, dest + ptr_pos);
   ptr_pos += imm_len;
 
   return ptr_pos;

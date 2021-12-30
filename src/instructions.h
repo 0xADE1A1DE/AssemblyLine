@@ -20,19 +20,15 @@
 
 #include "common.h"
 #include "enums.h"
-#include <inttypes.h>
 
-
-// operand format string to enum mapping 
-const static struct {
+// table for storing register string to enum mapping
+struct opd_format_table{
+  // enum representation of register
   operand_format val;
+  // string representation of register
   const char str[OPERAND_FORMAT_LEN];
   
-} OPD_FORMAT_TABLE[] = {{n,   {'\0'}},  {n,   "i"},   {m,         "m"},
-                        {r,   "r"},     {mr,  "mr"},  {rm,        "rm"},
-                        {rr,  "rr"},    {ri,  "ri"},  {mi,        "mi"},
-                        {rrr, "rrr"},   {rri, "rri"}, {rmi,       "rmi"},
-                        {rrm, "rrm"},   {rmr, "rmr"}, {opd_error, "error"}};
+};
 
 // defines opcode layout of each supported instruction
 struct instr_table{
@@ -72,12 +68,6 @@ struct instr_table{
    */
   int op_offset_i;
 
-  /* 'i' index of opcode[i] when an offset is present for a REG value denoted as
-   * '+ rd' in the intel manual section 3.1.1.1
-   * (set this value to NA if not applicable to the instruction)
-   */
-  int rd_offset_i;
-
   /* used for instructions with a single register operand denoted as '/digit'
    * in the intel manual section 3.1.1.1
    * (set this value to NA if not applicable to the instruction)
@@ -87,20 +77,16 @@ struct instr_table{
   // number of bytes in the opcode[MAX_OPCODE_LEN] field
   int instr_size;
 
-  /* displacement for the W0 prefix (following byte after the vector extension
-   * prefix VEX) check intel manual section 3.1.1.2 (set this value to NA if not
-   * applicable to the instruction)
-   */
-  int w0_disp;
-
   /* opcode layout for an instruction ex: {REX,0x0f,0xa9,REG}
    * REX and REG are placeholders for the prefix and register values
-   * more can be found in enums.h op_encoding
+   * more can be found in enums.h opcode_encoding
    */
   unsigned int opcode[MAX_OPCODE_LEN];
 
 }; 
 
+extern const struct opd_format_table OPD_FORMAT_TABLE[];
 extern const struct instr_table INSTR_TABLE[];
 extern int instr_table_index[26];
+extern int opd_format_table_index[26];
 #endif

@@ -24,6 +24,7 @@
 #include "instructions.h"
 #include <inttypes.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include <stdio.h>
 
 // contains the memory context for assembling an asm program
@@ -36,45 +37,73 @@ struct assemblyline {
   size_t chunk_size;
   bool external;
   ASM_MODE assembly_mode;
+  uint8_t mov_imm_handling : 2;
   bool debug;
   bool finalized;
+};
+
+// prefix and and register byte values
+struct prefix {
+  unsigned int reg;
+  unsigned int rex;
+  // [W|R][vvvv][L][pp]
+  unsigned int vvvv : 4;
+  bool is_w0 : 1;
+  // fix later if possible
+  unsigned int sib;
+};
+
+struct operand {
+  // pointer to operand in instruction string
+  char *ptr;
+  // stores the string representation of register
+  char str[MAX_REG_LEN];
+  // enum representation of register
+  asm_reg reg;
+  // stores the 2nd register in a memory reference
+  char sib[MAX_REG_LEN];
+  // enum representation of 2nd register in
+  // a memory reference
+  asm_reg index;
+  // operand typecould be: r,m, or i
+  char type;
+};
+
+// stores keywords used in assemblyline
+struct keywords {
+  bool is_short : 1;
+  bool is_long : 1;
+  bool is_byte : 1;
 };
 
 // internal representation of an assembly instruction
 struct instr {
   // connects instr to INSTR_TABLE[]
   asm_instr key;
-  // stores components assembly instruction into buffer
+  // stores components of assembly instruction into buffer
   char instruction[INSTRUCTION_CHAR_LEN];
-  char *operand[NUM_OF_OPD];
-  char op_cpy[NUM_OF_OPD][MAX_REG_LEN];
-  char op_mem_cpy[NUM_OF_OPD][MAX_REG_LEN];
-  char opd_type[OPD_FORMAT_LEN];
-  // operand registers represented as asm_reg enum
-  asm_reg opd[NUM_OF_OPD];
-  asm_reg opd_mem[NUM_OF_OPD];
-  // keywords for assemblyline
-  bool is_short;
-  bool is_long;
-  bool is_byte;
+  // stores operands represented as strings
+  struct operand opd[NUM_OF_OPD];
+  // bitmap for keywords
+  struct keywords keyword;
+  // enable or disable nasm register optimization
+  uint8_t imm_handling : 2;
   // constants and memory displacement
-  bool imm;
-  bool reduced_imm;
+  bool imm : 1;
+  bool reduced_imm : 1;
   unsigned long cons;
-  bool zero_byte;
-  bool mem_disp;
-  bool sib;
+  bool zero_byte : 1;
+  bool mem_disp : 1;
+  bool is_sib_const : 1;
+  bool is_sib : 1;
   uint32_t mem_offset;
   // displacement for modRM64_m variable based on
   // value of op_en and size of mem_disp
   int mod_disp;
+  int sib_disp;
   // uses operand_encoding to get value
-  // operand and prefix
-  unsigned int reg_hex;
-  unsigned int prefix_hex;
-  unsigned int vex_prefix_hex;
-  unsigned int w0_hex;
-  unsigned int mem_hex;
+  // operand and prefix values
+  struct prefix hex;
   // offset for opcode determined by register size
   int op_offset;
   int rd_offset;
