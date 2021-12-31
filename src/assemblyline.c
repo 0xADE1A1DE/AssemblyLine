@@ -44,7 +44,6 @@ static void asm_build_index_tables(assemblyline_t al) {
       previous_char = INSTR_TABLE[i].instr_name[0];
     }
   }
-  /*
   // create an index table from OPD_FORMAT_TABLE
   i = 0;
   previous_char = '\0';
@@ -54,7 +53,6 @@ static void asm_build_index_tables(assemblyline_t al) {
       previous_char = OPD_FORMAT_TABLE[i].str[0];
     }
   }
-  */
 }
 
 assemblyline_t asm_create_instance(uint8_t *buffer, int len) {
