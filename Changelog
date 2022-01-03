@@ -1,4 +1,4 @@
-version 1.1.0-release (2021-12-24)
+version 1.1.0-release (2022-01-04)
 
 	- added support for scaled index addressing mode
 	  with syntax [base + scale*index + offset] or
