@@ -9,8 +9,8 @@ An ultra-lightweight C library and binary for generating machine code of x86\_64
 `NASM`: binary output will match that of nasm as closely as possible.  
 `STRICT`: binary output will be in an 'as is' state.  
 `SMART`: intructions could be manipulated to ensure binary output matches nasm (default).  
-please refer to [src/README.md](https://github.com/0xADE1A1DE/AssemblyLine/blob/main/tools/README.md) for more information
-* Easy to use command-line tool `asmline` (refer to [src/README.md](https://github.com/0xADE1A1DE/AssemblyLine/blob/main/tools/README.md)) 
+please refer to [tools/README.md](https://github.com/0xADE1A1DE/AssemblyLine/blob/main/tools/README.md) for more information
+* Easy to use command-line tool `asmline` (refer to [tools/README.md](https://github.com/0xADE1A1DE/AssemblyLine/blob/main/tools/README.md)) 
 * High instruction compatibility and easy to add new instructions (refer to [src/README.md](https://github.com/0xADE1A1DE/AssemblyLine/blob/main/src/README.md))   
 ## How to use
 
