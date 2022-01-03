@@ -257,7 +257,8 @@ void encode_imm(struct instr *instrc) {
     // only condition for mov with M operand encoding implementation
     // check if immediate operand is a negative 32 bit value
     if (IN_RANGE(instrc->cons, NEG32BIT + 1, NEG64BIT) &&
-        (instrc->cons & NEG32BIT_CHECK) && (instrc->opd[0].reg & reg64)) {
+        (instrc->cons & NEG32BIT_CHECK) &&
+        ((instrc->opd[0].reg & reg64) || instrc->mem_disp)) {
       // set mov I operand encoding to M
       instrc->key++;
       // clear most significant 4 bytes
@@ -266,15 +267,16 @@ void encode_imm(struct instr *instrc) {
       instrc->reduced_imm = true;
       return;
     } else if (instrc->cons <= MAX_UNSIGNED_32BIT) {
-      if (instrc->imm_handling & NASM)
+      if ((instrc->imm_handling & NASM) && !instrc->mem_disp)
         nasm_register_size_optimize(instrc);
       // ensure instruction does not default to movabs
-      else if (instrc->cons < NEG32BIT_CHECK &&
-               (instrc->opd[0].reg & MODE_MASK) >= reg64)
+      else if ((instrc->cons < NEG32BIT_CHECK &&
+                (instrc->opd[0].reg & MODE_MASK) >= reg64) ||
+               instrc->mem_disp)
         instrc->key++;
     }
     if ((instrc->opd[0].reg & MODE_MASK) > noext8) {
-      if (instrc->imm_handling & NASM)
+      if ((instrc->imm_handling & NASM) && !instrc->mem_disp)
         instrc->op_offset = 8;
       else if (INSTR_TABLE[instrc->key].encode_operand == I)
         instrc->op_offset = 8;

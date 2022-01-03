@@ -138,6 +138,14 @@ static void check_for_keyword(struct instr *instr_buffer, char *all_opd,
     clearstring(all_opd, DWORD_LEN);
     break;
 
+  case 'q':
+    if (all_opd[1] == 'w')
+      find_word = strstr(all_opd, "qword");
+    if (find_word == NULL)
+      return;
+    clearstring(all_opd, DWORD_LEN);
+    break;
+
   case 's':
     if (opd_pos == FIRST_OPERAND && all_opd[1] == 'h')
       find_short = strstr(all_opd, "short");
