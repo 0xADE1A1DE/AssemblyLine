@@ -129,6 +129,15 @@ static void check_for_keyword(struct instr *instr_buffer, char *all_opd,
     clearstring(all_opd, BYTE_LEN);
     break;
 
+  case 'd':
+    if (all_opd[1] == 'w')
+      find_word = strstr(all_opd, "dword");
+    if (find_word == NULL)
+      return;
+    instr_buffer->keyword.is_dword = true;
+    clearstring(all_opd, DWORD_LEN);
+    break;
+
   case 's':
     if (opd_pos == FIRST_OPERAND && all_opd[1] == 'h')
       find_short = strstr(all_opd, "short");

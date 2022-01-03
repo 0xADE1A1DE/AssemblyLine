@@ -54,6 +54,8 @@
 #define SET_BYTE ~(reg16 | reg32 | reg64)
 #define SET_WORD ~(reg32 | reg64)
 
+#define SET_DWORD ~(reg64)
+
 #define C5H 0xc5
 #define C4H 0xc4
 #define NONE 0x0
@@ -133,6 +135,7 @@
 #define IN_RANGE(var, lower, upper) ((var >= lower) && (var <= upper))
 
 // keyword length
+#define DWORD_LEN 5
 #define BYTE_LEN 4
 #define LONG_LEN 4
 #define SHORT_LEN 5

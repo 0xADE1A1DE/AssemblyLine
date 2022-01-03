@@ -68,6 +68,8 @@ unsigned int get_rex_prefix(struct instr *all_instr, struct operand *m,
     rm = rm & SET_BYTE;
   else if (all_instr->keyword.is_word)
     rm = rm & SET_WORD;
+  else if (all_instr->keyword.is_dword)
+    rm = rm & SET_DWORD;
   else if (!(rm & reg_none) && !(rm & MODE_MASK) && rm >= spl)
     rex_prefix |= rex_;
   if (!(r->reg & reg_none) && !(r->reg & MODE_MASK) && r->reg >= spl)

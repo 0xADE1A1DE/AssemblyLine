@@ -75,6 +75,7 @@ struct keywords {
   bool is_long : 1;
   bool is_byte : 1;
   bool is_word : 1;
+  bool is_dword : 1;
 };
 
 // internal representation of an assembly instruction
