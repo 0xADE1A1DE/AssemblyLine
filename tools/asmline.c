@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 University of Adelaide
+ * Copyright 2022 University of Adelaide
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -89,7 +89,7 @@ void err_print_usage(char *error_msg) {
 void print_version() {
 
   printf("%s\n"
-         "Copyright 2021 University of Adelaide\n\n"
+         "Copyright 2022 University of Adelaide\n\n"
          "Licensed under the Apache License, Version 2.0 (the \"License\");\n"
          "You may obtain a copy of the License at\n\n"
          "\thttp://www.apache.org/licenses/LICENSE-2.0\n\n"
