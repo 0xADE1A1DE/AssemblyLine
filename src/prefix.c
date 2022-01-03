@@ -22,8 +22,17 @@
 #include "registers.h"
 #include <stdlib.h>
 
-unsigned int get_vector_rex_prefix(struct instr *all_instr, asm_reg m,
-                                   asm_reg r) {
+static void overide_opd_size(struct instr *all_instr, unsigned int *rm) {
+  if (all_instr->keyword.is_byte)
+    *rm = *rm & SET_BYTE;
+  else if (all_instr->keyword.is_word)
+    *rm = *rm & SET_WORD;
+  else if (all_instr->keyword.is_dword)
+    *rm = *rm & SET_DWORD;
+}
+
+static unsigned int get_vector_rex_prefix(struct instr *all_instr, asm_reg m,
+                                          asm_reg r) {
 
   unsigned int prefix_hex = rex_;
   if (IN_RANGE((m & MODE_MASK), reg64, ext64) && !all_instr->mem_disp)
@@ -64,12 +73,8 @@ unsigned int get_rex_prefix(struct instr *all_instr, struct operand *m,
     all_instr->hex.is_w0 = false;
   if ((m->reg & MODE_MASK) == mmx64 || (r->reg & MODE_MASK) == mmx64)
     return get_vector_rex_prefix(all_instr, m->reg, r->reg);
-  if (all_instr->keyword.is_byte)
-    rm = rm & SET_BYTE;
-  else if (all_instr->keyword.is_word)
-    rm = rm & SET_WORD;
-  else if (all_instr->keyword.is_dword)
-    rm = rm & SET_DWORD;
+  if (all_instr->keyword.is_keyword)
+    overide_opd_size(all_instr, &rm);
   else if (!(rm & reg_none) && !(rm & MODE_MASK) && rm >= spl)
     rex_prefix |= rex_;
   if (!(r->reg & reg_none) && !(r->reg & MODE_MASK) && r->reg >= spl)
