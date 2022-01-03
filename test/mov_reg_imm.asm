@@ -174,6 +174,7 @@ mov rsi, -0x2efdeeee
 mov rsi, -0x2efaeee
 mov rsi, 0x2efaeeeee
 
+mov qword [rax], -0x1
 mov qword [rax], 0x2
 mov qword [rax], 0x7f
 mov qword [rax], 0x80
@@ -207,9 +208,18 @@ mov qword [rax], 0xff11
 mov qword [rax], 0xff1
 mov qword [rax], 0xff
 mov dword [eax], 0x2
+mov dword [eax], -0x2
 mov dword [eax], 0x7f
 mov dword [eax], 0x80
 mov dword [eax], 0x80
 mov dword [eax], 0xff
 mov dword [r15d], 0x7ff
 mov dword [r13d], 0x7ff
+mov dword [ebp], -0xf
+mov dword [ebp], -0xe
+mov dword [ebp], -0xd
+mov dword [ebp], -0x7
+mov dword [ebp], -0x4
+mov dword [ebp], -0x3
+mov dword [ebp], -0x2
+mov dword [ebp], -0xff

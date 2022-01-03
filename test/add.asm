@@ -98,3 +98,19 @@ add rsp, 0x138
 add rsp, 0x48 
 add rsp, 0x50 
 add rsp, 0x80 
+add dword [ebp], -0xf
+add dword [ebp], -0xe
+add dword [ebp], -0xd
+add dword [ebp], -0x7
+add dword [ebp], -0x4
+add dword [ebp], -0x3
+add dword [ebp], -0x2
+add dword [ebp], -0xff
+add dword [ebp], 0xf
+add dword [ebp], 0xe
+add dword [ebp], 0xd
+add dword [ebp], 0x7
+add dword [ebp], 0x4
+add dword [ebp], 0x3
+add dword [ebp], 0x2
+add dword [ebp], 0xff
