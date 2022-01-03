@@ -52,6 +52,7 @@
 
 // set register length to 1 byte
 #define SET_BYTE ~(reg16 | reg32 | reg64)
+#define SET_WORD ~(reg32 | reg64)
 
 #define C5H 0xc5
 #define C4H 0xc4

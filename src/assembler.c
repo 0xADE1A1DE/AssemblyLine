@@ -203,7 +203,7 @@ static int assemble_instr(struct instr *instruc, unsigned char ptr[]) {
         (instruc->opd[2].reg & BIT_MASK) == BIT_32)
       ptr[ptr_pos++] = 0x67;
   // 16 bit register prefix
-  if ((instruc->opd[0].reg & BIT_MASK) == BIT_16)
+  if ((instruc->opd[0].reg & BIT_MASK) == BIT_16 || instruc->keyword.is_word)
     ptr[ptr_pos++] = 0x66;
   // assemble all prefixes and instruction opcode
   while (opcode_pos < INSTR_TABLE[instruc->key].instr_size) {
