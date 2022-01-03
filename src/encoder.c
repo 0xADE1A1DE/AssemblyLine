@@ -64,6 +64,8 @@ static void encode_mem(struct instr *instrc, int m) {
 
   if (!instrc->mem_disp)
     return;
+  if ((instrc->opd[m].reg & BIT_MASK) == BIT_32)
+    instrc->hex.is_67H = true;
   // auto correct SIB syntax in nasm and smart mode
   if ((instrc->imm_handling & (SMART | NASM)) &&
       (instrc->opd[m].index & REG_MASK) == spl && !instrc->sib_disp) {
@@ -75,9 +77,9 @@ static void encode_mem(struct instr *instrc, int m) {
   if ((instrc->opd[m].reg & VALUE_MASK) == spl &&
       instrc->opd[m].index == reg_none)
     instrc->is_sib_const = true;
-  if (!instrc->mem_disp || instrc->mem_offset)
+  if (instrc->mem_offset)
     return;
-  // check for an additional zero byte when memory displace is zer
+  // check for an additional zero byte when memory displace is zero
   unsigned int reg_opd = instrc->opd[m].reg & MODE_MASK;
   if (reg_opd > ext16 && reg_opd < mmx64 && !instrc->mem_offset &&
       (instrc->opd[m].reg & VALUE_MASK) == bpl) {

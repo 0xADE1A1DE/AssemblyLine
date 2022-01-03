@@ -195,16 +195,12 @@ static int assemble_instr(struct instr *instruc, unsigned char ptr[]) {
   int ptr_pos = 0;
   int opcode_pos = 0;
   int new_vex = 0;
-  // 67h - address size overwrite prefix
-  if (((INSTR_TABLE[instruc->key].type & VECTOR) && instruc->mem_disp) ||
-      instruc->is_sib)
-    if ((instruc->opd[0].reg & BIT_MASK) == BIT_32 ||
-        (instruc->opd[1].reg & BIT_MASK) == BIT_32 ||
-        (instruc->opd[2].reg & BIT_MASK) == BIT_32)
-      ptr[ptr_pos++] = 0x67;
   // 16 bit register prefix
   if ((instruc->opd[0].reg & BIT_MASK) == BIT_16 || instruc->keyword.is_word)
     ptr[ptr_pos++] = 0x66;
+  // 67h - address size overwrite prefix
+  if (instruc->hex.is_67H)
+    ptr[ptr_pos++] = 0x67;
   // assemble all prefixes and instruction opcode
   while (opcode_pos < INSTR_TABLE[instruc->key].instr_size) {
     unsigned char opc = INSTR_TABLE[instruc->key].opcode[opcode_pos] & 0xff;

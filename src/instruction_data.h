@@ -49,6 +49,7 @@ struct prefix {
   // [W|R][vvvv][L][pp]
   unsigned int vvvv : 4;
   bool is_w0 : 1;
+  bool is_67H : 1;
   // fix later if possible
   unsigned int sib;
 };
