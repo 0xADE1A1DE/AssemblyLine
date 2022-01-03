@@ -69,16 +69,8 @@ struct operand {
   // operand typecould be: r,m, or i
   char type;
 };
-/*
+
 // stores keywords used in assemblyline
-struct keywords {
-  bool is_short : 1;
-  bool is_long : 1;
-  bool is_byte : 1;
-  bool is_word : 1;
-  bool is_dword : 1;
-};
-*/
 union keywords {
   struct {
     uint8_t is_short : 1;
