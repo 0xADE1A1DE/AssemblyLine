@@ -2,10 +2,12 @@ SECTION .text
 GLOBAL test
 test:
 mov [rsp + 0x03f0 ], rax
-; mov [rsp + 0x03f0 ], rax
+mov [rsp + 0x03f0 ], rax
 mov byte [ rsp + 0xa0 ], r14b
 mov byte [ rsp + 0xa0 ], ah
+mov word [ rsp + 0xa0 ], ax
 mov byte [ rsp + 0xa0 ], al
+mov byte [r12], al
 mov [ r10 + 0xa0 ], rbx
 mov r10, r11
 mov r10, r12
