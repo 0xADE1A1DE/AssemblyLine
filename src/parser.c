@@ -35,12 +35,10 @@ representation*/
  */
 static int check_registers(struct instr *check_instr) {
 
-  FAIL_IF((check_instr->opd[0].reg & reg_error) == reg_error);
-  FAIL_IF((check_instr->opd[0].index & reg_error) == reg_error);
-  FAIL_IF((check_instr->opd[1].reg & reg_error) == reg_error);
-  FAIL_IF((check_instr->opd[1].index & reg_error) == reg_error);
-  FAIL_IF((check_instr->opd[2].reg & reg_error) == reg_error);
-  FAIL_IF((check_instr->opd[2].index & reg_error) == reg_error);
+  for (int i = 0; i < 3; i++) {
+    FAIL_IF((check_instr->opd[i].reg & reg_error) == reg_error);
+    FAIL_IF((check_instr->opd[i].index & reg_error) == reg_error);
+  }
   return EXIT_SUCCESS;
 }
 
