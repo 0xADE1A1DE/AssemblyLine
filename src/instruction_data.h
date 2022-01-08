@@ -49,6 +49,7 @@ struct prefix {
   // [W|R][vvvv][L][pp]
   unsigned int vvvv : 4;
   bool is_w0 : 1;
+  bool is_67H : 1;
   // fix later if possible
   unsigned int sib;
 };
@@ -70,10 +71,15 @@ struct operand {
 };
 
 // stores keywords used in assemblyline
-struct keywords {
-  bool is_short : 1;
-  bool is_long : 1;
-  bool is_byte : 1;
+union keywords {
+  struct {
+    uint8_t is_short : 1;
+    uint8_t is_long : 1;
+    uint8_t is_byte : 1;
+    uint8_t is_word : 1;
+    uint8_t is_dword : 1;
+  };
+  uint8_t is_keyword;
 };
 
 // internal representation of an assembly instruction
@@ -85,7 +91,7 @@ struct instr {
   // stores operands represented as strings
   struct operand opd[NUM_OF_OPD];
   // bitmap for keywords
-  struct keywords keyword;
+  union keywords keyword;
   // enable or disable nasm register optimization
   uint8_t imm_handling : 2;
   // constants and memory displacement

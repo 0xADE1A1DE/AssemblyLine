@@ -179,6 +179,7 @@ TEST_ASM = \
 		  test/psubd.asm \
 		  test/psubq.asm \
 		  test/psubw.asm \
+		  test/ptr.asm \
 		  test/pxor.asm \
 		  test/rdtsc.asm \
 		  test/rdtscp.asm \

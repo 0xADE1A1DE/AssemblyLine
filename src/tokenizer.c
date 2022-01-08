@@ -106,36 +106,55 @@ static void imm_tok(struct instr *instr_buffer, char *imme) {
  */
 static void check_for_keyword(struct instr *instr_buffer, char *all_opd,
                               int opd_pos) {
-  char *find_byte = NULL;
-  char *find_short = NULL;
-  char *find_long = NULL;
+
   switch (all_opd[0]) {
   case 'b':
-    if (all_opd[1] == 'y')
-      find_byte = strstr(all_opd, "byte");
-    if (find_byte == NULL)
+    if (strstr(all_opd, "byte") == NULL)
       return;
     instr_buffer->keyword.is_byte = true;
     clearstring(all_opd, BYTE_LEN);
     break;
+
+  case 'w':
+    if (strstr(all_opd, "word") == NULL)
+      return;
+    instr_buffer->keyword.is_word = true;
+    clearstring(all_opd, BYTE_LEN);
+    break;
+
+  case 'd':
+    if (strstr(all_opd, "dword") == NULL)
+      return;
+    instr_buffer->keyword.is_dword = true;
+    clearstring(all_opd, DWORD_LEN);
+    break;
+
+  case 'q':
+    if (strstr(all_opd, "qword") == NULL)
+      return;
+    clearstring(all_opd, DWORD_LEN);
+    break;
+
   case 's':
-    if (opd_pos == FIRST_OPERAND && all_opd[1] == 'h')
-      find_short = strstr(all_opd, "short");
-    if (find_short == NULL)
+    if (opd_pos != FIRST_OPERAND || all_opd[1] != 'h')
+      return;
+    if (strstr(all_opd, "short") == NULL)
       return;
     instr_buffer->keyword.is_short = true;
     instr_buffer->keyword.is_long = false;
     clearstring(all_opd, SHORT_LEN);
     break;
+
   case 'l':
-    if (opd_pos == FIRST_OPERAND && all_opd[1] == 'o')
-      find_long = strstr(all_opd, "long");
-    if (find_long == NULL)
+    if (opd_pos != FIRST_OPERAND || all_opd[1] != 'o')
+      return;
+    if (strstr(all_opd, "long") == NULL)
       return;
     instr_buffer->keyword.is_long = true;
     instr_buffer->keyword.is_short = false;
     clearstring(all_opd, LONG_LEN);
     break;
+
   default:
     return;
   }
