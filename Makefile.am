@@ -12,7 +12,16 @@
 ## See the License for the specific language governing permissions and
 ## limitations under the License.
 
-EXTRA_DIST =
+PKGCONFIG_FILES = \
+	libassemblyline.pc.in
+
+pkgconfigdir = $(libdir)/pkgconfig
+
+pkgconfig_DATA = \
+	libassemblyline.pc
+
+
+EXTRA_DIST = $(PKGCONFIG_FILES)
 ACLOCAL_AMFLAGS = -I m4 --install
 AM_CFLAGS = -Wall -std=gnu99
 AM_CPPFLAGS = -I./src

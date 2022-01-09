@@ -1,0 +1,10 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+Name: Assemblyline
+Description: A C library and binary for generating machine code of x86_64 assembly language and executing on the fly.
+Version: @VERSION@
+Libs: -L${libdir} -libassemblyline
+Cflags: -I${includedir}/

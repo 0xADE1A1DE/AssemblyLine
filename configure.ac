@@ -40,4 +40,7 @@ AM_INIT_AUTOMAKE([-Wall -Werror foreign subdir-objects])
 AC_CONFIG_FILES([
                  Makefile
                  ])
+
+AC_CONFIG_FILES([libassemblyline.pc])
+
 AC_OUTPUT
