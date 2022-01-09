@@ -50,24 +50,23 @@ static void auto_set_byte(struct instr *instrc) {
  * sets the operand size to 8 bits if the instruction referenced by
  * @param instrc only support 8-bit registers
  */
-static void auto_set_operand(struct instr *instrc, int m, int r) {
-  // exit if it is a vector instruction
-  // exit if operand sizes are the same
-  // check operand size of r
-  // instrctions with M operand encoding that only supports 8 bit registers
-  if (INSTR_TABLE[instrc->key].encode_operand == M) {
-    switch (INSTR_TABLE[instrc->key].name) {
-    case setc:
-    case seto:
-    case prefetcht0:
-    case prefetcht1:
-    case prefetcht2:
-    case prefetchnta:
-    case clflush:
+static void auto_set_operand(struct instr *instrc, int r) {
+  // exit if keyword is present or register is 64 bits or greater
+  if (instrc->keyword.is_keyword || (r & reg64))
+    return;
+  switch (r & BIT_MASK) {
+  case BIT_32:
+    instrc->keyword.is_dword = true;
+    break;
+
+  case BIT_16:
+    instrc->keyword.is_word = true;
+    break;
+
+  default:
+    if (r < reg16) {
       instrc->keyword.is_byte = true;
       instrc->op_offset = 0;
-    default:
-      return;
     }
   }
 }
@@ -92,6 +91,9 @@ static int encode_mem(struct instr *instrc, int m) {
     return NA;
   if ((instrc->opd[m].reg & BIT_MASK) == BIT_32)
     instrc->hex.is_67H = true;
+  if ((instrc->opd[m].reg & BIT_MASK) == BIT_16)
+    instrc->hex.is_66H = true;
+
   // auto correct SIB syntax in nasm and smart mode
   if ((instrc->imm_handling & (SMART | NASM)) &&
       (instrc->opd[m].index & REG_MASK) == spl && !instrc->sib_disp) {
@@ -121,7 +123,9 @@ static int encode_mem(struct instr *instrc, int m) {
  */
 static int encode_two_opds(struct instr *instrc, int r, int m) {
 
-  encode_mem(instrc, m);
+  if (encode_mem(instrc, m) != NA)
+    auto_set_operand(instrc, instrc->opd[r].reg);
+  // printf("instrc->keyword.is_word = %d\n", instrc->keyword.is_word);
   // check if a second register exist in memory reference ex: [rax+rcx]
   instrc->hex.rex = get_rex_prefix(instrc, &instrc->opd[m], &instrc->opd[r]);
   FAIL_IF(get_reg(instrc, &instrc->opd[m], instrc->opd[r].reg));
@@ -134,7 +138,8 @@ static int encode_two_opds(struct instr *instrc, int r, int m) {
  */
 static int encode_three_opds(struct instr *instrc, int r, int m, int v) {
 
-  encode_mem(instrc, m);
+  if (encode_mem(instrc, m) != NA)
+    auto_set_operand(instrc, instrc->opd[r].reg);
   // used for RXB and R
   instrc->hex.rex = get_rex_prefix(instrc, &instrc->opd[m], &instrc->opd[r]);
   // get vvvv parameter
