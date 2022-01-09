@@ -24,10 +24,36 @@ as well process any offsets or immediate operands*/
 #include <stdlib.h>
 
 /**
- * sets the register size to 8 bits if the instruction referenced by
+ * sets the operand size to 8 bits if the instruction referenced by
  * @param instrc only support 8-bit registers
  */
 static void auto_set_byte(struct instr *instrc) {
+  // instrctions with M operand encoding that only supports 8 bit registers
+  if (INSTR_TABLE[instrc->key].encode_operand == M) {
+    switch (INSTR_TABLE[instrc->key].name) {
+    case setc:
+    case seto:
+    case prefetcht0:
+    case prefetcht1:
+    case prefetcht2:
+    case prefetchnta:
+    case clflush:
+      instrc->keyword.is_byte = true;
+      instrc->op_offset = 0;
+    default:
+      return;
+    }
+  }
+}
+
+/**
+ * sets the operand size to 8 bits if the instruction referenced by
+ * @param instrc only support 8-bit registers
+ */
+static void auto_set_operand(struct instr *instrc, int m, int r) {
+  // exit if it is a vector instruction
+  // exit if operand sizes are the same
+  // check operand size of r
   // instrctions with M operand encoding that only supports 8 bit registers
   if (INSTR_TABLE[instrc->key].encode_operand == M) {
     switch (INSTR_TABLE[instrc->key].name) {
@@ -60,10 +86,10 @@ void encode_offset(struct instr *instrc) {
  * determines whether a zero byte is required for @param instrc depending on
  * the @param m register position
  */
-static void encode_mem(struct instr *instrc, int m) {
+static int encode_mem(struct instr *instrc, int m) {
 
   if (!instrc->mem_disp)
-    return;
+    return NA;
   if ((instrc->opd[m].reg & BIT_MASK) == BIT_32)
     instrc->hex.is_67H = true;
   // auto correct SIB syntax in nasm and smart mode
@@ -78,7 +104,7 @@ static void encode_mem(struct instr *instrc, int m) {
       instrc->opd[m].index == reg_none)
     instrc->is_sib_const = true;
   if (instrc->mem_offset)
-    return;
+    return EXIT_SUCCESS;
   // check for an additional zero byte when memory displace is zero
   unsigned int reg_opd = instrc->opd[m].reg & MODE_MASK;
   if (reg_opd > ext16 && reg_opd < mmx64 && !instrc->mem_offset &&
@@ -86,6 +112,7 @@ static void encode_mem(struct instr *instrc, int m) {
     instrc->mod_disp = MOD8;
     instrc->zero_byte = true;
   }
+  return EXIT_SUCCESS;
 }
 
 /**
