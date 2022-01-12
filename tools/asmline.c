@@ -265,7 +265,7 @@ int main(int argc, char *argv[]) {
   }
 
   if (get_ret == RUN) {
-    long (*func)() = asm_get_code(al);
+    void *func = asm_get_code(al);
     execute_get_ret_value(func, arglen);
   }
 
