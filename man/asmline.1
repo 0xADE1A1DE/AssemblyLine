@@ -6,6 +6,7 @@ asmline \- assemblyline tool
 .SH SYNOPSIS
 .B asmline
 [\fB\-r\fR]
+[\fB\-R\fR \fILEN\fR]
 [\fB\-p\fR]
 [\fB\-c\fR \fICHUNK_SIZE>1\fR]
 [\fB\-o\fR \fIFILENAME\fR]
@@ -28,8 +29,13 @@ Obtain command-line instructions for generating an ELF binary file from assembly
 .SH OPTIONS
 .TP
 
+
 .BR \-r ", " \-\-return
-Executes assembly code and prints out the contents of the rax register (return register).
+Assembles given code. Then executes it with six parameters to heap-allocated memory. Each pointer points to an array of ten 64-bit elements which can be dereferenced in the asmcode. After execution, it prints out the contents of the return (rax) register and frees the heap-memory.
+.TP
+
+.BR \-R ", " \-\-Return " " \fILEN
+Like -r, but allocates LEN elements instead of 10.
 .TP
 
 .BR \-p ", " \-\-print
