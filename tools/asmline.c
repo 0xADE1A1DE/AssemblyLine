@@ -32,12 +32,17 @@ void err_print_usage(char *error_msg) {
   fprintf(
       stderr,
       "%s\nUsage: asmline "
-      "[-r] [-p] [-P FILENAME] [-o FILENAME_NO_EXT] [-c CHUNK_SIZE>1] "
+      "[-r] [-R LEN] [-p] [-P FILENAME] [-o FILENAME_NO_EXT] [-c CHUNK_SIZE>1] "
       "[-n] [-t] [-s] [-h] [-v] "
       "[path/to/file.asm]\n\n"
       "  -r, --return\n"
-      "\tExecutes assembly code and prints out the contents of the rax "
-      "register (return register)\n\n"
+      "\tAssembles given code. Then executes it with six parameters to "
+      "heap-allocated memory. Each pointer points to an array of ten 64-bit "
+      "elements which can be dereferenced in the asmcode. After execution, it "
+      "prints out the contents of the return (rax) register and frees the "
+      "heap-memory.\n\n"
+      "  -R LEN, --Return LEN\n"
+      "\tlike -r, but allocates LEN elements instead of 10.\n\n"
       "  -p, --print\n"
       "\tThe corresponding machine code will be printed to stdout in hex "
       "form.\n"
@@ -170,6 +175,7 @@ int main(int argc, char *argv[]) {
       {"version", no_argument, 0, 'v'},
       {"help", no_argument, 0, 'h'},
       {"return", no_argument, 0, 'r'},
+      {"Return", no_argument, 0, 'R'},
       {"print", no_argument, 0, 'p'},
       {"printfile", required_argument, 0, 'P'},
       {"nasm", no_argument, 0, 'n'},
@@ -186,7 +192,7 @@ int main(int argc, char *argv[]) {
     err_print_usage("Error: invalid number of arguments\n");
 
   assemblyline_t al = asm_create_instance(NULL, 0);
-  while ((opt = getopt_long(argc, argv, "hvr:ntspP:c:o:", long_options,
+  while ((opt = getopt_long(argc, argv, "hvrR:ntspP:c:o:", long_options,
                             &option_index)) != -1) {
     switch (opt) {
     case 'v':
@@ -195,11 +201,12 @@ int main(int argc, char *argv[]) {
     case 'h':
       err_print_usage("");
       break;
-    case 'r':
-      get_ret = RUN;
+    case 'R':
       if (check_digit(optarg)) {
         arglen = atoi(optarg);
       }
+    case 'r':
+      get_ret = RUN;
       break;
     case 'p':
       asm_set_debug(al, true);

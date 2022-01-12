@@ -116,9 +116,13 @@ dist_man3_MANS = man/libassemblyline.3 $(link_man)
 ##############################################################################################
 
 # runner for 'asm'-tests
+TEST_EXTENSIONS = .asm
 ASM_LOG_COMPILER = ./test/al_nasm_compare.sh
-# build this program (takes asm file, uses assemblyline
-# to assemble and outputs linewise hex of machinecode)
+
+
+# add SH-tests here
+TEST_SH = \
+		  test/tools/asmline.sh
 
 
 # add .c -tests here
@@ -130,8 +134,6 @@ TEST_C= \
 		test/optimization_disabled \
 		test/run \
 		test/vector_operations
-
-TEST_EXTENSIONS = .asm
 
 # add .asm-tests here
 TEST_ASM = \
@@ -212,5 +214,5 @@ TEST_ASM = \
 # if needed, add utility programs, which should be build for the test, to check_PROGRAMS
 check_PROGRAMS = $(bin_PROGRAMS) $(TEST_C)
 
-TESTS = $(TEST_ASM) $(TEST_C)
+TESTS = $(TEST_SH) $(TEST_ASM) $(TEST_C)
 
