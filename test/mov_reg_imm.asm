@@ -222,3 +222,4 @@ mov dword [ebp], -0x4
 mov dword [ebp], -0x3
 mov dword [ebp], -0x2
 mov dword [ebp], -0xff
+mov rsi, 0x2efaeeeee
