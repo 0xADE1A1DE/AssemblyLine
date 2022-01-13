@@ -42,6 +42,8 @@ test/*
 !test/*.sh
 !test/*.asm
 
+man/*_*
+
 *.in
 aclocal.m4
 configure
