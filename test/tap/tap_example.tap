@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+#https://www.gnu.org/software/automake/manual/html_node/Use-TAP-with-the-Automake-test-harness.html
+
+echo 1..4 # Number of tests to be executed.
+echo 'ok 1 - Swallows fly'
+echo 'not ok 2 - Caterpillars fly # TODO metamorphosis in progress' # todo means, expect to fail
+echo 'ok 3 - Pigs fly # SKIP not enough acid'                       # means the 'ok' is not considered
+echo '# I just love word plays ...'                                 #entirely ignored
+echo 'ok 4 - Flies fly too :-)'

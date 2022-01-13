@@ -6,6 +6,10 @@ AC_INIT([assemblyline],[1.1.0],[yval@cs.adelaide.edu.au])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_SRCDIR([src/assemblyline.c])
 AC_CONFIG_AUX_DIR([build-aux])
+
+# for the Test-Anything Protocol (TAP)
+AC_REQUIRE_AUX_FILE([tap-driver.sh])
+
 AC_CONFIG_MACRO_DIR([m4])
 
 # Checks for programs.
