@@ -26,6 +26,10 @@ imul rcx, r10, 0x2
 imul rcx, r11, 0x2
 imul rdi, [ rsi + 0x10 ], 0x2
 imul rdx, r11, 0x2
+imul rbx, rax
+imul ebx, eax
+imul bx, ax
+imul bl
 imul rax, [rax]
 imul rax, [rbx]
 imul rax, [rcx]
