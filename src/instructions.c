@@ -105,6 +105,7 @@ const struct instr_table INSTR_TABLE[] = {
     {"divpd",       divpd,       {NA, vv},   RM,  VECTOR,         NA,  NA,  5,  {0x66, REX, 0x0f, 0x5e, REG}},
     {"imul",        imul,        {rri, rmi}, RM,  OTHER,          1,   NA,  3,  {REX, 0x68, REG}},
     {{'\0'},        imul,        {rr, rm},   RM,  OTHER,          NA,  NA,  4,  {REX, 0x0f, 0xaf, REG}},
+    {{'\0'},        imul,        {NA, r},    M,   OTHER,          1,   5,   3,  {REX, 0xf6, REG}},
     {"inc",         inc,         {r,  m},    M,   OTHER,          1,   0,   3,  {REX, 0xfe, REG}},
     {"ja",          ja,          {n,  n},    D,   CONTROL_FLOW,   NA,  NA,  2,  {0x0f, 0x87}},
     {{'\0'},        ja,          {NA, NA},   S,   CONTROL_FLOW,   NA,  NA,  2,  {0x77, ib}},
