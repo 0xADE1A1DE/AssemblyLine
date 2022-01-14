@@ -324,7 +324,7 @@ int check_machine_code(uint8_t ptr[], const uint8_t code[], size_t len) {
   return EXIT_SUCCESS;
 }
 
-int main(int argc, char **argv) {
+int main() {
 
   assemblyline_t al = asm_create_instance(NULL, 0);
   // ensure nasm style register size optimization is disabled

@@ -21,7 +21,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-int main(int argc, char **argv) {
+int main() {
 
     const char *short_jmp =
     "mov rcx, 0x123\n"

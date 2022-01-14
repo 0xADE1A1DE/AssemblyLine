@@ -26,7 +26,7 @@
  * being assembled than the internal buffer could store when initially
  * allocated.
  */
-int main(int argc, char **argv) {
+int main() {
 
   // use internal memory allocation
   assemblyline_t al = asm_create_instance(NULL, 0);

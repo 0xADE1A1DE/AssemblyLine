@@ -39,7 +39,7 @@ int execute_test(void (*exe)(uint64_t *, uint64_t *, ...)) {
   return EXIT_SUCCESS;
 }
 
-int main(int argc, char **argv) {
+int main() {
 
   const char *cur_B =
       "sub rsp, 0x80 \n"

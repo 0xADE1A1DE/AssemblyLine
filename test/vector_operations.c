@@ -141,7 +141,7 @@ const char *mul_long_ymm = "vmovdqu ymm0, [rdi]\n"
                            "vmovdqu [rdx], ymm3\n"
                            "ret\n";
 
-int main(int argc, char **argv) {
+int main() {
 
   assemblyline_t al = asm_create_instance(NULL, 0);
   if (assemble_str(al, add_double_ymm) == EXIT_FAILURE)

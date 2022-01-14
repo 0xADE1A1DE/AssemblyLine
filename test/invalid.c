@@ -48,7 +48,7 @@ int main(int argc, char **argv) {
 
   assemblyline_t al = asm_create_instance(NULL, 0);
 
-  int i = 0;
+  size_t i = 0;
   char const *str;
   while (i < sizeof(testStrings) / sizeof(testStrings[0])) {
     str = testStrings[i++];

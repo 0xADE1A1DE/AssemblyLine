@@ -31,7 +31,7 @@ struct test_struct {
   const char *asm_string;
 };
 
-int main(int argc, char **argv) {
+int main() {
   struct test_struct tests[] = {
       {
           .expected_breaks = 0,
