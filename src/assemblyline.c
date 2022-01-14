@@ -167,7 +167,10 @@ int asm_get_offset(assemblyline_t al) { return al->offset; }
 
 void asm_set_offset(assemblyline_t al, int offset) { al->offset = offset; }
 
-uint8_t *asm_get_buffer(assemblyline_t al) { return al->buffer; }
+uint8_t __attribute__((deprecated("use asm_get_code instead"))) *
+    asm_get_buffer(assemblyline_t al) {
+  return al->buffer;
+}
 
 void *asm_get_code(assemblyline_t al) { return (void *)al->buffer; }
 
