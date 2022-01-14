@@ -22,16 +22,15 @@
 #include "enums.h"
 
 // table for storing register string to enum mapping
-struct opd_format_table{
+struct opd_format_table {
   // enum representation of register
   operand_format val;
   // string representation of register
   const char str[OPERAND_FORMAT_LEN];
-  
 };
 
 // defines opcode layout of each supported instruction
-struct instr_table{
+struct instr_table {
 
   /* null-terminated string representation of an instruction ex: "mov"
    * subsequent instructions of the same name with a different operand
@@ -82,8 +81,7 @@ struct instr_table{
    * more can be found in enums.h opcode_encoding
    */
   unsigned int opcode[MAX_OPCODE_LEN];
-
-}; 
+};
 
 extern const struct opd_format_table OPD_FORMAT_TABLE[];
 extern const struct instr_table INSTR_TABLE[];

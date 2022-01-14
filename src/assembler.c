@@ -27,7 +27,7 @@
 #include <stdbool.h>
 
 // no operation instructions of length 1 to 11 bytes
-const static uint8_t *FIXED_NOP_LENGTH[] = {
+static const uint8_t *FIXED_NOP_LENGTH[] = {
     (uint8_t[]){0x90},
     (uint8_t[]){0x66, 0x90},
     (uint8_t[]){0x0f, 0x1f, 0x00},
@@ -119,7 +119,7 @@ static int assemble_imm(struct instr *instruc, unsigned char ptr[]) {
   else if (bytes > 4 && bytes < 9)
     bytes = 8 - bytes;
   // pad zero byte
-  for (int k = 0; k < bytes; k++)
+  for (unsigned int k = 0; k < bytes; k++)
     ptr[ptr_pos++] = 0x0;
   return ptr_pos;
 }

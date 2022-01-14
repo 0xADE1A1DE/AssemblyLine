@@ -35,7 +35,7 @@
  */
 static void asm_build_index_tables(assemblyline_t al) {
   // INSTR_TABLE index starts at the SKIP entry
-  int i = 2;
+  size_t i = 2;
   char previous_char = 'a' - 1;
   while (INSTR_TABLE[++i].name != NA) {
     if (INSTR_TABLE[i].instr_name[0] != '\0') {
@@ -53,6 +53,7 @@ static void asm_build_index_tables(assemblyline_t al) {
       previous_char = OPD_FORMAT_TABLE[i].str[0];
     }
   }
+  al->table_built = true;
 }
 
 assemblyline_t asm_create_instance(uint8_t *buffer, int len) {

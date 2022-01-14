@@ -35,11 +35,12 @@ struct assemblyline {
   // size of assembly program in bytes (could be manually adjusted)
   int offset;
   size_t chunk_size;
-  bool external;
+  bool external : 1;
   ASM_MODE assembly_mode;
   uint8_t mov_imm_handling : 2;
-  bool debug;
-  bool finalized;
+  bool debug : 1;
+  bool finalized : 1;
+  bool table_built : 1;
 };
 
 // prefix and and register byte values
@@ -85,7 +86,7 @@ union keywords {
 // internal representation of an assembly instruction
 struct instr {
   // connects instr to INSTR_TABLE[]
-  asm_instr key;
+  int key;
   // stores components of assembly instruction into buffer
   char instruction[INSTRUCTION_CHAR_LEN];
   // stores operands represented as strings

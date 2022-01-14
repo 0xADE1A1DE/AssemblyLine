@@ -176,7 +176,7 @@ static int check_operand_type(struct instr *instr_buffer, char *all_opd,
       return EXIT_SUCCESS;
     else
       FAIL_IF_MSG(true, "cannot have an operand after immediate\n");
-
+    break;
   // get register string from operand
   case 'r':
   case 'v':

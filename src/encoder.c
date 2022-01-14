@@ -236,7 +236,7 @@ void encode_imm(struct instr *instrc) {
       INSTR_TABLE[instrc->key].type != DATA_TRANSFER) {
     //-0x1 and 0x0 are always 8 bits except for mov
     // 8 bit positive
-    if (IN_RANGE(instrc->cons, 0, 0xe0))
+    if (instrc->cons <= 0xe0)
       instrc->op_offset += 2;
     // 8 bit positive immediate
     if (instrc->cons > MAX_SIGNED_8BIT)

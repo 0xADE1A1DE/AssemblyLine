@@ -24,9 +24,9 @@
 int find_add_mem(char *mem, bool *neg, int *base) {
 
   bool first_num = false;
-  unsigned long len = strlen(mem);
+  size_t len = strlen(mem);
   // find the index of the memory displacement followed by '+' or '-' character
-  for (int i = 1; i < len; i++) {
+  for (size_t i = 1; i < len; i++) {
     if (IN_RANGE(mem[i], '0', '9') && (mem[i - 1] == '-' || mem[i - 1] == '+'))
       first_num = true;
     if (first_num && IN_RANGE(mem[i + 1], '0', '9'))
@@ -64,9 +64,9 @@ int get_opcode_offset(asm_reg reg_value) {
 void get_reg_str(char *opd_str, char *reg) {
 
   int j = 0;
-  unsigned long len = strlen(opd_str);
+  size_t len = strlen(opd_str);
   // copies the register from mem to reg ex: "rax ," -> "rax"
-  for (int i = 0; i < len; i++) {
+  for (size_t i = 0; i < len; i++) {
     if (j > 0 && IN_RANGE(opd_str[i], 'a', 'z'))
       reg[j++] = opd_str[i];
     else if (j > 0 && IN_RANGE(opd_str[i], '0', '9'))
@@ -104,17 +104,16 @@ static unsigned int check_sib_disp(struct instr *instruc, char scale,
 }
 unsigned int get_index_reg(struct instr *instruc, char *mem, char *reg) {
 
-  int i;
   bool plus = false;
   bool multiply = false;
-  unsigned long len = strlen(mem);
+  size_t len = strlen(mem);
   // check closing bracket
   if (mem[len - 1] != ']')
     return EXIT_FAILURE;
   // default sib_disp;
   instruc->sib_disp = SIB;
   // copies the index register from mem to reg ex: "[rcx+rax+0x16]" -> "rax"
-  for (i = 0; i < len; i++) {
+  for (size_t i = 0; i < len; i++) {
     if ((multiply || plus) && IN_RANGE(mem[i], 'a', 'z')) {
       int j = i;
       int k = 0;

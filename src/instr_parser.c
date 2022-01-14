@@ -50,7 +50,7 @@ int str_to_instr_key(char *instruction, operand_format opd_layout) {
     if (INSTR_TABLE[i].instr_name[0] != '\0') {
       // compare intruction strings
       if (!strcmp(instruction, INSTR_TABLE[i].instr_name)) {
-        asm_instr found_instr = INSTR_TABLE[i].name;
+        int found_instr = INSTR_TABLE[i].name;
         while (INSTR_TABLE[i].name == found_instr) {
           // compare operand formats
           if (INSTR_TABLE[i].opd_format[0] == opd_layout)
@@ -78,7 +78,7 @@ int to_special_instr_key(int key) {
   case xor:
     if (INSTR_TABLE[key].encode_operand == M)
       return key + 1;
-  default:
-    return EOI;
+    break;
   }
+  return EOI;
 }

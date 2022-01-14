@@ -72,8 +72,7 @@ static int line_to_instr(struct instr *instr_data, char *filtered_asm_str) {
   if (instr_data->imm && INSTR_TABLE[instr_data->key].type == CONTROL_FLOW) {
     if (IN_RANGE(instr_data->cons, 0xffffff80, 0xffffffff))
       instr_data->keyword.is_short = true;
-    else if (IN_RANGE(instr_data->cons, 0, 0x7f) &&
-             !instr_data->keyword.is_long)
+    else if (instr_data->cons <= 0x7f && !instr_data->keyword.is_long)
       instr_data->keyword.is_short = true;
     else
       FAIL_IF_MSG(instr_data->cons > 0x7f && instr_data->keyword.is_short,
@@ -272,8 +271,8 @@ static int assemble_with_chunk_fitting(assemblyline_t al,
     // checks if memory buffer is exceeded
     FAIL_IF(check_len_or_resize(al, *buf_pos));
     // check the number of bytes available in chunk
-    int free_chunk_space = al->chunk_size - (*buf_pos % al->chunk_size);
-    int written_length = assemble_asm(new_instr, al->buffer + *buf_pos);
+    size_t free_chunk_space = al->chunk_size - (*buf_pos % al->chunk_size);
+    size_t written_length = assemble_asm(new_instr, al->buffer + *buf_pos);
     // write machine code to memory if there is sufficient chunk space
     if (written_length <= free_chunk_space ||
         written_length >= al->chunk_size ||
