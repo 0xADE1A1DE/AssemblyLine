@@ -42,6 +42,10 @@ test/*
 !test/*.sh
 !test/*.asm
 
+man/*
+!man/libassemblyline.3
+!man/asmline.1
+
 *.in
 aclocal.m4
 configure
