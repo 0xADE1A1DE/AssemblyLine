@@ -317,7 +317,7 @@ const uint8_t mov_manual_ri_code[] = {
     0xFF, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0x00};
 
 int check_machine_code(uint8_t ptr[], const uint8_t code[], size_t len) {
-  for (int i = 0; i < len; ++i)
+  for (size_t i = 0; i < len; ++i)
     // compare assemblyline output against pre-assembled machine code
     if (ptr[i] != code[i])
       return EXIT_FAILURE;
