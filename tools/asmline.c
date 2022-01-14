@@ -136,6 +136,9 @@ int main(int argc, char *argv[]) {
 
   int opt, get_ret = 0;
   enum OUTPUT create_bin = NONE;
+  char bin_ext[] = ".bin";
+  char *param_file = NULL;
+  char *bin_file = NULL;
   char *write_file = NULL;
 
   static struct option long_options[] = {
@@ -191,13 +194,13 @@ int main(int argc, char *argv[]) {
       break;
     case 'P':
       create_bin = GENERIC_FILE;
-      write_file = optarg;
+      param_file = optarg;
       break;
     case 'o':
       if (strchr(optarg, '.'))
         err_print_usage("elf filename cannot have an extension\n");
       create_bin = BIN_FILE;
-      write_file = optarg;
+      param_file = optarg;
       break;
 
     default: /* '?' */
@@ -234,22 +237,21 @@ int main(int argc, char *argv[]) {
 
   switch (create_bin) {
   case NONE:
+    exit(EXIT_SUCCESS);
     break;
   case BIN_FILE: {
-    const char *filename = strcat(write_file, ".bin");
-    if (create_bin_file(al, filename) == EXIT_FAILURE) {
-      fprintf(stderr, "failed to create %s\n", filename);
-      exit(EXIT_FAILURE);
-    }
+    size_t bin_file_len = strlen(param_file) + strlen(bin_ext) + 1;
+    bin_file = calloc(bin_file_len, sizeof(char));
+    sprintf(bin_file, "%s%s", param_file, bin_ext);
+    write_file = bin_file;
+  } break;
+  case GENERIC_FILE:
+    write_file = param_file;
     break;
   }
-  case GENERIC_FILE: {
-    if (create_bin_file(al, write_file) == EXIT_FAILURE) {
-      fprintf(stderr, "failed to create %s\n", write_file);
-      exit(EXIT_FAILURE);
-    }
+  if (create_bin_file(al, write_file) == EXIT_FAILURE) {
+    fprintf(stderr, "failed to create %s\n", param_file);
+    exit(EXIT_FAILURE);
   }
-  }
-
   exit(EXIT_SUCCESS);
 }
