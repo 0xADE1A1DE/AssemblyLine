@@ -14,7 +14,7 @@
 
 EXTRA_DIST =
 ACLOCAL_AMFLAGS = -I m4 --install
-AM_CFLAGS = -Wall -std=gnu99
+AM_CFLAGS = -Wall -Wextra -std=gnu99
 AM_CPPFLAGS = -I./src
 CLEANFILES = config.h~ \
 			 configure~ \
