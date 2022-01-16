@@ -113,7 +113,7 @@ int check_digit(char *optarg) {
 }
 
 int create_bin_file(assemblyline_t al, const char *file_name) {
-  void *buffer = asm_get_buffer(al);
+  void *buffer = asm_get_code(al);
   int len = asm_get_offset(al);
   FILE *write_ptr = fopen(file_name, "wb");
 
