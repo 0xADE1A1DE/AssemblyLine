@@ -90,9 +90,9 @@ LDADD = libassemblyline.la
 link_man = \
 		   man/asm_create_instance.3 \
 		   man/asm_destroy_instance.3 \
-		   man/assemble_str.3 \
-		   man/assemble_file.3 \
-		   man/assemble_string_counting_chunks.3 \
+		   man/asm_assemble_str.3 \
+		   man/asm_assemble_file.3 \
+		   man/asm_assemble_string_counting_chunks.3 \
 		   man/asm_set_chunk_size.3 \
 		   man/asm_set_debug.3 \
 		   man/asm_get_offset.3 \
