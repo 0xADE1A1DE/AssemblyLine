@@ -45,7 +45,7 @@ int main() {
     "ret";
 
     assemblyline_t al = asm_create_instance(NULL, 0);
-    if (assemble_str(al, short_jmp) == EXIT_FAILURE) 
+    if (asm_assemble_str(al, short_jmp) == EXIT_FAILURE) 
         return EXIT_FAILURE; 
 
     int (*funcA)() = asm_get_code(al);
@@ -54,7 +54,7 @@ int main() {
 
     asm_set_offset(al, 0);
 
-    if (assemble_str(al, long_jmp) == EXIT_FAILURE) 
+    if (asm_assemble_str(al, long_jmp) == EXIT_FAILURE) 
         return EXIT_FAILURE; 
 
     int (*funcB)() = asm_get_code(al);
@@ -63,7 +63,7 @@ int main() {
 
     asm_set_offset(al, 0);
 
-    if (assemble_str(al, std_jmp) == EXIT_FAILURE) 
+    if (asm_assemble_str(al, std_jmp) == EXIT_FAILURE) 
         return EXIT_FAILURE; 
 
     int (*funcC)() = asm_get_code(al);

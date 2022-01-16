@@ -345,7 +345,7 @@ int main() {
                            "ret\n";
 
   assemblyline_t al = asm_create_instance(NULL, 0);
-  if (assemble_str(al, cur_B) == EXIT_FAILURE)
+  if (asm_assemble_str(al, cur_B) == EXIT_FAILURE)
     return EXIT_FAILURE;
 
   void (*curB)(uint64_t * out, uint64_t * in0, ...) = asm_get_code(al);
@@ -356,7 +356,7 @@ int main() {
   }
   asm_set_offset(al, 0);
 
-  if (assemble_str(al, function_B) == EXIT_FAILURE)
+  if (asm_assemble_str(al, function_B) == EXIT_FAILURE)
     return EXIT_FAILURE;
 
   void (*funcB)(uint64_t * out, uint64_t * in0, ...) = asm_get_code(al);
@@ -368,7 +368,7 @@ int main() {
   asm_set_offset(al, 0);
   asm_set_chunk_size(al, 9);
 
-  if (assemble_str(al, cur_B) == EXIT_FAILURE)
+  if (asm_assemble_str(al, cur_B) == EXIT_FAILURE)
     return EXIT_FAILURE;
 
   void (*curB_w_chunk)(uint64_t * out, uint64_t * in0, ...) = asm_get_code(al);
@@ -391,7 +391,7 @@ int main() {
 
   // use asemblyline with external buffer
   assemblyline_t al_buffer = asm_create_instance(buffer, 60000);
-  if (assemble_str(al_buffer, cur_B) == EXIT_FAILURE)
+  if (asm_assemble_str(al_buffer, cur_B) == EXIT_FAILURE)
     return EXIT_FAILURE;
 
   void (*curB_buffer)(uint64_t * out, uint64_t * in0, ...) =

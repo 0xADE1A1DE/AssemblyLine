@@ -52,7 +52,7 @@ int main(int argc, char **argv) {
   char const *str;
   while (i < sizeof(testStrings) / sizeof(testStrings[0])) {
     str = testStrings[i++];
-    if (assemble_str(al, str) != EXIT_FAILURE) {
+    if (asm_assemble_str(al, str) != EXIT_FAILURE) {
       fprintf(stderr,
               "should have failed to assemble '%s' and return code '%d' \n",
               str, EXIT_FAILURE);

@@ -330,7 +330,7 @@ int main() {
   // ensure nasm style register size optimization is disabled
   strict_mov_imm_handling(al);
 
-  if (assemble_str(al, mov_ri) == EXIT_FAILURE)
+  if (asm_assemble_str(al, mov_ri) == EXIT_FAILURE)
     return EXIT_FAILURE;
 
   uint8_t *ptr = asm_get_code(al);
@@ -344,7 +344,7 @@ int main() {
   // allow manual enabling of nasm style register size optimization
   smart_mov_imm_handling(al);
 
-  if (assemble_str(al, mov_manual_ri) == EXIT_FAILURE)
+  if (asm_assemble_str(al, mov_manual_ri) == EXIT_FAILURE)
     return EXIT_FAILURE;
 
   ptr = asm_get_code(al);
