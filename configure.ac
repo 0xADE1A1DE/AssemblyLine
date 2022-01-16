@@ -41,6 +41,6 @@ AC_CONFIG_FILES([
                  Makefile
                  ])
 
-AC_CONFIG_FILES([libassemblyline.pc])
+AC_CONFIG_FILES([assemblyline.pc])
 
 AC_OUTPUT

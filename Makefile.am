@@ -13,12 +13,12 @@
 ## limitations under the License.
 
 PKGCONFIG_FILES = \
-	libassemblyline.pc.in
+	assemblyline.pc.in
 
 pkgconfigdir = $(libdir)/pkgconfig
 
 pkgconfig_DATA = \
-	libassemblyline.pc
+	assemblyline.pc
 
 
 EXTRA_DIST = $(PKGCONFIG_FILES)
