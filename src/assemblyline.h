@@ -43,15 +43,48 @@ int asm_destroy_instance(assemblyline_t instance);
  * assembles the given string @param assembly_str containing valid x64 assembly
  * code with instance @param al It writes the corresponding machine code to the
  * memory location specified by al->buffer.
+ * (DEPRECATED: use asm_assemble_str() instead)
  */
-int assemble_str(assemblyline_t al, const char *assembly_str);
+int __attribute__((deprecated("use asm_assemble_str instead")))
+assemble_str(assemblyline_t al, const char *assembly_str);
+
+/**
+ * assembles the given string @param assembly_str containing valid x64 assembly
+ * code with instance @param al It writes the corresponding machine code to the
+ * memory location specified by al->buffer.
+ */
+int asm_assemble_str(assemblyline_t al, const char *assembly_str);
+
+/**
+ * assembles the given file path @param asm_file containing valid x64 assembly
+ * code with instance @param al It writes the corresponding machine code to the
+ * memory location specified by al->buffer.
+ * (DEPRECATED: use asm_assemble_file() instead)
+ */
+int __attribute__((deprecated("use asm_assemble_file instead")))
+assemble_file(assemblyline_t al, char *asm_file);
 
 /**
  * assembles the given file path @param asm_file containing valid x64 assembly
  * code with instance @param al It writes the corresponding machine code to the
  * memory location specified by al->buffer.
  */
-int assemble_file(assemblyline_t al, char *asm_file);
+int asm_assemble_file(assemblyline_t al, char *asm_file);
+
+/**
+ * assembles the given null-terminated @param string with instance @param al.
+ * It counts the number of instructions that break the chunk boundary of size
+ * @param chunk_size and saves it to @param dest It does not nop-pad
+ * necessarily, depends on the @param al instance (you can nop-pad and count
+ * different chunk breaks).
+ * NOTE: you cannot pass const char* as @param string, it will segfault, because
+ * string will be altered.
+ * (DEPRECATED: use asm_assemble_string_counting_chunks() instead)
+ */
+int __attribute__((
+    deprecated("use asm_assemble_string_counting_chunks instead")))
+assemble_string_counting_chunks(assemblyline_t al, char *string, int chunk_size,
+                                int *dest);
 
 /**
  * assembles the given null-terminated @param string with instance @param al.
@@ -62,8 +95,8 @@ int assemble_file(assemblyline_t al, char *asm_file);
  * NOTE: you cannot pass const char* as @param string, it will segfault, because
  * string will be altered.
  */
-int assemble_string_counting_chunks(assemblyline_t al, char *string,
-                                    int chunk_size, int *dest);
+int asm_assemble_string_counting_chunks(assemblyline_t al, char *string,
+                                        int chunk_size, int *dest);
 
 /**
  * sets a given chunk size boundary @param chunk_size in bytes with instance
@@ -98,7 +131,8 @@ void asm_set_offset(assemblyline_t al, int offset);
  * returns the buffer associated with @param al
  * (DEPRECATED: use asm_get_code() instead)
  */
-uint8_t *asm_get_buffer(assemblyline_t al);
+uint8_t __attribute__((deprecated("use asm_get_code instead"))) *
+    asm_get_buffer(assemblyline_t al);
 
 /**
  * returns the buffer associated with @param al as type void* for easy

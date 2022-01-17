@@ -35,7 +35,7 @@ int main() {
       "./test/mov.asm"}; // also, this file is very long in itself
   // assemble file multiple times to ensure the internal buffer is exceeded
   for (int i = 0; i <= 1; i++) {
-    if (assemble_file(al, long_asm_file_path) == EXIT_FAILURE) {
+    if (asm_assemble_file(al, long_asm_file_path) == EXIT_FAILURE) {
       fprintf(stderr, "failed to assemble %s\n", long_asm_file_path);
       return EXIT_FAILURE;
     }

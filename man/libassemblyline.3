@@ -35,19 +35,19 @@ NOTE: \fIbuffer\fR could also be set to NULL for internal memory allocation.
 Frees all memory associated with \fIinstance\fR.
 
 .TP
-.BI "int assemble_str(assemblyline_t " al ", const char *" assembly_str );
+.BI "int asm_assemble_str(assemblyline_t " al ", const char *" assembly_str );
 Assembles the given string \fIassembly_str\fR containing valid x64 assembly code with instance \fIal\fR.
 .br
 It writes the corresponding machine code to the memory location specified by al->buffer.
 
 .TP
-.BI "int assemble_file(assemblyline_t " al ", char *" asm_file );
+.BI "int asm_assemble_file(assemblyline_t " al ", char *" asm_file );
 Assembles the given file path \fIasm_file\fR containing valid x64 assembly code with instance \fIal\fR.
 .br
 It writes the corresponding machine code to the memory location specified by al->buffer.
 
 .TP
-.BI "int assemble_string_counting_chunks(assemblyline_t " al ", char *" str ", int " chunk_size ", int *" dest );
+.BI "int asm_assemble_string_counting_chunks(assemblyline_t " al ", char *" str ", int " chunk_size ", int *" dest );
 Assembles the given null-terminated @param string with instance \fIal\fR.
 .br
 It counts the number of instructions that break the chunk boundary of size

@@ -96,10 +96,10 @@ int main() {
     char *string_modifylable = calloc(strlen(t.asm_string) + 1, sizeof(char));
     strcpy(string_modifylable, t.asm_string);
     // LOOK. in the test array above, the asm_string is const.
-    // the assemble_string_counting_chunks requires a changeable string.
+    // the asm_assemble_string_counting_chunks requires a changeable string.
     // It'll segfault, if the passed pointer points to the datasegment.
 
-    if (assemble_string_counting_chunks(al, string_modifylable, t.break_size,
+    if (asm_assemble_string_counting_chunks(al, string_modifylable, t.break_size,
                                         &counted)) {
       printf("failed to assemble.\n");
       result |= 1;

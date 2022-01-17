@@ -107,6 +107,10 @@ static int check_buffer_len(int buffer_len) {
 }
 
 int assemble_str(assemblyline_t al, const char *assembly_str) {
+  return asm_assemble_str(al, assembly_str);
+}
+
+int asm_assemble_str(assemblyline_t al, const char *assembly_str) {
 
   al->finalized = false;
   // check minimum buffer length requirement
@@ -120,6 +124,11 @@ int assemble_str(assemblyline_t al, const char *assembly_str) {
 
 int assemble_string_counting_chunks(assemblyline_t al, char *str,
                                     int chunk_size, int *dest) {
+  return asm_assemble_string_counting_chunks(al, str, chunk_size, dest);
+}
+
+int asm_assemble_string_counting_chunks(assemblyline_t al, char *str,
+                                        int chunk_size, int *dest) {
   al->assembly_mode = CHUNK_COUNT;
   if (chunk_size < 2)
     al->assembly_mode = ASSEMBLE;
@@ -133,6 +142,10 @@ int assemble_string_counting_chunks(assemblyline_t al, char *str,
 }
 
 int assemble_file(assemblyline_t al, char *asm_file) {
+  return asm_assemble_file(al, asm_file);
+}
+
+int asm_assemble_file(assemblyline_t al, char *asm_file) {
   // open file for reading
   int fd = open(asm_file, O_RDONLY, S_IRUSR | S_IRUSR);
   FAIL_SYS(fd == -1, "failed to open file\n");
@@ -144,7 +157,7 @@ int assemble_file(assemblyline_t al, char *asm_file) {
       mmap(NULL, file_stat.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
   close(fd);
   FAIL_SYS(assembly_str == MAP_FAILED, "failed to allocate memory via mmap\n");
-  int exit_status = assemble_str(al, assembly_str);
+  int exit_status = asm_assemble_str(al, assembly_str);
   // free mmap memory used for reading file
   FAIL_SYS(munmap((void *)assembly_str, str_len) == -1,
            "Error: failed to free memory\n");
@@ -167,7 +180,10 @@ int asm_get_offset(assemblyline_t al) { return al->offset; }
 
 void asm_set_offset(assemblyline_t al, int offset) { al->offset = offset; }
 
-uint8_t *asm_get_buffer(assemblyline_t al) { return al->buffer; }
+uint8_t __attribute__((deprecated("use asm_get_code instead"))) *
+    asm_get_buffer(assemblyline_t al) {
+  return al->buffer;
+}
 
 void *asm_get_code(assemblyline_t al) { return (void *)al->buffer; }
 

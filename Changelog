@@ -41,6 +41,8 @@ version 1.1.0-release (2022-01-04)
 	  ex: "mov rax, 0x000000007fffffff" ->  48 b8 ff ff ff 7f 00 00 00 00
           "mov rax, 0x7fffffff" -> b8 ff ff ff 7f
 
+    - assemblyline functions without asm_ prefix are now deprecated
+
 	- simplified the process for adding new instructions
 	
 	- improvements to autotools

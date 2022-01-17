@@ -58,9 +58,9 @@ please refer to [tools/README.md](https://github.com/0xADE1A1DE/AssemblyLine/blo
     ```
 1. Assemble a file or string containing x64 assembly code. The machine code will be written to `mybuffer` or the internal buffer. You can call those functions sequentially; the new machinecode will be appended at the end.
     ```c
-    assemble_file(al, "./path/to/x64_file.asm");
-    assemble_str(al, "mov rax, 0x0\nadd rax, 0x2; adds two");
-    assemble_str(al, "sub rax, 0x1; subs one\nret");
+    asm_assemble_file(al, "./path/to/x64_file.asm");
+    asm_assemble_str(al, "mov rax, 0x0\nadd rax, 0x2; adds two");
+    asm_assemble_str(al, "sub rax, 0x1; subs one\nret");
     ```
 1. Get the start address of the buffer containing the start of the assembly program
     ```c
@@ -86,8 +86,8 @@ please refer to [tools/README.md](https://github.com/0xADE1A1DE/AssemblyLine/blo
     
     asm_set_chunk_size(al, 16); 
     
-    assemble_str(al, "mov rax, 0x0\nadd rax, 0x2; adds two");
-    assemble_str(al, "sub rax, 0x1; subs one\nret");
+    asm_assemble_str(al, "mov rax, 0x0\nadd rax, 0x2; adds two");
+    asm_assemble_str(al, "sub rax, 0x1; subs one\nret");
  
     void (*func)() = asm_get_code(al);
     

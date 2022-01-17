@@ -113,7 +113,7 @@ int check_digit(char *optarg) {
 }
 
 int create_bin_file(assemblyline_t al, const char *file_name) {
-  void *buffer = asm_get_buffer(al);
+  void *buffer = asm_get_code(al);
   int len = asm_get_offset(al);
   FILE *write_ptr = fopen(file_name, "wb");
 
@@ -211,7 +211,7 @@ int main(int argc, char *argv[]) {
       char *line = NULL;
       size_t size = 100;
       while (getline(&line, &size, stdin) != -1) {
-        if (assemble_str(al, line) == EXIT_FAILURE) {
+        if (asm_assemble_str(al, line) == EXIT_FAILURE) {
           fprintf(stderr, "failed to assemble instruction: %s\n", line);
           exit(EXIT_FAILURE);
         }
@@ -221,7 +221,7 @@ int main(int argc, char *argv[]) {
       err_print_usage("Error: Expected path/to/file.asm after options\n");
     }
   } else {
-    if (assemble_file(al, argv[optind]) == EXIT_FAILURE) {
+    if (asm_assemble_file(al, argv[optind]) == EXIT_FAILURE) {
       fprintf(stderr, "failed to assemble file: %s\n", argv[optind]);
       exit(EXIT_FAILURE);
     }

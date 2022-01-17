@@ -144,7 +144,7 @@ const char *mul_long_ymm = "vmovdqu ymm0, [rdi]\n"
 int main() {
 
   assemblyline_t al = asm_create_instance(NULL, 0);
-  if (assemble_str(al, add_double_ymm) == EXIT_FAILURE)
+  if (asm_assemble_str(al, add_double_ymm) == EXIT_FAILURE)
     return EXIT_FAILURE;
 
   void (*test_double)(double *A, double *B, double *C) = asm_get_code(al);
@@ -156,7 +156,7 @@ int main() {
   // clear previous test
   asm_set_offset(al, 0);
 
-  if (assemble_str(al, sub_double_ymm) == EXIT_FAILURE)
+  if (asm_assemble_str(al, sub_double_ymm) == EXIT_FAILURE)
     return EXIT_FAILURE;
 
   test_double = asm_get_code(al);
@@ -169,7 +169,7 @@ int main() {
   // clear previous test
   asm_set_offset(al, 0);
 
-  if (assemble_str(al, mul_double_ymm) == EXIT_FAILURE)
+  if (asm_assemble_str(al, mul_double_ymm) == EXIT_FAILURE)
     return EXIT_FAILURE;
 
   test_double = asm_get_code(al);
@@ -182,7 +182,7 @@ int main() {
   // clear previous test
   asm_set_offset(al, 0);
 
-  if (assemble_str(al, div_double_ymm) == EXIT_FAILURE)
+  if (asm_assemble_str(al, div_double_ymm) == EXIT_FAILURE)
     return EXIT_FAILURE;
 
   test_double = asm_get_code(al);
@@ -195,7 +195,7 @@ int main() {
   // clear previous test
   asm_set_offset(al, 0);
 
-  if (assemble_str(al, add_long_ymm) == EXIT_FAILURE)
+  if (asm_assemble_str(al, add_long_ymm) == EXIT_FAILURE)
     return EXIT_FAILURE;
 
   void (*test_long)(long *A, long *B, long *C) = asm_get_code(al);
@@ -208,7 +208,7 @@ int main() {
   // clear previous test
   asm_set_offset(al, 0);
 
-  if (assemble_str(al, sub_long_ymm) == EXIT_FAILURE)
+  if (asm_assemble_str(al, sub_long_ymm) == EXIT_FAILURE)
     return EXIT_FAILURE;
 
   test_long = asm_get_code(al);
@@ -221,7 +221,7 @@ int main() {
   // clear previous test
   asm_set_offset(al, 0);
 
-  if (assemble_str(al, mul_long_ymm) == EXIT_FAILURE)
+  if (asm_assemble_str(al, mul_long_ymm) == EXIT_FAILURE)
     return EXIT_FAILURE;
 
   test_long = asm_get_code(al);
