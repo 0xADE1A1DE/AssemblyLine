@@ -187,20 +187,6 @@ uint8_t __attribute__((deprecated("use asm_get_code instead"))) *
 
 void *asm_get_code(assemblyline_t al) { return (void *)al->buffer; }
 
-void strict_mov_imm_handling(assemblyline_t al) {
-  al->assembly_opt &= ~(NASM_SIB | SMART_MOV_IMM | NASM_MOV_IMM);
-}
-
-void nasm_mov_imm_handling(assemblyline_t al) {
-  al->assembly_opt |= (NASM_SIB | NASM_MOV_IMM);
-  al->assembly_opt &= ~SMART_MOV_IMM;
-}
-
-void smart_mov_imm_handling(assemblyline_t al) {
-  al->assembly_opt |= (SMART | NASM_SIB);
-  al->assembly_opt &= ~NASM_MOV_IMM;
-}
-
 int asm_mov_imm(assemblyline_t al, int option) {
 
   switch (option) {
