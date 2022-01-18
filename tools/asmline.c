@@ -143,9 +143,8 @@ void execute_get_ret_value(void *function, int arglen) {
     result = f();
   } else {
     // allocate 6 args with arglen uint64_t's
-    for (int i = 0; i < 6; i++) {
+    for (int i = 0; i < 6; i++)
       arguments[i] = malloc(arglen * sizeof(uint64_t));
-    }
     // cast
     uint64_t (*f)(uint64_t *, uint64_t *, uint64_t *, uint64_t *, uint64_t *,
                   uint64_t *) = function;
@@ -153,9 +152,8 @@ void execute_get_ret_value(void *function, int arglen) {
     result = f(arguments[0], arguments[1], arguments[2], arguments[3],
                arguments[4], arguments[5]);
     // free args
-    for (int i = 0; i < 6; i++) {
+    for (int i = 0; i < 6; i++)
       free(arguments[i]);
-    }
   }
   printf("\nthe value is 0x%lx\n", result);
 }
@@ -257,9 +255,8 @@ int main(int argc, char *argv[]) {
         }
       }
       free(line);
-    } else {
+    } else
       err_print_usage("Error: Expected path/to/file.asm after options\n");
-    }
   } else {
     if (assemble_file(al, argv[optind]) == EXIT_FAILURE) {
       fprintf(stderr, "failed to assemble file: %s\n", argv[optind]);
