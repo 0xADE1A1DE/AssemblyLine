@@ -10,9 +10,9 @@ path/to/file.asm
 
 .SH DESCRIPTION
 .B asmline 
-Generates machine code from a file or stdin containing x64 assembly instructions. 
+Generates machine code from a file or stdin containing x86_64 assembly instructions. 
 .br
-Machine code could be executed directly without the need for an executable file format. 
+Machine code could be directly executed without the need for an executable file format. 
 
 .SH OPTIONS
 .TP
@@ -57,7 +57,7 @@ Generates a binary file from path/to/file.asm called \fIFILENAME\fR.bin in the c
 .BR \-n ", " \-\-nasm
 Enables nasm-style mov-immediate register-size optimization.
 .br
-ex: if immediate size for mov is less than or equal to max signed 32 bit assemblyline 
+ex: if immediate size for mov is less than or equal to max signed 32-bit assemblyline 
 .br
     will emit code to mov to 32-bit register rather than 64-bit.
 .br
@@ -70,7 +70,7 @@ note: rax got optimized to eax for faster immediate to register transfer and
 .BR \-t ", " \-\-strict
 Disables nasm-style mov-immediate register-size optimization.
 .br
-ex: even if immediate size for mov is less than or equal to max signed 32 bit assemblyline 
+ex: even if immediate size for mov is less than or equal to max signed 32-bit assemblyline 
 .br
     will pad the immediate to fit 64bit.
 .br
