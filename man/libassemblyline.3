@@ -149,7 +149,7 @@ base and index register if the stack pointer register is used as index
 .br
 setting \fIoption\fR to STRICT disables Nasm SIB handling.
 .br
-That is: "lea r15, [rax+rsp]" will be interperted as is -> 4c 8d 3c 20
+That is: "lea r15, [rax+rsp]" will be interpreted as is -> 4c 8d 3c 20
 .br
          "lea r15, [rsp+rsp]" will not produce an error
 
@@ -157,7 +157,7 @@ That is: "lea r15, [rax+rsp]" will be interperted as is -> 4c 8d 3c 20
 .br
 setting \fIoption\fR to NASM enables Nasm SIB handling.
 .br
-That is: "lea r15, [rax+rsp]" will be interperted as "lea r15, [rsp+rax]" -> 4c 8d 3c 04
+That is: "lea r15, [rax+rsp]" will be interpreted as "lea r15, [rsp+rax]" -> 4c 8d 3c 04
 .br
          "lea r15, [rsp+rsp]" will produce an error
 .TP

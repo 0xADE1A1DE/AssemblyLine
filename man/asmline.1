@@ -59,7 +59,7 @@ In SIB addressing if the index register is esp or rsp then the base and index re
 .br
 will be swapped.
 .br
-That is: "lea r15, [rax+rsp]" interpreted as "lea r15, [rsp+rax]" > 4c 8d 3c 04
+That is: "lea r15, [rax+rsp]" interpreted as "lea r15, [rsp+rax]" -> 4c 8d 3c 04
 .br
          "lea r15, [rsp+rsp]" will produce an error
 .br
@@ -71,7 +71,7 @@ In SIB addressing the base and index registers will not be swapped even if the
 .br
 index register is esp or rsp.
 .br
-That is: "lea r15, [rax+rsp] is interperted as is -> 4c 8d 3c 20 
+That is: "lea r15, [rax+rsp] is interpreted as is -> 4c 8d 3c 20 
 .br
          "lea r15, [rsp+rsp]" will not produce an error
 

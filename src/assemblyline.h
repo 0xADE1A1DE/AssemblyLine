@@ -176,12 +176,12 @@ int asm_mov_imm(assemblyline_t al, int option);
  *
  * setting @param option to STRICT disables Nasm SIB handling.
  * That is:
- * "lea r15, [rax+rsp]" will be interperted as is
+ * "lea r15, [rax+rsp]" will be interpreted as is
  * -> 4c 8d 3c 20
  *
  * setting @param option to NASM enables Nasm SIB handling.
  * That is:
- * "lea r15, [rax+rsp]" will be interperted as "lea r15, [rsp+rax]"
+ * "lea r15, [rax+rsp]" will be interpreted as "lea r15, [rsp+rax]"
  * -> 4c 8d 3c 04
  */
 int asm_sib(assemblyline_t al, int option);
