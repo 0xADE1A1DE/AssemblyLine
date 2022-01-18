@@ -159,6 +159,7 @@ TEST_ASM = \
 		  test/negative_mem_disp.asm \
 		  test/new_instruction.asm \
 		  test/nop.asm \
+		  test/no_ptr.asm \
 		  test/not.asm \
 		  test/or.asm \
 		  test/paddb.asm \

@@ -24,7 +24,7 @@ as well process any offsets or immediate operands*/
 #include <stdlib.h>
 
 /**
- * sets the register size to 8 bits if the instruction referenced by
+ * sets the operand size to 8 bits if the instruction referenced by
  * @param instrc only support 8-bit registers
  */
 static void auto_set_byte(struct instr *instrc) {
@@ -46,6 +46,31 @@ static void auto_set_byte(struct instr *instrc) {
   }
 }
 
+/**
+ * sets the operand size to 8 bits if the instruction referenced by
+ * @param instrc only support 8-bit registers
+ */
+static void auto_set_operand(struct instr *instrc, int r) {
+  // exit if keyword is present or register is 64 bits or greater
+  if (instrc->keyword.is_keyword || (r & reg64))
+    return;
+  switch (r & BIT_MASK) {
+  case BIT_32:
+    instrc->keyword.is_dword = true;
+    break;
+
+  case BIT_16:
+    instrc->keyword.is_word = true;
+    break;
+
+  default:
+    if (r < reg16) {
+      instrc->keyword.is_byte = true;
+      instrc->op_offset = 0;
+    }
+  }
+}
+
 void encode_offset(struct instr *instrc) {
   // check if register is no prefix
   if ((instrc->opd[0].reg & MODE_MASK) == noext8 ||
@@ -60,12 +85,15 @@ void encode_offset(struct instr *instrc) {
  * determines whether a zero byte is required for @param instrc depending on
  * the @param m register position
  */
-static void encode_mem(struct instr *instrc, int m) {
+static int encode_mem(struct instr *instrc, int m) {
 
   if (!instrc->mem_disp)
-    return;
+    return NA;
   if ((instrc->opd[m].reg & BIT_MASK) == BIT_32)
     instrc->hex.is_67H = true;
+  if ((instrc->opd[m].reg & BIT_MASK) == BIT_16)
+    instrc->hex.is_66H = true;
+
   // auto correct SIB syntax in nasm and smart mode
   if ((instrc->imm_handling & (SMART | NASM)) &&
       (instrc->opd[m].index & REG_MASK) == spl && !instrc->sib_disp) {
@@ -78,7 +106,7 @@ static void encode_mem(struct instr *instrc, int m) {
       instrc->opd[m].index == reg_none)
     instrc->is_sib_const = true;
   if (instrc->mem_offset)
-    return;
+    return EXIT_SUCCESS;
   // check for an additional zero byte when memory displace is zero
   unsigned int reg_opd = instrc->opd[m].reg & MODE_MASK;
   if (reg_opd > ext16 && reg_opd < mmx64 && !instrc->mem_offset &&
@@ -86,6 +114,7 @@ static void encode_mem(struct instr *instrc, int m) {
     instrc->mod_disp = MOD8;
     instrc->zero_byte = true;
   }
+  return EXIT_SUCCESS;
 }
 
 /**
@@ -94,7 +123,9 @@ static void encode_mem(struct instr *instrc, int m) {
  */
 static int encode_two_opds(struct instr *instrc, int r, int m) {
 
-  encode_mem(instrc, m);
+  if (encode_mem(instrc, m) != NA)
+    auto_set_operand(instrc, instrc->opd[r].reg);
+  // printf("instrc->keyword.is_word = %d\n", instrc->keyword.is_word);
   // check if a second register exist in memory reference ex: [rax+rcx]
   instrc->hex.rex = get_rex_prefix(instrc, &instrc->opd[m], &instrc->opd[r]);
   FAIL_IF(get_reg(instrc, &instrc->opd[m], instrc->opd[r].reg));
@@ -107,7 +138,8 @@ static int encode_two_opds(struct instr *instrc, int r, int m) {
  */
 static int encode_three_opds(struct instr *instrc, int r, int m, int v) {
 
-  encode_mem(instrc, m);
+  if (encode_mem(instrc, m) != NA)
+    auto_set_operand(instrc, instrc->opd[r].reg);
   // used for RXB and R
   instrc->hex.rex = get_rex_prefix(instrc, &instrc->opd[m], &instrc->opd[r]);
   // get vvvv parameter

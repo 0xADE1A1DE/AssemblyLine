@@ -16,6 +16,12 @@ or an interal dynamically allocated buffer within assemblyline. An external buff
 greater than 20 bytes. An error will the thrown if written length exceeds (buffer length - 20).
 .br
 There is no size limit when using an internal buffer.
+.br
+.br
+.br
+\fBNOTE:\fR assemblyline does not check for mismatch operand size/type when using pointers
+.br 
+      ie. mov qword [rbp], al will be intepreted as mov qword [rbp], rax
 
 .SH SYNOPSIS
 .TP

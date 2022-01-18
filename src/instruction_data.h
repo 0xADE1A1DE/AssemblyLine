@@ -51,6 +51,7 @@ struct prefix {
   unsigned int vvvv : 4;
   bool is_w0 : 1;
   bool is_67H : 1;
+  bool is_66H : 1;
   // fix later if possible
   unsigned int sib;
 };

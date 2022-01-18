@@ -5,6 +5,11 @@ mov [rsp + 0x03f0 ], rax
 mov [rsp + 0x03f0 ], rax
 mov byte [ rsp + 0xa0 ], r14b
 mov byte [ rsp + 0xa0 ], ah
+mov byte [ rsp + 0xa0 ], ch
+mov byte [ rsp + 0xa0 ], dh
+mov byte [ rsp + 0xa0 ], bh
+mov byte [ rsp + 0xa0 ], spl
+mov byte [ rbp + 0xa0 ], spl
 mov word [ rsp + 0xa0 ], ax
 mov dword [ rsp + 0xa0 ], eax
 mov byte [ rsp + 0xa0 ], al

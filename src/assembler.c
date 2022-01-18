@@ -196,7 +196,8 @@ static int assemble_instr(struct instr *instruc, unsigned char ptr[]) {
   int opcode_pos = 0;
   int new_vex = 0;
   // 16 bit register prefix
-  if ((instruc->opd[0].reg & BIT_MASK) == BIT_16 || instruc->keyword.is_word)
+  if ((instruc->opd[0].reg & BIT_MASK) == BIT_16 || instruc->hex.is_66H ||
+      instruc->keyword.is_word)
     ptr[ptr_pos++] = 0x66;
   // 67h - address size overwrite prefix
   if (instruc->hex.is_67H)

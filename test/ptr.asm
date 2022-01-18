@@ -260,7 +260,7 @@ mov bp, word [rbp]
 mov ax, word [rdx+8*r15+0x7f]
 mov ax, word [r9+8*rbp+0x7f]
 mov ax, word [eax]
-mov word [eax], ax 
+mov word [eax+0x2], ax 
 mov ax, word [ebx]
 mov ax, word [ecx]
 mov ax, word [edx]
