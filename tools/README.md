@@ -136,13 +136,39 @@ DESCRIPTION:
 
 ## Different modes of assembly
 When moving immediate values to a 64-bit register, if immediate value is less than or equal to 0x7fffffff (max signed 32-bit)
-nasm will interpret 'mov rax, IMM' as 'mov eax, IMM'. The following three settings allow the user to control this behavior.
+nasm will interpret 'mov rax, IMM' as 'mov eax, IMM'.  
+Since the stack pointer register is not scalable in SIB when the index register is set to rsp or esp, NASM will swap the index 
+and base register to produce a valid instruction.  
+The settings below allow the user to control the following behavior.
 
-### Set assembly mode to NASM
+### Set SIB to NASM
 
-1. `$ asmline -n path/to/file.asm` to ensure the generated machine code from `file.asm` matches nasm 
+1. `$ asmline --nasm-mov-imm path/to/file.asm` to ensure the generated machine code from `file.asm` matches nasm 
     ```
-    -n, --nasm
+    --nasm-sib
+            In SIB addressing if the index register is esp or rsp then the base and index registers
+            will be swapped.
+            That is: "lea r15, [rax+rsp]" interpreted as "lea r15, [rsp+rax]" -> 4c 8d 3c 04
+                     "lea r15, [rsp+rsp]" will produce an error
+            note: this is because the stack pointer register is not scalable in SIB
+    ```
+
+### Set SIB to STRICT
+
+1. `$ asmline --strict-mov-imm path/to/file.asm` to ensure the generated machine code from `file.asm` is in an 'as is' state 
+    ```
+    --strict-sib
+            In SIB addressing the base and index registers will not be swapped even if the
+            index register is esp or rsp.
+            That is: "lea r15, [rax+rsp] is interpreted as is -> 4c 8d 3c 20
+                     "lea r15, [rsp+rsp]" will not produce an error
+    ```
+
+### Set mov immediate to NASM
+
+1. `$ asmline --nasm-mov-imm path/to/file.asm` to ensure the generated machine code from `file.asm` matches nasm 
+    ```
+    --nasm-mov-imm
             Enables nasm-style mov-immediate register-size optimization.
             ex: if immediate size for mov is less than or equal to max signed 32-bit assemblyline
                 will emit code to mov to the 32-bit register rather than 64-bit.
@@ -151,11 +177,11 @@ nasm will interpret 'mov rax, IMM' as 'mov eax, IMM'. The following three settin
                   produces a shorter instruction. 
     ```
 
-### Set assembly mode to STRICT
+### Set mov immediate to STRICT
 
-1. `$ asmline -t path/to/file.asm` to ensure the generated machine code from `file.asm` is in an 'as is' state 
+1. `$ asmline --strict-mov-imm path/to/file.asm` to ensure the generated machine code from `file.asm` is in an 'as is' state 
     ```
-    -t, --strict
+    --strict-mov-imm
             Disables nasm-style mov-immediate register-size optimization.
             ex: even if immediate size for mov is less than or equal to max signed 32-bit assemblyline.
                 will pad the immediate to fit 64-bit
@@ -165,15 +191,31 @@ nasm will interpret 'mov rax, IMM' as 'mov eax, IMM'. The following three settin
                   and produces a shorter instruction.
     ```
 
-### Set assembly mode to SMART
+### Set mov immediate to SMART
 
-1. `$ asmline -s path/to/file.asm` to ensure the generated machine code from `file.asm` can manually be set to  
+1. `$ asmline --smart-mov-imm path/to/file.asm` to ensure the generated machine code from `file.asm` can manually be set to  
 disable nasm mode (this is enabled by default). 
     ```
-    -s, --smart
+    --smart-mov-imm
             The immediate value will be checked for leading 0's.
             Immediate must be zero padded to 64-bits exactly to ensure it will not optimize.
             This is currently set as default.
             ex: "mov rax, 0x000000007fffffff" ->  48 b8 ff ff ff 7f 00 00 00 00
                 "mov rax, 0x7fffffff" -> b8 ff ff ff 7f
+    ```
+
+### Set all to NASM
+
+1. `$ asmline --nasm path/to/file.asm` to ensure the generated machine code from `file.asm` matches nasm 
+    ```
+    -n, --nasm
+           equivalent to --nasm-mov-imm --nasm-sib
+    ```
+
+### Set all to STRICT
+
+1. `$ asmline --strict path/to/file.asm` to ensure the generated machine code from `file.asm` is in an 'as is' state 
+    ```
+    -t, --strict
+              equivalent to --strict-mov-imm --strict-sib
     ```
