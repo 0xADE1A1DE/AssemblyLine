@@ -26,6 +26,9 @@
 #include <string.h>
 #include <unistd.h>
 
+#define DEFAULT_ARG_LEN 10
+#define BUFFER_SIZE 100
+
 const char *asm_version = PACKAGE_STRING;
 
 void err_print_usage(char *error_msg) {
@@ -168,7 +171,7 @@ int main(int argc, char *argv[]) {
 
   // for running (with arguments)
   enum run get_ret = DONT_RUN;
-  int arglen = 10;
+  int arglen = DEFAULT_ARG_LEN;
 
   static struct option long_options[] = {
       /* These options set a flag. */
@@ -246,7 +249,7 @@ int main(int argc, char *argv[]) {
     // check is stdin is provided via pipe
     if (!isatty(fileno(stdin))) {
       char *line = NULL;
-      size_t size = 100;
+      size_t size = BUFFER_SIZE;
       while (getline(&line, &size, stdin) != -1) {
         if (assemble_str(al, line) == EXIT_FAILURE) {
           fprintf(stderr, "failed to assemble instruction: %s\n", line);
