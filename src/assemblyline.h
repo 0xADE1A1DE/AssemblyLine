@@ -174,12 +174,12 @@ int asm_mov_imm(assemblyline_t al, int option);
  * Since the stack pointer register is non-scalable in SIB, Nasm will swap the
  * base and index register if the stack pointer register is used as index
  *
- * setting @param option to STRICT disables this behaviour by Nasm.
+ * setting @param option to STRICT disables Nasm SIB handling.
  * That is:
  * "lea r15, [rax+rsp]" will be interperted as is
  * -> 4c 8d 3c 20
  *
- * setting @param option to NASM enables this behaviour by Nasm.
+ * setting @param option to NASM enables Nasm SIB handling.
  * That is:
  * "lea r15, [rax+rsp]" will be interperted as "lea r15, [rsp+rax]"
  * -> 4c 8d 3c 04
@@ -187,11 +187,13 @@ int asm_mov_imm(assemblyline_t al, int option);
 int asm_sib(assemblyline_t al, int option);
 
 /**
- * setting @param option to STRICT is equivalent to calling asm_sib(al,STRICT)
- * and asm_mov_imm(al,STRICT)
+ * setting @param option to STRICT is equivalent to calling both
+ * asm_sib(al,STRICT) and asm_mov_imm(al,STRICT)
  *
- * setting @param option to NASM is equivalent to calling asm_sib(al,NASM)
+ * setting @param option to NASM is equivalent to calling both asm_sib(al,NASM)
  * and asm_mov_imm(al,NASM)
+ *
+ * setting @param option to SMART is equivalent to calling asm_mov_imm(al,SMART)
  */
 int asm_set_all(assemblyline_t al, int option);
 
