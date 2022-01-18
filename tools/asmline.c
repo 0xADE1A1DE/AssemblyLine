@@ -35,9 +35,7 @@ void err_print_usage(char *error_msg) {
   fprintf(
       stderr,
       "%s\nUsage: asmline "
-      "[-r] [-R LEN] [-p] [-P FILENAME] [-o FILENAME_NO_EXT] [-c CHUNK_SIZE>1] "
-      "[-n] [-t] [-s] [-h] [-v] "
-      "[path/to/file.asm]\n\n"
+      "[OPTIONS]... path/to/file.asm\n\n"
       "  -r, --return\n"
       "\tAssembles given code. Then executes it with six parameters to "
       "heap-allocated memory.\n\tEach pointer points to an array of ten 64-bit "
