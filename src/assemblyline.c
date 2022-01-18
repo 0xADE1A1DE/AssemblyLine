@@ -237,6 +237,7 @@ int asm_sib(assemblyline_t al, int option) {
 }
 
 int asm_set_all(assemblyline_t al, int option) {
+
   switch (option) {
   case NASM:
     al->assembly_opt |= (NASM_SIB | NASM_MOV_IMM);
