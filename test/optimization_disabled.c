@@ -342,7 +342,7 @@ int main() {
   asm_set_offset(al, 0);
 
   // allow manual enabling of nasm style register size optimization
-  asm_mov_imm(al, STRICT);
+  asm_mov_imm(al, SMART);
 
   if (asm_assemble_str(al, mov_manual_ri) == EXIT_FAILURE)
     return EXIT_FAILURE;
