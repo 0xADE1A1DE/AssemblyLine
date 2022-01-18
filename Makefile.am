@@ -119,6 +119,14 @@ dist_man3_MANS = man/libassemblyline.3 $(link_man)
 TEST_EXTENSIONS = .asm
 ASM_LOG_COMPILER = ./test/al_nasm_compare.sh
 
+# get the tap-driver
+TEST_EXTENSIONS += .tap
+TAP_LOG_DRIVER = env AM_TAP_AWK='$(AWK)' $(SHELL) \
+                  $(top_srcdir)/build-aux/tap-driver.sh
+TAP_LOG_COMPILER = ./test/tap/compiler.sh
+
+# add TAP tests here
+TEST_TAP = test/tap/misc.tap
 
 # add SH-tests here
 TEST_SH = \
@@ -215,5 +223,5 @@ TEST_ASM = \
 # if needed, add utility programs, which should be build for the test, to check_PROGRAMS
 check_PROGRAMS = $(bin_PROGRAMS) $(TEST_C)
 
-TESTS = $(TEST_SH) $(TEST_ASM) $(TEST_C)
+TESTS = $(TEST_TAP) $(TEST_SH) $(TEST_ASM) $(TEST_C)
 
