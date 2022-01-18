@@ -228,10 +228,28 @@ int asm_sib(assemblyline_t al, int option) {
     al->assembly_opt |= NASM_SIB;
     break;
   case STRICT:
-    al->assembly_opt &= ~(NASM_MOV_IMM);
+    al->assembly_opt &= ~(NASM_SIB);
     break;
   default:
-    FAIL_IF_MSG(true, "invalid option for mov_sib");
+    FAIL_IF_MSG(true, "invalid option for sib");
+  }
+  return EXIT_SUCCESS;
+}
+
+int asm_set_all(assemblyline_t al, int option) {
+  switch (option) {
+  case NASM:
+    al->assembly_opt |= (NASM_SIB | NASM_MOV_IMM);
+    al->assembly_opt &= ~SMART_MOV_IMM;
+    break;
+  case STRICT:
+    al->assembly_opt &= ~(NASM_SIB | SMART_MOV_IMM | NASM_MOV_IMM);
+    break;
+  case SMART:
+    asm_mov_imm(al, SMART);
+    break;
+  default:
+    FAIL_IF_MSG(true, "invalid assembly option");
   }
   return EXIT_SUCCESS;
 }

@@ -182,4 +182,6 @@ int asm_mov_imm(assemblyline_t al, int option);
 
 int asm_sib(assemblyline_t al, int option);
 
+int asm_set_all(assemblyline_t al, int option);
+
 #endif
