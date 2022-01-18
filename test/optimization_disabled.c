@@ -328,7 +328,7 @@ int main() {
 
   assemblyline_t al = asm_create_instance(NULL, 0);
   // ensure nasm style register size optimization is disabled
-  strict_mov_imm_handling(al);
+  asm_mov_imm(al, STRICT);
 
   if (asm_assemble_str(al, mov_ri) == EXIT_FAILURE)
     return EXIT_FAILURE;
@@ -342,7 +342,7 @@ int main() {
   asm_set_offset(al, 0);
 
   // allow manual enabling of nasm style register size optimization
-  smart_mov_imm_handling(al);
+  asm_mov_imm(al, STRICT);
 
   if (asm_assemble_str(al, mov_manual_ri) == EXIT_FAILURE)
     return EXIT_FAILURE;

@@ -95,7 +95,7 @@ static int encode_mem(struct instr *instrc, int m) {
     instrc->hex.is_66H = true;
 
   // auto correct SIB syntax in nasm and smart mode
-  if ((instrc->imm_handling & (SMART | NASM)) &&
+  if ((instrc->assembly_opt & NASM_SIB) &&
       (instrc->opd[m].index & REG_MASK) == spl && !instrc->sib_disp) {
     asm_reg swap = instrc->opd[m].index;
     instrc->opd[m].index = instrc->opd[m].reg;
@@ -299,7 +299,7 @@ void encode_imm(struct instr *instrc) {
       instrc->reduced_imm = true;
       return;
     } else if (instrc->cons <= MAX_UNSIGNED_32BIT) {
-      if ((instrc->imm_handling & NASM) && !instrc->mem_disp)
+      if ((instrc->assembly_opt & NASM_MOV_IMM) && !instrc->mem_disp)
         nasm_register_size_optimize(instrc);
       // ensure instruction does not default to movabs
       else if ((instrc->cons < NEG32BIT_CHECK &&
@@ -308,7 +308,7 @@ void encode_imm(struct instr *instrc) {
         instrc->key++;
     }
     if ((instrc->opd[0].reg & MODE_MASK) > noext8) {
-      if ((instrc->imm_handling & NASM) && !instrc->mem_disp)
+      if ((instrc->assembly_opt & NASM_MOV_IMM) && !instrc->mem_disp)
         instrc->op_offset = 8;
       else if (INSTR_TABLE[instrc->key].encode_operand == I)
         instrc->op_offset = 8;
