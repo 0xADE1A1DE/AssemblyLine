@@ -49,6 +49,10 @@ version 1.1.0-release (2022-01-04)
 
 	- tools/asmline dynamically links to libassemblyline.so
 
+	- tools/asmline's -r option now runs with six arguments, which point to 
+	heap-memory. Each argumenty points to ten 64-bit elements. It also
+	features now -R, which changes the amount of elements of each pointer.
+	This makes -r equivalent to -R 10.
 
 version 1.0.5-release (2021-09-29)
 

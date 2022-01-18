@@ -26,18 +26,24 @@
 #include <string.h>
 #include <unistd.h>
 
+#define DEFAULT_ARG_LEN 10
+#define BUFFER_SIZE 100
+
 const char *asm_version = PACKAGE_STRING;
 
 void err_print_usage(char *error_msg) {
   fprintf(
       stderr,
       "%s\nUsage: asmline "
-      "[-r] [-p] [-P FILENAME] [-o FILENAME_NO_EXT] [-c CHUNK_SIZE>1] "
-      "[-n] [-t] [-s] [-h] [-v] "
-      "[path/to/file.asm]\n\n"
+      "[OPTIONS]... path/to/file.asm\n\n"
       "  -r, --return\n"
-      "\tExecutes assembly code and prints out the contents of the rax "
-      "register (return register)\n\n"
+      "\tAssembles given code. Then executes it with six parameters to "
+      "heap-allocated memory.\n\tEach pointer points to an array of ten 64-bit "
+      "elements which can be dereferenced in the asmcode.\n\tAfter execution, "
+      "it prints out the contents of the return (rax) register and frees the "
+      "heap-memory.\n\n"
+      "  -R LEN, --Return LEN\n"
+      "\tlike -r, but allocates LEN elements instead of 10.\n\n"
       "  -p, --print\n"
       "\tThe corresponding machine code will be printed to stdout in hex "
       "form.\n"
@@ -126,26 +132,52 @@ int create_bin_file(assemblyline_t al, const char *file_name) {
 
   return EXIT_SUCCESS;
 }
+void execute_get_ret_value(void *function, int arglen) {
+  uint64_t *arguments[6];
 
-void execute_get_ret_value(int (*exe)()) {
-  printf("\nthe value is 0x%x\n", ((int (*)())exe)());
+  uint64_t result = 0;
+  if (arglen == 0) {
+    uint64_t (*f)() = function;
+    result = f();
+  } else {
+    // allocate 6 args with arglen uint64_t's
+    for (int i = 0; i < 6; i++)
+      arguments[i] = malloc(arglen * sizeof(uint64_t));
+    // cast
+    uint64_t (*f)(uint64_t *, uint64_t *, uint64_t *, uint64_t *, uint64_t *,
+                  uint64_t *) = function;
+    // call
+    result = f(arguments[0], arguments[1], arguments[2], arguments[3],
+               arguments[4], arguments[5]);
+    // free args
+    for (int i = 0; i < 6; i++)
+      free(arguments[i]);
+  }
+  printf("\nthe value is 0x%lx\n", result);
 }
+
 enum OUTPUT { NONE, BIN_FILE, GENERIC_FILE };
+enum run { DONT_RUN, RUN };
 
 int main(int argc, char *argv[]) {
 
-  int opt, get_ret = 0;
+  int opt;
   enum OUTPUT create_bin = NONE;
   char bin_ext[] = ".bin";
   char *param_file = NULL;
   char *bin_file = NULL;
   char *write_file = NULL;
 
+  // for running (with arguments)
+  enum run get_ret = DONT_RUN;
+  int arglen = DEFAULT_ARG_LEN;
+
   static struct option long_options[] = {
       /* These options set a flag. */
       {"version", no_argument, 0, 'v'},
       {"help", no_argument, 0, 'h'},
       {"return", no_argument, 0, 'r'},
+      {"Return", no_argument, 0, 'R'},
       {"print", no_argument, 0, 'p'},
       {"printfile", required_argument, 0, 'P'},
       {"nasm", no_argument, 0, 'n'},
@@ -162,7 +194,7 @@ int main(int argc, char *argv[]) {
     err_print_usage("Error: invalid number of arguments\n");
 
   assemblyline_t al = asm_create_instance(NULL, 0);
-  while ((opt = getopt_long(argc, argv, "hvrntspP:c:o:", long_options,
+  while ((opt = getopt_long(argc, argv, "hvrR:ntspP:c:o:", long_options,
                             &option_index)) != -1) {
     switch (opt) {
     case 'v':
@@ -171,8 +203,12 @@ int main(int argc, char *argv[]) {
     case 'h':
       err_print_usage("");
       break;
+    case 'R':
+      if (check_digit(optarg))
+        err_print_usage("Error: [-r LEN] expects an integer\n");
+      arglen = atoi(optarg);
     case 'r':
-      get_ret = 1;
+      get_ret = RUN;
       break;
     case 'p':
       asm_set_debug(al, true);
@@ -212,7 +248,7 @@ int main(int argc, char *argv[]) {
     // check is stdin is provided via pipe
     if (!isatty(fileno(stdin))) {
       char *line = NULL;
-      size_t size = 100;
+      size_t size = BUFFER_SIZE;
       while (getline(&line, &size, stdin) != -1) {
         if (asm_assemble_str(al, line) == EXIT_FAILURE) {
           fprintf(stderr, "failed to assemble instruction: %s\n", line);
@@ -220,9 +256,8 @@ int main(int argc, char *argv[]) {
         }
       }
       free(line);
-    } else {
+    } else
       err_print_usage("Error: Expected path/to/file.asm after options\n");
-    }
   } else {
     if (asm_assemble_file(al, argv[optind]) == EXIT_FAILURE) {
       fprintf(stderr, "failed to assemble file: %s\n", argv[optind]);
@@ -230,9 +265,9 @@ int main(int argc, char *argv[]) {
     }
   }
 
-  if (get_ret) {
-    int (*func)() = asm_get_code(al);
-    execute_get_ret_value(func);
+  if (get_ret == RUN) {
+    void *func = asm_get_code(al);
+    execute_get_ret_value(func, arglen);
   }
 
   switch (create_bin) {

@@ -5,31 +5,29 @@ asmline \- assemblyline tool
 
 .SH SYNOPSIS
 .B asmline
-[\fB\-r\fR]
-[\fB\-p\fR]
-[\fB\-c\fR \fICHUNK_SIZE>1\fR]
-[\fB\-o\fR \fIFILENAME\fR]
-[\fB\-n\fR]
-[\fB\-s\fR]
-[\fB\-m\fR]
-[\fB\-h\fR]
-[\fB\-v\fR]
+[OPTIONS]...
 path/to/file.asm
 
 .SH DESCRIPTION
 .B asmline 
-Generates machine code from a file or stdin containing x64 assembly instructions. 
-
+Generates machine code from a file or stdin containing x86_64 assembly instructions. 
 .br
-Machine code could be executed directly without the need for an executable file format. 
-.br
-Obtain command-line instructions for generating an ELF binary file from assembly code.
+Machine code could be directly executed without the need for an executable file format. 
 
 .SH OPTIONS
 .TP
 
+
 .BR \-r ", " \-\-return
-Executes assembly code and prints out the contents of the rax register (return register).
+Assembles given code. Then executes it with six parameters to heap-allocated memory. 
+.br
+Each pointer points to an array of ten 64-bit elements which can be dereferenced in the asmcode. 
+.br
+Prints out the contents of the return (rax) register after execution and frees the heap-memory.
+.TP
+
+.BR \-R ", " \-\-Return " " \fILEN
+Like -r, but allocates LEN elements instead of 10.
 .TP
 
 .BR \-p ", " \-\-print
@@ -59,7 +57,7 @@ Generates a binary file from path/to/file.asm called \fIFILENAME\fR.bin in the c
 .BR \-n ", " \-\-nasm
 Enables nasm-style mov-immediate register-size optimization.
 .br
-ex: if immediate size for mov is less than or equal to max signed 32 bit assemblyline 
+ex: if immediate size for mov is less than or equal to max signed 32-bit assemblyline 
 .br
     will emit code to mov to 32-bit register rather than 64-bit.
 .br
@@ -72,7 +70,7 @@ note: rax got optimized to eax for faster immediate to register transfer and
 .BR \-t ", " \-\-strict
 Disables nasm-style mov-immediate register-size optimization.
 .br
-ex: even if immediate size for mov is less than or equal to max signed 32 bit assemblyline 
+ex: even if immediate size for mov is less than or equal to max signed 32-bit assemblyline 
 .br
     will pad the immediate to fit 64bit.
 .br
