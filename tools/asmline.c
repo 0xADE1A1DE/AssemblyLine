@@ -217,13 +217,13 @@ int main(int argc, char *argv[]) {
       asm_set_debug(al, true);
       break;
     case 'n':
-      nasm_mov_imm_handling(al);
+      asm_set_all(al, NASM);
       break;
     case 't':
-      strict_mov_imm_handling(al);
+      asm_set_all(al, STRICT);
       break;
     case 's':
-      smart_mov_imm_handling(al);
+      asm_set_all(al, SMART);
       break;
     case 'c':
       if (check_digit(optarg))
