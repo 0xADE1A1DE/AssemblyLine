@@ -203,9 +203,9 @@ int main(int argc, char *argv[]) {
       err_print_usage("");
       break;
     case 'R':
-      if (check_digit(optarg)) {
-        arglen = atoi(optarg);
-      }
+      if (check_digit(optarg))
+        err_print_usage("Error: [-r LEN] expects an integer\n");
+      arglen = atoi(optarg);
     case 'r':
       get_ret = RUN;
       break;
