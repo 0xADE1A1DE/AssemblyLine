@@ -18,10 +18,14 @@
 #ifndef ASSEMBLYLINE_H
 #define ASSEMBLYLINE_H
 
-#include "enums.h"
 #include <stdbool.h>
 #include <stdint.h>
 #include <unistd.h>
+
+#define STRICT 0b00
+#define NASM 0b01
+#define SMART 0b10
+
 typedef struct assemblyline *assemblyline_t;
 
 /**
@@ -175,5 +179,7 @@ void nasm_mov_imm_handling(assemblyline_t al);
 void smart_mov_imm_handling(assemblyline_t al);
 
 int asm_mov_imm(assemblyline_t al, int option);
+
+int asm_sib(assemblyline_t al, int option);
 
 #endif
