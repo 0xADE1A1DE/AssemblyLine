@@ -204,9 +204,12 @@ int main(int argc, char *argv[]) {
       err_print_usage("");
       break;
     case 'R':
-      if (check_digit(optarg))
+      if (!check_digit(optarg)) {
+        arglen = atoi(optarg);
+        get_ret = RUN;
+      } else
         err_print_usage("Error: [-r LEN] expects an integer\n");
-      arglen = atoi(optarg);
+      break;
     case 'r':
       get_ret = RUN;
       break;
