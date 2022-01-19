@@ -108,7 +108,7 @@ Returns the buffer associated with \fIal\fR (DEPRECATED: use
 \fBasm_get_code(3)\fR instead).
 
 .TP
-.BI "int asm_mov_imm(assemblyline_t " al ", int "option );
+.BI "void asm_mov_imm(assemblyline_t " al ", enum asm_opt "option );
 setting \fIoption\fR to STRICT disables nasm-style mov-immediate register-size handling.
 .br
 ex: even if immediate size for mov is less than or equal to max signed 32 bit assemblyline 
@@ -144,7 +144,7 @@ ex: "mov rax, 0x000000007fffffff" ->  48 b8 ff ff ff 7f 00 00 00 00
 setting \fIoption\fR to any other value results in an no-operation function
 
 .TP
-.BI "void asm_sib(assemblyline_t " al ", int "option );
+.BI "void asm_sib(assemblyline_t " al ", enum asm_opt "option );
 Since the stack pointer register is non-scalable in SIB, Nasm will swap the
 .br
 base and index register if the stack pointer register is used as index
@@ -170,7 +170,7 @@ That is: "lea r15, [rax+rsp]" will be interpreted as "lea r15, [rsp+rax]" -> 4c 
 setting \fIoption\fR to SMART or any other value results in an no-operation function
 
 .TP
-.BI "void asm_set_all(assemblyline_t " al ", int "option );
+.BI "void asm_set_all(assemblyline_t " al ", enum asm_opt "option );
 setting \fIoption\fR to STRICT is equivalent to calling both asm_sib(al,STRICT)
 .br
 and asm_mov_imm(al,STRICT)
