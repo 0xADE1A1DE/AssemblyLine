@@ -109,7 +109,7 @@ Returns the buffer associated with \fIal\fR (DEPRECATED: use
 
 .TP
 .BI "void asm_mov_imm(assemblyline_t " al ", enum asm_opt "option );
-setting \fIoption\fR to STRICT disables nasm-style mov-immediate register-size handling.
+Setting \fIoption\fR to STRICT disables nasm-style mov-immediate register-size handling.
 .br
 ex: even if immediate size for mov is less than or equal to max signed 32 bit assemblyline 
 .br
@@ -121,7 +121,7 @@ That is: "mov rax,0x7fffffff" as "mov rax,0x000000007fffffff"
 
 .br
 .br
-setting \fIoption\fR to NASM enables nasm-style mov-immediate register-size handling.
+Setting \fIoption\fR to NASM enables nasm-style mov-immediate register-size handling.
 .br
 ex: if immediate size for mov is less than or equal to max signed 32 bit assemblyline 
 .br
@@ -131,7 +131,7 @@ That is: "mov rax, 0x7fffffff" as "mov eax, 0x7fffffff" -> b8 ff ff ff 7f
 
 .br
 .br
-setting \fIoption\fR to SMART, Assemblyline will check the immediate value for leading 0's
+Setting \fIoption\fR to SMART, Assemblyline will check the immediate value for leading 0's
 .br
 and thus allows manual handlings. This is currently set as default.
 .br
@@ -141,17 +141,17 @@ ex: "mov rax, 0x000000007fffffff" ->  48 b8 ff ff ff 7f 00 00 00 00
 
 .br
 .br
-setting \fIoption\fR to any other value results in an no-operation function
+Setting \fIoption\fR to any other value results in an no-operation function.
 
 .TP
 .BI "void asm_sib(assemblyline_t " al ", enum asm_opt "option );
 Since the stack pointer register is non-scalable in SIB, Nasm will swap the
 .br
-base and index register if the stack pointer register is used as index
+base and index register if the stack pointer register is used as the index.
 
 .br
 .br
-setting \fIoption\fR to STRICT disables Nasm SIB handling.
+Setting \fIoption\fR to STRICT disables Nasm SIB handling.
 .br
 That is: "lea r15, [rax+rsp]" will be interpreted as "lea r15, [rax+riz]" -> 4c 8d 3c 20
 .br
@@ -163,7 +163,7 @@ That is: "lea r15, [rax+rsp]" will be interpreted as "lea r15, [rax+riz]" -> 4c 
 
 .br
 .br
-setting \fIoption\fR to NASM enables Nasm SIB handling.
+Setting \fIoption\fR to NASM enables Nasm SIB handling.
 .br
 That is: "lea r15, [rax+rsp]" will be interpreted as "lea r15, [rsp+rax]" -> 4c 8d 3c 04
 .br
@@ -171,27 +171,27 @@ That is: "lea r15, [rax+rsp]" will be interpreted as "lea r15, [rsp+rax]" -> 4c 
 
 .br
 .br
-setting \fIoption\fR to SMART or any other value results in an no-operation function
+Setting \fIoption\fR to SMART or any other value results in an no-operation function.
 
 .TP
 .BI "void asm_set_all(assemblyline_t " al ", enum asm_opt "option );
-setting \fIoption\fR to STRICT is equivalent to calling both asm_sib(al,STRICT)
+Setting \fIoption\fR to STRICT is equivalent to calling both asm_sib(al,STRICT)
 .br
-and asm_mov_imm(al,STRICT)
+and asm_mov_imm(al,STRICT).
 
 .br
 .br
-setting \fIoption\fR to NASM is equivalent to calling both asm_sib(al,NASM)
+Setting \fIoption\fR to NASM is equivalent to calling both asm_sib(al,NASM)
 .br
-and asm_mov_imm(al,NASM)
+and asm_mov_imm(al,NASM).
 
 .br
 .br
-setting \fIoption\fR to SMART is equivalent to calling asm_mov_imm(al,SMART)
+Setting \fIoption\fR to SMART is equivalent to calling asm_mov_imm(al,SMART).
 
 .br
 .br
-setting \fIoption\fR to any other value results in an no-operation function
+Setting \fIoption\fR to any other value results in an no-operation function.
 
 .SH SEE ALSO
 .B asmline(1)
