@@ -22,9 +22,8 @@
 #include <stdint.h>
 #include <unistd.h>
 
-#define STRICT 0b00
-#define NASM 0b01
-#define SMART 0b10
+// different assembly options for mov immediate and SIB
+enum asm_opt { STRICT, NASM, SMART };
 
 typedef struct assemblyline *assemblyline_t;
 
@@ -168,7 +167,7 @@ void *asm_get_code(assemblyline_t al);
  * ex: "mov rax, 0x000000007fffffff" ->  48 b8 ff ff ff 7f 00 00 00 00
  *     "mov rax, 0x7fffffff" -> b8 ff ff ff 7f
  */
-int asm_mov_imm(assemblyline_t al, int option);
+int asm_mov_imm(assemblyline_t al, enum asm_opt option);
 
 /**
  * Since the stack pointer register is non-scalable in SIB, Nasm will swap the
@@ -184,7 +183,7 @@ int asm_mov_imm(assemblyline_t al, int option);
  * "lea r15, [rax+rsp]" will be interpreted as "lea r15, [rsp+rax]"
  * -> 4c 8d 3c 04
  */
-int asm_sib(assemblyline_t al, int option);
+int asm_sib(assemblyline_t al, enum asm_opt option);
 
 /**
  * setting @param option to STRICT is equivalent to calling both
@@ -195,6 +194,6 @@ int asm_sib(assemblyline_t al, int option);
  *
  * setting @param option to SMART is equivalent to calling asm_mov_imm(al,SMART)
  */
-int asm_set_all(assemblyline_t al, int option);
+int asm_set_all(assemblyline_t al, enum asm_opt option);
 
 #endif

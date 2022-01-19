@@ -187,7 +187,7 @@ uint8_t __attribute__((deprecated("use asm_get_code instead"))) *
 
 void *asm_get_code(assemblyline_t al) { return (void *)al->buffer; }
 
-int asm_mov_imm(assemblyline_t al, int option) {
+int asm_mov_imm(assemblyline_t al, enum asm_opt option) {
 
   switch (option) {
   case NASM:
@@ -207,7 +207,7 @@ int asm_mov_imm(assemblyline_t al, int option) {
   return EXIT_SUCCESS;
 }
 
-int asm_sib(assemblyline_t al, int option) {
+int asm_sib(assemblyline_t al, enum asm_opt option) {
 
   switch (option) {
   case NASM:
@@ -222,7 +222,7 @@ int asm_sib(assemblyline_t al, int option) {
   return EXIT_SUCCESS;
 }
 
-int asm_set_all(assemblyline_t al, int option) {
+int asm_set_all(assemblyline_t al, enum asm_opt option) {
 
   switch (option) {
   case NASM:
