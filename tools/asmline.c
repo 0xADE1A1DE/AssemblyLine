@@ -200,8 +200,6 @@ int main(int argc, char *argv[]) {
       {"smart-mov-imm", no_argument, &mov_imm, SMART_MOV_IMM},
       {"nasm-sib", no_argument, &sib, NASM_SIB},
       {"strict-sib", no_argument, &sib, STRICT_SIB},
-      {"nasm", no_argument, 0, 'n'},
-      {"strict", no_argument, 0, 't'},
       {"version", no_argument, 0, 'v'},
       {"help", no_argument, 0, 'h'},
       {"return", no_argument, 0, 'r'},
@@ -249,6 +247,9 @@ int main(int argc, char *argv[]) {
       break;
     case 't':
       asm_set_all(al, STRICT);
+      break;
+    case 's':
+      asm_set_all(al, SMART);
       break;
     case 'c':
       if (check_digit(optarg))
