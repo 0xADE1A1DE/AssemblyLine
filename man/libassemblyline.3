@@ -139,6 +139,10 @@ ex: "mov rax, 0x000000007fffffff" ->  48 b8 ff ff ff 7f 00 00 00 00
 .br
     "mov rax, 0x7fffffff" -> b8 ff ff ff 7f
 
+.br
+.br
+setting \fIoption\fR to any other value results in an no-operation function
+
 .TP
 .BI "void asm_sib(assemblyline_t " al ", int "option );
 Since the stack pointer register is non-scalable in SIB, Nasm will swap the
@@ -160,6 +164,11 @@ setting \fIoption\fR to NASM enables Nasm SIB handling.
 That is: "lea r15, [rax+rsp]" will be interpreted as "lea r15, [rsp+rax]" -> 4c 8d 3c 04
 .br
          "lea r15, [rsp+rsp]" will produce an error
+
+.br
+.br
+setting \fIoption\fR to SMART or any other value results in an no-operation function
+
 .TP
 .BI "void asm_set_all(assemblyline_t " al ", int "option );
 setting \fIoption\fR to STRICT is equivalent to calling both asm_sib(al,STRICT)
@@ -175,7 +184,10 @@ and asm_mov_imm(al,NASM)
 .br
 .br
 setting \fIoption\fR to SMART is equivalent to calling asm_mov_imm(al,SMART)
+
 .br
+.br
+setting \fIoption\fR to any other value results in an no-operation function
 
 .SH SEE ALSO
 .B asmline(1)

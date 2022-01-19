@@ -166,6 +166,8 @@ void *asm_get_code(assemblyline_t al);
  * as default.
  * ex: "mov rax, 0x000000007fffffff" ->  48 b8 ff ff ff 7f 00 00 00 00
  *     "mov rax, 0x7fffffff" -> b8 ff ff ff 7f
+ *
+ * setting @param option to any other value results in an no-operation function.
  */
 void asm_mov_imm(assemblyline_t al, enum asm_opt option);
 
@@ -182,6 +184,9 @@ void asm_mov_imm(assemblyline_t al, enum asm_opt option);
  * That is:
  * "lea r15, [rax+rsp]" will be interpreted as "lea r15, [rsp+rax]"
  * -> 4c 8d 3c 04
+ *
+ * setting @param option to SMART or any other value results in an no-operation
+ * function.
  */
 void asm_sib(assemblyline_t al, enum asm_opt option);
 
@@ -193,6 +198,8 @@ void asm_sib(assemblyline_t al, enum asm_opt option);
  * and asm_mov_imm(al,NASM)
  *
  * setting @param option to SMART is equivalent to calling asm_mov_imm(al,SMART)
+ *
+ * setting @param option to any other value results in an no-operation function.
  */
 void asm_set_all(assemblyline_t al, enum asm_opt option);
 
