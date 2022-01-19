@@ -25,6 +25,8 @@
 // different assembly options for mov immediate and SIB
 enum asm_opt { STRICT, NASM, SMART };
 
+#define DEFAULT SMART_MOV_IMM | NASM_SIB
+
 typedef struct assemblyline *assemblyline_t;
 
 /**
@@ -173,7 +175,7 @@ void asm_mov_imm(assemblyline_t al, enum asm_opt option);
 
 /**
  * Since the stack pointer register is non-scalable in SIB, Nasm will swap the
- * base and index register if the stack pointer register is used as index
+ * base and index register if the stack pointer register is used as index.
  *
  * setting @param option to STRICT disables Nasm SIB handling.
  * That is:
@@ -199,7 +201,7 @@ void asm_sib(assemblyline_t al, enum asm_opt option);
  *
  * setting @param option to SMART is equivalent to calling asm_mov_imm(al,SMART)
  *
- * setting @param option to any other value results in an no-operation function.
+ * setting @param option to any other value results in an no-operation function
  */
 void asm_set_all(assemblyline_t al, enum asm_opt option);
 

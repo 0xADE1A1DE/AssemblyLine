@@ -60,7 +60,7 @@ assemblyline_t asm_create_instance(uint8_t *buffer, int len) {
 
   assemblyline_t al = malloc(sizeof(struct assemblyline));
   al->offset = 0;
-  al->assembly_opt = SMART_MOV_IMM | NASM_SIB;
+  al->assembly_opt = DEFAULT;
   // allocate buffer internally if not directly given
   if (buffer == NULL) {
     al->external = false;
