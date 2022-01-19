@@ -214,7 +214,7 @@ int asm_sib(assemblyline_t al, enum asm_opt option) {
     al->assembly_opt |= NASM_SIB;
     break;
   case STRICT:
-    al->assembly_opt &= ~(NASM_SIB);
+    al->assembly_opt &= ~NASM_SIB;
     break;
   default:
     FAIL_IF_MSG(true, "invalid option for sib");
@@ -226,11 +226,12 @@ int asm_set_all(assemblyline_t al, enum asm_opt option) {
 
   switch (option) {
   case NASM:
-    al->assembly_opt |= (NASM_SIB | NASM_MOV_IMM);
-    al->assembly_opt &= ~SMART_MOV_IMM;
+    asm_mov_imm(al, NASM);
+    asm_sib(al, NASM);
     break;
   case STRICT:
-    al->assembly_opt &= ~(NASM_SIB | SMART_MOV_IMM | NASM_MOV_IMM);
+    asm_mov_imm(al, STRICT);
+    asm_sib(al, STRICT);
     break;
   case SMART:
     asm_mov_imm(al, SMART);
