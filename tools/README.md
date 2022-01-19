@@ -56,7 +56,7 @@ DESCRIPTION:
     
 ### Print assembled machine code to stdout
 
-1. `$ asmline -p path/to/file.asm` to write the generated machine code from `file.asm` to stdout
+1. `$ asmline -p path/to/file.asm` to write the generated machine code from `path/to/file.asm` to stdout
     ```
     -p --print
             The corresponding machine code will be printed to stdout in hex form.
@@ -68,7 +68,7 @@ DESCRIPTION:
 
 ### Print assembled machine code to a file
 
-1. `$ asmline -P FILENAME path/to/file.asm` to write the generated machine code from `file.asm` to FILENAME
+1. `$ asmline -P FILENAME path/to/file.asm` to write the generated machine code from `path/to/file.asm` to FILENAME
     ```
     -P, --printfile FILENAME
             The corresponding machine code will be printed to FILENAME in binary form.
@@ -143,7 +143,7 @@ The settings below allow the user to control the following behavior.
 
 ### Set SIB to NASM
 
-1. `$ asmline --nasm-mov-imm path/to/file.asm` to ensure the generated machine code from `file.asm` matches nasm 
+1. `$ asmline --nasm-sib path/to/file.asm` to ensure the generated machine code from `path/to/file.asm` matches nasm 
     ```
     --nasm-sib
             In SIB addressing if the index register is esp or rsp then the base and index registers
@@ -155,7 +155,7 @@ The settings below allow the user to control the following behavior.
 
 ### Set SIB to STRICT
 
-1. `$ asmline --strict-mov-imm path/to/file.asm` to ensure the generated machine code from `file.asm` is in an 'as is' state 
+1. `$ asmline --strict-sib path/to/file.asm` to ensure the generated machine code from `path/to/file.asm` is in an 'as is' state 
     ```
     --strict-sib
             In SIB addressing the base and index registers will not be swapped even if the
@@ -166,7 +166,7 @@ The settings below allow the user to control the following behavior.
 
 ### Set mov immediate to NASM
 
-1. `$ asmline --nasm-mov-imm path/to/file.asm` to ensure the generated machine code from `file.asm` matches nasm 
+1. `$ asmline --nasm-mov-imm path/to/file.asm` to ensure the generated machine code from `path/to/file.asm` matches nasm 
     ```
     --nasm-mov-imm
             Enables nasm-style mov-immediate register-size optimization.
@@ -179,7 +179,7 @@ The settings below allow the user to control the following behavior.
 
 ### Set mov immediate to STRICT
 
-1. `$ asmline --strict-mov-imm path/to/file.asm` to ensure the generated machine code from `file.asm` is in an 'as is' state 
+1. `$ asmline --strict-mov-imm path/to/file.asm` to ensure the generated machine code from `path/to/file.asm` is in an 'as is' state 
     ```
     --strict-mov-imm
             Disables nasm-style mov-immediate register-size optimization.
@@ -193,7 +193,7 @@ The settings below allow the user to control the following behavior.
 
 ### Set mov immediate to SMART
 
-1. `$ asmline --smart-mov-imm path/to/file.asm` to ensure the generated machine code from `file.asm` can manually be set to  
+1. `$ asmline --smart-mov-imm path/to/file.asm` to ensure the generated machine code from `path/to/file.asm` can manually be set to  
 disable nasm mode (this is enabled by default). 
     ```
     --smart-mov-imm
@@ -206,7 +206,7 @@ disable nasm mode (this is enabled by default).
 
 ### Set all to NASM
 
-1. `$ asmline --nasm path/to/file.asm` to ensure the generated machine code from `file.asm` matches nasm 
+1. `$ asmline --nasm path/to/file.asm` to ensure the generated machine code from `path/to/file.asm` matches nasm 
     ```
     -n, --nasm
            equivalent to --nasm-mov-imm --nasm-sib
@@ -214,7 +214,7 @@ disable nasm mode (this is enabled by default).
 
 ### Set all to STRICT
 
-1. `$ asmline --strict path/to/file.asm` to ensure the generated machine code from `file.asm` is in an 'as is' state 
+1. `$ asmline --strict path/to/file.asm` to ensure the generated machine code from `path/to/file.asm` is in an 'as is' state 
     ```
     -t, --strict
               equivalent to --strict-mov-imm --strict-sib
