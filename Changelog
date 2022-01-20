@@ -5,7 +5,9 @@ version 1.1.0-release (2022-01-21)
 	  [base + index*scale + offset]
 	  ex: "add rax, [rcx+4*rbp+0x8]" or "add rax, [rcx+rbp*4+0x8]"
 
-	- added support for MMX, SSE2, AVX, and AVX2 instruction sets  
+	- added support for MMX, SSE2, AVX, and AVX2 instruction sets
+
+	- added support for pointers: byte, word, dword, and qword  
 	
 	- added different modes of register size handling for 
 	  "mov register, immediate" instruction: NASM, STRICT, SMART
@@ -41,7 +43,7 @@ version 1.1.0-release (2022-01-21)
 	  ex: "mov rax, 0x000000007fffffff" ->  48 b8 ff ff ff 7f 00 00 00 00
 	      "mov rax, 0x7fffffff"         ->  b8 ff ff ff 7f
 
-    - assemblyline functions without asm_ prefix are now deprecated
+	- assemblyline functions without asm_ prefix are now deprecated
 
 	- simplified the process for adding new instructions
 	
