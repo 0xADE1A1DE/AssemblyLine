@@ -145,7 +145,7 @@ void execute_get_ret_value(void *function, int arglen, enum run mode) {
   } else {
     // allocate 6 args with arglen uint64_t's
     for (int arg_idx = 0; arg_idx < 6; arg_idx++) {
-      arguments[arg_idx] = malloc(arglen * sizeof(uint64_t));
+      arguments[arg_idx] = calloc(arglen, sizeof(uint64_t));
       if (mode & RUN_RAND)
         for (int qword_idx = 0; qword_idx < arglen; qword_idx++) {
           uint64_t rand_val = rand();           // lo_limb
