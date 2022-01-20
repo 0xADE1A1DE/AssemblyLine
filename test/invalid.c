@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 University of Adelaide
+ * Copyright 2022 University of Adelaide
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,33 @@ const char *const testStrings[] = {
     "mov [rax],[rbx]; cannot mov mem to mem",
     "shrd rax, [rsp], 9; arg2 must be a register.",
     "invalid rax,1",
-};
+    "lea rax, [rsp+*4*r14*4]; invalid memory syntax",
+    "lea rax, [rsp+*r14 ; invalid memory syntax",
+    "lea rax, [rsp+r14*9] ; invalid memory syntax",
+    "lea rax, [rsp+42*r14] ; invalid memory syntax",
+    "lea rax, [rsp+rsp] ; invalid memory syntax",
+    "lea rax, [esp+esp] ; invalid memory syntax",
+    "lea rax, [rbp+4*rsp] ; invalid memory syntax",
+    "lea rax, [r12+2*rsp] ; invalid memory syntax"};
+
+// test invalid instructions with option
+int test_invalid(assemblyline_t al, enum asm_opt option){
+
+  asm_set_all(al,option);
+  size_t i = 0;
+  char const *str;
+  while (i < sizeof(testStrings) / sizeof(testStrings[0])) {
+    str = testStrings[i++];
+    if (asm_assemble_str(al, str) != EXIT_FAILURE) {
+      fprintf(stderr,
+              "should have failed to assemble '%s' and return code '%d' \n",
+              str, EXIT_FAILURE);
+      return EXIT_FAILURE;
+    }
+  }
+  return EXIT_SUCCESS;
+}
+
 
 int main(int argc, char **argv) {
   if (argc > 1) {
@@ -41,17 +67,14 @@ int main(int argc, char **argv) {
 
   assemblyline_t al = asm_create_instance(NULL, 0);
 
-  int i = 0;
-  char const *str;
-  while (i < sizeof(testStrings) / sizeof(testStrings[0])) {
-    str = testStrings[i++];
-    if (assemble_str(al, str) != EXIT_FAILURE) {
-      fprintf(stderr,
-              "should have failed to assemble '%s' and return code '%d' \n",
-              str, EXIT_FAILURE);
-      return 1;
-    }
-  }
+  if(test_invalid(al,NASM))
+    return EXIT_FAILURE;
+
+  if(test_invalid(al,STRICT))
+    return EXIT_FAILURE;
+
+  if(test_invalid(al,SMART))
+    return EXIT_FAILURE;
 
   asm_destroy_instance(al);
   return 0;

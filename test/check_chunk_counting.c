@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 University of Adelaide
+ * Copyright 2022 University of Adelaide
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ struct test_struct {
   const char *asm_string;
 };
 
-int main(int argc, char **argv) {
+int main() {
   struct test_struct tests[] = {
       {
           .expected_breaks = 0,
@@ -96,10 +96,10 @@ int main(int argc, char **argv) {
     char *string_modifylable = calloc(strlen(t.asm_string) + 1, sizeof(char));
     strcpy(string_modifylable, t.asm_string);
     // LOOK. in the test array above, the asm_string is const.
-    // the assemble_string_counting_chunks requires a changeable string.
+    // the asm_assemble_string_counting_chunks requires a changeable string.
     // It'll segfault, if the passed pointer points to the datasegment.
 
-    if (assemble_string_counting_chunks(al, string_modifylable, t.break_size,
+    if (asm_assemble_string_counting_chunks(al, string_modifylable, t.break_size,
                                         &counted)) {
       printf("failed to assemble.\n");
       result |= 1;

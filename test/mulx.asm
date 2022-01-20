@@ -4109,6 +4109,41 @@ mulx rbp, rbp, r15
 mulx rbp, rbp, rsp
 mulx rbp, rbp, rsi
 mulx rbp, rbp, rbp
+
+mulx ecx, eax, eax
+mulx ecx, eax, ebx
+mulx ecx, eax, ecx
+mulx ecx, eax, edx
+mulx ecx, eax, edi
+mulx ebp, ebp, eax
+mulx ebp, ebp, ebx
+mulx ebp, ebp, ecx
+mulx ebp, ebp, edx
+mulx ebp, ebp, edi
+mulx esi, ebp, eax
+mulx esi, ebp, ebx
+mulx esi, ebp, ecx
+mulx esi, ebp, edx
+mulx esi, ebp, edi
+mulx r13d, r12d, ebp
+mulx r13d, r13d, eax
+mulx r13d, r13d, ebx
+mulx r13d, r13d, ecx
+mulx r13d, r13d, edx
+mulx r13d, r13d, edi
+mulx r13d, r13d, r8d
+mulx r13d, r13d, r9d
+mulx r13d, r13d, r10d
+mulx r13d, r13d, r11d
+mulx r13d, r13d, r12d
+mulx r13d, r13d, r13d
+mulx r13d, r13d, r14d
+mulx r13d, r13d, r15d
+mulx r13d, r13d, esp
+mulx r13d, r13d, esi
+mulx r13d, r13d, ebp
+mulx r13d, r14d, eax
+
 mulx r10, r9, [ rsi + 0x8 ]
 mulx r11, r9, [ rsi + 0x10 ]
 mulx r11, rbp, r11
@@ -4149,14 +4184,14 @@ mulx rax, rbx, r14
 mulx rax, rdi, r13
 mulx rbp, r12, [ rsi + 0x8 ]
 mulx rbp, r8, rcx
-mulx rbp, r9, [ r12 + 0x0 ]
+mulx rbp, r9, [ r12 + rbp + 0x0 ]
 mulx rbp, r9, rax
 mulx rbp, r9, [ rsi + 0x8 ]
 mulx rbp, rcx, rbp
 mulx rbx, r10, rbx
 mulx rbx, r15, rbx
 mulx rbx, rdx, rbx
-mulx rcx, r13, [ rsi + 0x10 ]
+mulx rcx, r13, [ rsi + r15 + 0x10 ]
 mulx rcx, r14, r9
 mulx rcx, r14, rdi
 mulx rcx, r15, r13
@@ -4179,5 +4214,9 @@ mulx rdx, rbp, [ rsi + 0x0 ]
 mulx rdx, rbx, [ r11 + 0x18 ]
 mulx rdx, rbx, [ rsi + 0x18 ]
 mulx rdx, rcx, [ r11 + 0x10 ]
-mulx rdx, rcx, [ rsi + 0x18 ]
+mulx rdx, rsi, [ r13 + 0x10 ]
 mulx rdx, rsi, [ r12 + 0x10 ]
+mulx rdx, rsi, [ r13 + 0x10 ]
+mulx rdx, rsi, [ rbp + 0x10 ]
+mulx edx, esi, [ r13d + 0x10 ]
+mulx edx, esi, [ ebp + 0x10 ]

@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 University of Adelaide
+ * Copyright 2022 University of Adelaide
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,23 +33,34 @@
  * INSTR_TABLE[] where the first occurrence of each letter of the alphabet to
  * instr_index_table for more efficient instruction lookup
  */
-static void asm_build_index_table(assemblyline_t al) {
-  int i = 3;
+static void asm_build_index_tables(assemblyline_t al) {
+  // INSTR_TABLE index starts at the SKIP entry
+  size_t i = 2;
   char previous_char = 'a' - 1;
-  while (INSTR_TABLE[i].name != NA) {
+  while (INSTR_TABLE[++i].name != NA) {
     if (INSTR_TABLE[i].instr_name[0] != '\0') {
       if (previous_char != INSTR_TABLE[i].instr_name[0])
         instr_table_index[INSTR_TABLE[i].instr_name[0] - 'a'] = i;
       previous_char = INSTR_TABLE[i].instr_name[0];
     }
-    i++;
   }
+  // create an index table from OPD_FORMAT_TABLE
+  i = 0;
+  previous_char = '\0';
+  while (OPD_FORMAT_TABLE[++i].val != opd_error) {
+    if (previous_char != OPD_FORMAT_TABLE[i].str[0]) {
+      opd_format_table_index[OPD_FORMAT_TABLE[i].str[0] - 'a'] = i;
+      previous_char = OPD_FORMAT_TABLE[i].str[0];
+    }
+  }
+  al->table_built = true;
 }
 
 assemblyline_t asm_create_instance(uint8_t *buffer, int len) {
 
   assemblyline_t al = malloc(sizeof(struct assemblyline));
   al->offset = 0;
+  al->assembly_opt = DEFAULT;
   // allocate buffer internally if not directly given
   if (buffer == NULL) {
     al->external = false;
@@ -69,11 +80,11 @@ assemblyline_t asm_create_instance(uint8_t *buffer, int len) {
     al->buffer = buffer;
   }
   al->assembly_mode = ASSEMBLE;
-  al->chunk_size = none;
+  al->chunk_size = NONE;
   al->chunk_size++;
   al->debug = false;
   al->finalized = false;
-  asm_build_index_table(al);
+  asm_build_index_tables(al);
   return al;
 }
 
@@ -88,6 +99,7 @@ int asm_destroy_instance(assemblyline_t instance) {
 
 // checks the minimum buffer length requirement 20 bytes at least
 static int check_buffer_len(int buffer_len) {
+
   FAIL_IF_MSG(buffer_len < BUFFER_TOLERANCE,
               "insufficient buffer size: ensure length of buffer is at least "
               "20 bytes\n");
@@ -95,6 +107,10 @@ static int check_buffer_len(int buffer_len) {
 }
 
 int assemble_str(assemblyline_t al, const char *assembly_str) {
+  return asm_assemble_str(al, assembly_str);
+}
+
+int asm_assemble_str(assemblyline_t al, const char *assembly_str) {
 
   al->finalized = false;
   // check minimum buffer length requirement
@@ -108,6 +124,11 @@ int assemble_str(assemblyline_t al, const char *assembly_str) {
 
 int assemble_string_counting_chunks(assemblyline_t al, char *str,
                                     int chunk_size, int *dest) {
+  return asm_assemble_string_counting_chunks(al, str, chunk_size, dest);
+}
+
+int asm_assemble_string_counting_chunks(assemblyline_t al, char *str,
+                                        int chunk_size, int *dest) {
   al->assembly_mode = CHUNK_COUNT;
   if (chunk_size < 2)
     al->assembly_mode = ASSEMBLE;
@@ -121,6 +142,10 @@ int assemble_string_counting_chunks(assemblyline_t al, char *str,
 }
 
 int assemble_file(assemblyline_t al, char *asm_file) {
+  return asm_assemble_file(al, asm_file);
+}
+
+int asm_assemble_file(assemblyline_t al, char *asm_file) {
   // open file for reading
   int fd = open(asm_file, O_RDONLY, S_IRUSR | S_IRUSR);
   FAIL_SYS(fd == -1, "failed to open file\n");
@@ -132,7 +157,7 @@ int assemble_file(assemblyline_t al, char *asm_file) {
       mmap(NULL, file_stat.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
   close(fd);
   FAIL_SYS(assembly_str == MAP_FAILED, "failed to allocate memory via mmap\n");
-  int exit_status = assemble_str(al, assembly_str);
+  int exit_status = asm_assemble_str(al, assembly_str);
   // free mmap memory used for reading file
   FAIL_SYS(munmap((void *)assembly_str, str_len) == -1,
            "Error: failed to free memory\n");
@@ -155,6 +180,61 @@ int asm_get_offset(assemblyline_t al) { return al->offset; }
 
 void asm_set_offset(assemblyline_t al, int offset) { al->offset = offset; }
 
-uint8_t *asm_get_buffer(assemblyline_t al) { return al->buffer; }
+uint8_t __attribute__((deprecated("use asm_get_code instead"))) *
+    asm_get_buffer(assemblyline_t al) {
+  return al->buffer;
+}
 
 void *asm_get_code(assemblyline_t al) { return (void *)al->buffer; }
+
+void asm_mov_imm(assemblyline_t al, enum asm_opt option) {
+
+  switch (option) {
+  case NASM:
+    al->assembly_opt |= NASM_MOV_IMM;
+    al->assembly_opt &= ~SMART_MOV_IMM;
+    break;
+  case STRICT:
+    al->assembly_opt &= ~(NASM_MOV_IMM | SMART_MOV_IMM);
+    break;
+  case SMART:
+    al->assembly_opt |= SMART_MOV_IMM;
+    al->assembly_opt &= ~NASM_MOV_IMM;
+    break;
+  default:
+    return;
+  }
+}
+
+void asm_sib(assemblyline_t al, enum asm_opt option) {
+
+  switch (option) {
+  case NASM:
+    al->assembly_opt |= NASM_SIB;
+    break;
+  case STRICT:
+    al->assembly_opt &= ~NASM_SIB;
+    break;
+  default:
+    return;
+  }
+}
+
+void asm_set_all(assemblyline_t al, enum asm_opt option) {
+
+  switch (option) {
+  case NASM:
+    asm_mov_imm(al, NASM);
+    asm_sib(al, NASM);
+    break;
+  case STRICT:
+    asm_mov_imm(al, STRICT);
+    asm_sib(al, STRICT);
+    break;
+  case SMART:
+    asm_mov_imm(al, SMART);
+    break;
+  default:
+    return;
+  }
+}

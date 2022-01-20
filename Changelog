@@ -1,3 +1,69 @@
+version 1.1.0-release (2022-01-21)
+
+	- added support for scaled index addressing mode
+	  with syntax [base + scale*index + offset] or
+	  [base + index*scale + offset]
+	  ex: "add rax, [rcx+4*rbp+0x8]" or "add rax, [rcx+rbp*4+0x8]"
+
+	- added support for MMX, SSE2, AVX, and AVX2 instruction sets
+
+	- added support for pointers: byte, word, dword, and qword  
+	
+	- added different modes of register size handling for 
+	  "mov register, immediate" instruction: NASM, STRICT, SMART
+
+	- improved 32-bit register supportability:
+	  using eax-r15b for memory addressing in vector extension now 
+	  produces the correct prefix (67H)
+	
+	- improved intel x86_64 instruction supportability:
+	  source code is now more inline with the intel manual, therefore
+	  more instructions can be supported in the near future
+
+	- added a command-line option in asmline for setting 
+	  assembly mode to NASM '$ asmline -n' where:
+	  if immediate size for mov is less than or equal to max signed 32-bit
+	  asmline will emit code to mov to 32-bit register rather than 64-bit.
+	  That is: "mov rax, 0x7fffffff" as "mov eax, 0x7fffffff" -> b8 ff ff ff 7f
+	  note: rax got optimized to eax for faster immediate to register transfer and
+	  produces a shorter instruction. 
+
+	- added a command-line option in asmline for setting 
+	  assembly mode to STRICT '$ asmline -t' where:  
+	  ex: even if immediate size for mov is less than or equal to max signed 32-bit
+	  pad the immediate to fit 64bit.
+	  That is: "mov rax,0x7fffffff" as "mov rax,0x000000007fffffff" 
+	    -> 48 b8 ff ff ff 7f 00 00 00 00
+
+	- added a command-line option in asmline for setting  
+	  assembly mode to SMART '$ asmline -s' where:  
+	  asmline will check the immediate value for leading 0's and thus allows manual
+	  optimizations. Immediate must be zero padded to 64-bits exactly to ensure 
+	  it will not optimize. This is currently set as default.
+	  ex: "mov rax, 0x000000007fffffff" ->  48 b8 ff ff ff 7f 00 00 00 00
+	      "mov rax, 0x7fffffff"         ->  b8 ff ff ff 7f
+
+	- assemblyline functions without asm_ prefix are now deprecated
+
+	- simplified the process for adding new instructions
+	
+	- improvements to autotools, including use of pkg-config. That enables
+	  other autotools-based projects to include assemblyline as such:
+	  add to their `configure.ac`:
+	  ```
+		AC_SUBST([LIBASSEMBLYLINE_CFLAGS])
+		AC_SUBST([LIBASSEMBLYLINE_LIBS])
+		PKG_CHECK_MODULES([LIBASSEMBLYLINE], [assemblyline >= 1.1.0])
+	  ```
+
+	- tools/asmline dynamically links to libassemblyline.so
+
+	- tools/asmline's -r[=LEN] option now runs with six arguments, which point
+	  to heap-memory. Each argumenty points to LEN (defaults to ten) 64-bit
+	  elements. It also features now --rand, which initializes those pointers to
+	  random data.
+	
+
 version 1.0.5-release (2021-09-29)
 
 	- FIX another bug where 'mov reg, imm' results in a wrong instruction
@@ -5,31 +71,41 @@ version 1.0.5-release (2021-09-29)
 version 1.0.4-release (2021-09-27)
 	
 	- FIX bug where 'mov reg, imm' is interpreted as  movntqda
+	
 	- updated documentation
+	
 	- implemented register size optimization for mov instruction 
 	  to match nasm assembly style
+	
 	- added man page
+	
 	- added -v -h options to asmline
 
 
 version 1.0.3-release (2021-09-16)
 
 	- FIX rdtsc
+
 	- ADD rdtscp,
+	
 	- ADD ror (ri encoding only for now)
+	
 	- code maintenance
+	
 	- added library versioning
 
 
 version 1.0.2-release (2021-09-09)
 
 	- added support for the prefetch instruction
+	
 	- added support for all registers (prefetch)
 
 
 version 1.0.1-release (2021-09-09)
 
 	- added support for the rorx instruction
+	
 	- updated documentation
 
 

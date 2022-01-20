@@ -1,0 +1,148 @@
+.TH ASMLINE 1 2022-01-04 GNU
+
+.SH NAME
+asmline \- assemblyline tool 
+
+.SH SYNOPSIS
+.B asmline
+[OPTIONS]...
+path/to/file.asm
+
+.SH DESCRIPTION
+.B asmline 
+Generates machine code from a file or stdin containing x86_64 assembly instructions. 
+.br
+Machine code could be directly executed without the need for an executable file format. 
+
+.SH OPTIONS
+
+
+.TP
+.BR \-r[=LEN] ", " \-\-return[=LEN]
+Assembles given code. Then executes it with six parameters to heap-allocated memory.
+.br
+Each pointer points to an array of LEN 64-bit elements which can be dereferenced in 
+.br
+the asm-code, where LEN defaults to 10. After execution, it prints out the contents 
+.br
+of the return (rax) register and frees the heap-memory.
+
+.TP
+.BR \-\-rand
+Implies -r and will additionally initialize the memory from with random data. 
+.br
+-r=11 can be used to alter LEN.
+
+.TP
+.BR \-p ", " \-\-print
+The corresponding machine code will be printed to stdout in hex form.
+.br
+Output is similar to `objdump`: Byte-wise delimited by space and linebreaks after 7 bytes.
+.br
+If -c is given, the chunks are delimited by '|' with each chunk on one line.
+
+.TP
+.BR \-P ", " \-\-printfile " " \fIFILENAME
+The corresponding machine code will be printed to \fIFILENAME\fR in binary form.
+.br
+Can be set to '/dev/stdout' to write to stdout.
+
+.TP
+.BR \-c ", " \-\-chunk " " \fICHUNK_SIZE>1
+Sets a given \fICHUNK_SIZE\fR boundary in bytes. Nop padding will be used to ensure 
+.br
+no instruction opcode will cross the specified \fICHUNK_SIZE\fR boundary.
+
+.TP
+.BR \-o ", " \-\-object " " \fIFILENAME
+Generates a binary file from path/to/file.asm called \fIFILENAME\fR.bin in the current directory.
+
+.TP
+.BR \-\-nasm\-sib
+In SIB addressing if the index register is esp or rsp then the base and index registers
+.br
+will be swapped as this is because the stack pointer register is not scalable in SIB.
+.br
+This is currently set as default.
+.br
+That is: "lea r15, [rax+rsp]" interpreted as "lea r15, [rsp+rax]" -> 4c 8d 3c 04
+.br
+         "lea r15, [rsp+rsp]" will produce an error (base and index cannot be swapped)
+.br
+
+.TP
+.BR \-\-strict\-sib
+In SIB addressing the base and index registers will not be swapped even if the
+.br
+index register is esp or rsp.
+.br
+That is: "lea r15, [rax+rsp]" will be interpreted as "lea r15, [rax+riz]" -> 4c 8d 3c 20
+.br
+         riz is a pseudo-register evaluated by GCC to constant 0 and therefore cannot be 
+.br
+         used in assemblyline as a string ie. assembling "lea r15, [rax+riz]" is invalid
+.br
+         "lea r15, [rsp+rsp]" will also produce an error (invalid instruction)
+
+.TP
+.BR \-\-nasm\-mov\-imm
+Enables nasm-style mov-immediate register-size handling.
+.br
+ex: if immediate size for mov is less than or equal to max signed 32-bit assemblyline 
+.br
+    will emit code to mov to 32-bit register rather than 64-bit.
+.br
+That is: "mov rax, 0x7fffffff" as "mov eax, 0x7fffffff" -> b8 ff ff ff 7f
+.br
+note: rax got optimized to eax for faster immediate to register transfer and
+.br
+      produces a shorter instruction.
+
+.TP
+.BR \-\-strict\-mov\-imm
+Enables strict mov-imm thereby disabling nasm-style mov-immediate register-size handling.
+.br
+ex: even if immediate size for mov is less than or equal to max signed 32-bit assemblyline 
+.br
+    will pad the immediate to fit 64bit.
+.br
+That is: "mov rax,0x7fffffff" as "mov rax,0x000000007fffffff" 
+.br
+          -> 48 b8 ff ff ff 7f 00 00 00 00
+
+.TP
+.BR \-\-smart\-mov\-imm
+Assemblyline will check the immediate value for leading 0's and thus allows manual
+.br 
+optimizations. Immediate must be zero padded to 64-bits exactly to ensure it will not optimize.
+.br
+This is currently set as default.
+.br
+ex: "mov rax, 0x000000007fffffff" ->  48 b8 ff ff ff 7f 00 00 00 00
+.br
+    "mov rax, 0x7fffffff" -> b8 ff ff ff 7f
+
+.TP
+.BR \-n ", " \-\-nasm
+Equivalent to \fB--nasm-mov-imm\fR \fB--nasm-sib\fR.
+.br
+
+.TP
+.BR \-t ", " \-\-strict
+Equivalent to \fB--strict-mov-imm\fR \fB--strict-sib\fR.
+.br
+
+.TP
+.BR \-s ", " \-\-smart
+Equivalent to \fB--smart-mov-imm\fR.
+.br 
+
+.TP
+.BR \-h ", " \-\-help
+Prints usage information to stdout and exits.
+.TP
+.BR \-v ", " \-\-version
+Prints version information to stdout and exits.
+
+.SH SEE ALSO
+.B libassemblyline(3)

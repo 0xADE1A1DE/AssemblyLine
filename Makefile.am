@@ -1,4 +1,4 @@
-## Copyright 2021 University of Adelaide
+## Copyright 2022 University of Adelaide
 
 ## Licensed under the Apache License, Version 2.0 (the "License");
 ## you may not use this file except in compliance with the License.
@@ -12,25 +12,50 @@
 ## See the License for the specific language governing permissions and
 ## limitations under the License.
 
+# to tell pkg-config what to place where
+pkgconfig_DATA = assemblyline.pc
+pkgconfigdir = $(libdir)/pkgconfig
 
-SUBDIRS = src test tools
-# run 'make check' from projects' root to have libassemblyline being compiled on change
-# check_LTLIBRARIES = libassemblyline.la
-EXTRA_DIST =
 ACLOCAL_AMFLAGS = -I m4 --install
+AM_CFLAGS = -Wall -Wextra -std=gnu99
+AM_CPPFLAGS = -I./src
+CLEANFILES = assemblyline-*.tar.gz \
+			 config.h~ \
+			 configure~
 
-# this ensures, that the lib is rebuild (if necessary) on make check
+##############################################################################################
+##############################################################################################
+###############################      LIB        ##############################################
+##############################################################################################
+##############################################################################################
+
 lib_LTLIBRARIES = libassemblyline.la
-libassemblyline_la_SOURCES =
-libassemblyline_la_LIBADD = src/libassemblyline.la
+libassemblyline_la_SOURCES = \
+							 src/assembler.c \
+							 src/assembler.h \
+							 src/assemblyline.c \
+							 src/common.h \
+							 src/encoder.c \
+							 src/encoder.h \
+							 src/enums.h \
+							 src/instr_parser.c \
+							 src/instr_parser.h \
+							 src/instruction_data.h \
+							 src/instructions.c \
+							 src/instructions.h \
+							 src/parser.c \
+							 src/parser.h \
+							 src/prefix.c \
+							 src/prefix.h \
+							 src/reg_parser.c \
+							 src/reg_parser.h \
+							 src/registers.h \
+							 src/registers.c \
+							 src/tokenizer.c \
+							 src/tokenizer.h
 
+include_HEADERS = src/assemblyline.h
 
-CLEANFILES = config.h~ \
-			 configure~ \
-			 assemblyline-*.tar.gz
-
-distclean-local:
-	rm -rf autom4te.cache/
 
 # from  7.3 https://www.gnu.org/software/libtool/manual/html_node/Versioning.html#Versioning
 # -version-info accepts ‘current[:revision[:age]]’
@@ -45,4 +70,158 @@ distclean-local:
 # 3. Programs may need to be changed, recompiled, and relinked in order to use the new version. Bump current, set revision and age to 0.
 
 # in short, if only patch from configure.ac is bumped, bump the middle number below. If more is changed, read the above
-libassemblyline_la_LDFLAGS = -version-info 1:5:0
+libassemblyline_la_LDFLAGS = -version-info 2:0:1
+
+##############################################################################################
+##############################################################################################
+###############################      BINS       ##############################################
+##############################################################################################
+##############################################################################################
+
+bin_PROGRAMS = tools/asmline
+LDADD = libassemblyline.la
+
+##############################################################################################
+##############################################################################################
+###############################      MANS       ##############################################
+##############################################################################################
+##############################################################################################
+
+link_man = \
+		   man/asm_create_instance.3 \
+		   man/asm_destroy_instance.3 \
+		   man/asm_assemble_str.3 \
+		   man/asm_assemble_file.3 \
+		   man/asm_assemble_string_counting_chunks.3 \
+		   man/asm_set_chunk_size.3 \
+		   man/asm_set_debug.3 \
+		   man/asm_get_offset.3 \
+		   man/asm_set_offset.3 \
+		   man/asm_get_buffer.3 \
+		   man/asm_get_code.3 \
+		   man/asm_mov_imm.3 \
+		   man/asm_sib.3 \
+		   man/asm_set_all.3
+
+$(link_man): man/libassemblyline.3
+	test -e $@ || $(LN_S) libassemblyline.3 $@
+
+dist_man1_MANS = man/asmline.1
+dist_man3_MANS = man/libassemblyline.3 $(link_man)
+
+##############################################################################################
+##############################################################################################
+###############################      TEST       ##############################################
+##############################################################################################
+##############################################################################################
+
+# runner for 'asm'-tests
+TEST_EXTENSIONS = .asm
+ASM_LOG_COMPILER = ./test/al_nasm_compare.sh
+
+# get the tap-driver
+TEST_EXTENSIONS += .tap
+TAP_LOG_DRIVER = env AM_TAP_AWK='$(AWK)' $(SHELL) \
+                  $(top_srcdir)/build-aux/tap-driver.sh
+TAP_LOG_COMPILER = ./test/tap/compiler.sh
+
+# add TAP tests here
+TEST_TAP = test/tap/misc.tap
+
+# add SH-tests here
+TEST_SH = \
+		  test/tools/asmline.sh
+
+
+# add .c -tests here
+TEST_C= \
+		test/check_chunk_counting \
+		test/invalid \
+		test/jump \
+		test/memory_reallocation \
+		test/optimization_disabled \
+		test/run \
+		test/vector_operations
+
+# add .asm-tests here
+TEST_ASM = \
+		  test/MOV_REG_IMM.asm \
+		  test/adc.asm \
+		  test/adcx.asm \
+		  test/add.asm \
+		  test/adox.asm \
+		  test/and.asm \
+		  test/bextr.asm \
+		  test/bzhi.asm \
+		  test/clc.asm \
+		  test/high_low_xmm.asm \
+		  test/imul.asm \
+		  test/lea.asm \
+		  test/mov.asm \
+		  test/mov_reg_imm.asm \
+		  test/mov_reg_imm32.asm \
+		  test/movd.asm \
+		  test/movntdqa.asm \
+		  test/movntq.asm \
+		  test/movq.asm \
+		  test/movzx.asm \
+		  test/mulx.asm \
+		  test/negative_mem_disp.asm \
+		  test/new_instruction.asm \
+		  test/nop.asm \
+		  test/no_ptr.asm \
+		  test/not.asm \
+		  test/or.asm \
+		  test/paddb.asm \
+		  test/paddd.asm \
+		  test/paddq.asm \
+		  test/paddw.asm \
+		  test/pand.asm \
+		  test/pmuldq.asm \
+		  test/pmulhuw.asm \
+		  test/pmulhw.asm \
+		  test/pmulld.asm \
+		  test/pmullq.asm \
+		  test/pmullw.asm \
+		  test/pmuludq.asm \
+		  test/por.asm \
+		  test/prefetch.asm \
+		  test/psubb.asm \
+		  test/psubd.asm \
+		  test/psubq.asm \
+		  test/psubw.asm \
+		  test/ptr.asm \
+		  test/pxor.asm \
+		  test/rdtsc.asm \
+		  test/rdtscp.asm \
+		  test/ror.asm \
+		  test/rorx.asm \
+		  test/sarx.asm \
+		  test/sbb.asm \
+		  test/setc.asm \
+		  test/seto.asm \
+		  test/shl.asm \
+		  test/shld.asm \
+		  test/shlx.asm \
+		  test/shr.asm \
+		  test/shrd.asm \
+		  test/shrx.asm \
+		  test/sub.asm \
+		  test/vaddpd.asm \
+		  test/vector_add.asm \
+		  test/vector_add_mem.asm \
+		  test/vector_float_divide.asm \
+		  test/vector_float_mul.asm \
+		  test/vector_mul.asm \
+		  test/vector_sub.asm \
+		  test/vmovupd.asm \
+		  test/vperm2i128.asm \
+		  test/vsubpd.asm \
+		  test/xor.asm \
+		  test/zero_byte_rbp.asm
+
+# if needed, add utility programs, which should be build for the test, to check_PROGRAMS
+check_PROGRAMS = $(bin_PROGRAMS) $(TEST_C)
+
+TESTS = $(TEST_TAP) $(TEST_SH) $(TEST_ASM) $(TEST_C)
+
