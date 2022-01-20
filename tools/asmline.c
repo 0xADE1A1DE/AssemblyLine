@@ -24,6 +24,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include <unistd.h>
 
 #define DEFAULT_ARG_LEN 10
@@ -148,6 +149,7 @@ void execute_get_ret_value(void *function, int arglen, enum run mode) {
       arguments[arg_idx] = calloc(arglen, sizeof(uint64_t));
       if (mode & RUN_RAND)
         for (int qword_idx = 0; qword_idx < arglen; qword_idx++) {
+
           uint64_t rand_val = rand();           // lo_limb
           rand_val |= ((uint64_t)rand()) << 32; // hi_limb
           arguments[arg_idx][qword_idx] = rand_val;
@@ -275,6 +277,9 @@ int main(int argc, char *argv[]) {
   }
 
   if (get_ret != DONT_RUN) {
+    // initialize the randomizer if needed
+    if (get_ret & RUN_RAND)
+      srand(time(NULL));
     void *func = asm_get_code(al);
     execute_get_ret_value(func, arglen, get_ret);
   }

@@ -25,7 +25,7 @@ AC_PROG_LN_S
 LT_INIT
 
 # Checks for header files.
-AC_CHECK_HEADERS([fcntl.h inttypes.h stdint.h stdlib.h string.h strings.h unistd.h])
+AC_CHECK_HEADERS([fcntl.h inttypes.h stdint.h stdlib.h string.h strings.h unistd.h time.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_CHECK_HEADER_STDBOOL
