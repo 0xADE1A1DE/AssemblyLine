@@ -2,7 +2,7 @@
 
 1. Get the instruction opcode layout and operand encoding format (please refer to the [intel manual](https://www.intel.com/content/dam/www/public/us/en/documents/manuals/64-ia-32-architectures-software-developer-instruction-set-reference-manual-325383.pdf)).
 1. Add the new instruction to the asm\_instr enumerator set found in the [/src/enums.h](https://github.com/0xADE1A1DE/AssemblyLine/tree/main/src/enums.h).
-1. Add a new entry to INSTR\_TABLE[] [/src/instructions.h](https://github.com/0xADE1A1DE/AssemblyLine/tree/main/src/enums.h) while maintaining alphabetical order  
+1. Add a new entry to INSTR\_TABLE[] [/src/instructions.c](https://github.com/0xADE1A1DE/AssemblyLine/tree/main/src/instructions.c) while maintaining alphabetical order  
 
 #### Instruction table format: 
 ```c
@@ -18,13 +18,14 @@ struct INSTR_TABLE[] {
   // asm_instr enumerator for uniquely identifying a instruction
   int name;
 
-  /* contains the valid operand formats for an instruction that maps
-   * to the same operand enccoding (at most 2 for a single operand encoding)
+  /* contains the valid operand formats for an instruction that maps to the same operand
+   * enccoding (at most 2 for a single operand encoding)
    * ex: rr (instruction reg,reg) && rm (instruction reg, [mem]) both maps to RM
-   * when both operand formats are set to NA ex: {NA,NA}, this denotes
-   * that the instruction cannot be accessed during the parsing phase rather
-   * it could only be accessed during encoding by incrementing the INSTR_TABLE[key] 
-   * index using key++, therefore ordering is important for this type of entry
+   *     when both operand formats are set to NA. 
+   * ex: {NA,NA}, this denotes that the instruction cannot be accessed during the
+   *     parsing phase rather it could only be accessed during encoding by incrementing 
+   *     the INSTR_TABLE[key] index using key++, therefore ordering is important for 
+   *     this type of entry.
    */
   int opd_format[VALID_OPERAND_FORMATS];
 
@@ -36,8 +37,7 @@ struct INSTR_TABLE[] {
 
   /* enumerator for defining the semantic type of an instruction
    * where special encoding is required ( currently, only applicable for 
-   * SHIFT, DATA_TRANSFER, and CONTROLFLOW type instructions) 
-   * else set this to 'OTHER'
+   * SHIFT, DATA_TRANSFER, and CONTROL_FLOW type instructions) else set this to 'OTHER'
    */
   instr_type type;
 
@@ -47,12 +47,6 @@ struct INSTR_TABLE[] {
    */
   int op_offset_i;
 
-  /* 'i' index of opcode[i] when an offset is present for a REG value denoted as
-   * '+ rd' in the intel manual section 3.1.1.1 
-   * (set this value to NA if not applicable to the instruction)
-   */
-  int rd_offset_i;
-
   /* used for instructions with a single register operand denoted as '/digit'
    * in the intel manual section 3.1.1.1
    * (set this value to NA if not applicable to the instruction)
@@ -61,16 +55,12 @@ struct INSTR_TABLE[] {
 
   // number of bytes in the opcode[MAX_OPCODE_LEN] field
   int instr_size;
-
-  /* displacement for the W0 prefix (following byte after the vector extension prefix VEX)
-   * check intel manual section 3.1.1.2
-   * (set this value to NA if not applicable to the instruction)
-   */
-  int w0_disp;
-
-  /* opcode layout for an instruction ex: {REX,0x0f,0xa9,REG}
-   * REX and REG are placeholders for the prefix and register values
-   * more can be found in enums.h op_encoding
+  
+  /* opcode layout for an instruction ex: {REX,0x0f+rd,0xa9,REG}
+   * REX VEX, and REG are placeholders for prefix and register values for encoding of
+   * VEX prefix please refer to the intel manual section 2.3.5 as well as common.h
+   * '#define VEX(vvvv,L,pp,mmmmm,WIG)' and enums.h 'opcode_encoding'.
+   * '+rd' refers to '+rb, +rw, +rd, +ro' in intel manual section 3.1.1.1
    */
   unsigned int opcode[MAX_OPCODE_LEN];                 
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 University of Adelaide
+ * Copyright 2022 University of Adelaide
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ void encode_offset(struct instr *instruc);
 /**
  * determines register and prefix opcode of @param instruc
  */
-void encode_operands(struct instr *instruc);
+int encode_operands(struct instr *instruc);
 
 /**
  * preprocess the immediate for @param instruc

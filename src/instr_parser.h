@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 University of Adelaide
+ * Copyright 2022 University of Adelaide
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ operand_format get_opd_format(char *opd_en);
  * an operand_format enum representation @param opd_index and returns the index
  * key to the matching INSTR_TABLE[] entry.
  */
-int str_to_instr_key(char *instruction, operand_format opd_index);
+int str_to_instr_key(char *instruction, operand_format opd_layout);
 
 /**
  * takes a INSTR_TABLE[] index key @param key and returns the new INSTR_TABLE[]
