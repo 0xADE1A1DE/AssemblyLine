@@ -4,10 +4,11 @@ An ultra-lightweight C library and binary for generating machine code of x86\_64
 * Support for MMX, SSE2, AVX, and AVX2 instruction sets.
 * Supports Scaled Index addressing mode (SIB) with the following syntax:  
 `[base + index*scale +\- offset]` or `[base + scale*index +\- offset]` 
-* Memory chunk alignment by using nop-padding.
+* Supports pointer: byte, word, dword, qword
+* Memory chunk alignment by using nop-padding (similar to gcc).
 * Different modes for assembling instructions.  
-`NASM`: binary output will match that of nasm as closely as possible.  
-`STRICT`: binary output will be in an 'as is' state.  
+`NASM`: binary output will match that of nasm as closely as possible (default for SIB).  
+`STRICT`: binary output will be in an 'as is' state in respect to the instruction.  
 `SMART`: intructions could be manipulated to ensure binary output matches nasm (default).  
 please refer to [tools/README.md](https://github.com/0xADE1A1DE/AssemblyLine/blob/main/tools/README.md) for more information
 * Easy to use command-line tool `asmline` (refer to [tools/README.md](https://github.com/0xADE1A1DE/AssemblyLine/blob/main/tools/README.md)) 
