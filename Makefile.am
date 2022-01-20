@@ -99,9 +99,9 @@ link_man = \
 		   man/asm_set_offset.3 \
 		   man/asm_get_buffer.3 \
 		   man/asm_get_code.3 \
-		   man/strict_mov_imm_handling.3 \
-		   man/nasm_mov_imm_handling.3 \
-		   man/smart_mov_imm_handling.3
+		   man/asm_mov_imm.3 \
+		   man/asm_sib.3 \
+		   man/asm_set_all.3
 
 $(link_man): man/libassemblyline.3
 	test -e $@ || $(LN_S) libassemblyline.3 $@

@@ -54,8 +54,33 @@ no instruction opcode will cross the specified \fICHUNK_SIZE\fR boundary.
 Generates a binary file from path/to/file.asm called \fIFILENAME\fR.bin in the current directory.
 
 .TP
-.BR \-n ", " \-\-nasm
-Enables nasm-style mov-immediate register-size optimization.
+.BR \-\-nasm\-sib
+In SIB addressing if the index register is esp or rsp then the base and index registers
+.br
+will be swapped as this is because the stack pointer register is not scalable in SIB.
+.br
+That is: "lea r15, [rax+rsp]" interpreted as "lea r15, [rsp+rax]" -> 4c 8d 3c 04
+.br
+         "lea r15, [rsp+rsp]" will produce an error (base and index cannot be swapped)
+.br
+
+.TP
+.BR \-\-strict\-sib
+In SIB addressing the base and index registers will not be swapped even if the
+.br
+index register is esp or rsp.
+.br
+That is: "lea r15, [rax+rsp]" will be interpreted as "lea r15, [rax+riz]" -> 4c 8d 3c 20
+.br
+         riz is a pseudo-register evaluated by GCC to constant 0 and therefore cannot be 
+.br
+         used in assemblyline as a string ie. assembling "lea r15, [rax+riz]" is invalid
+.br
+         "lea r15, [rsp+rsp]" will also produce an error (invalid instruction)
+
+.TP
+.BR \-\-nasm\-mov\-imm
+Enables nasm-style mov-immediate register-size handling.
 .br
 ex: if immediate size for mov is less than or equal to max signed 32-bit assemblyline 
 .br
@@ -66,9 +91,10 @@ That is: "mov rax, 0x7fffffff" as "mov eax, 0x7fffffff" -> b8 ff ff ff 7f
 note: rax got optimized to eax for faster immediate to register transfer and
 .br
       produces a shorter instruction.
+
 .TP
-.BR \-t ", " \-\-strict
-Disables nasm-style mov-immediate register-size optimization.
+.BR \-\-strict\-mov\-imm
+Enables strict mov-imm thereby disabling nasm-style mov-immediate register-size handling.
 .br
 ex: even if immediate size for mov is less than or equal to max signed 32-bit assemblyline 
 .br
@@ -79,7 +105,7 @@ That is: "mov rax,0x7fffffff" as "mov rax,0x000000007fffffff"
           -> 48 b8 ff ff ff 7f 00 00 00 00
 
 .TP
-.BR \-s ", " \-\-smart
+.BR \-\-smart\-mov\-imm
 Assemblyline will check the immediate value for leading 0's and thus allows manual
 .br 
 optimizations. Immediate must be zero padded to 64-bits exactly to ensure it will not optimize.
@@ -89,6 +115,21 @@ This is currently set as default.
 ex: "mov rax, 0x000000007fffffff" ->  48 b8 ff ff ff 7f 00 00 00 00
 .br
     "mov rax, 0x7fffffff" -> b8 ff ff ff 7f
+
+.TP
+.BR \-n ", " \-\-nasm
+Equivalent to --nasm-mov-imm --nasm-sib.
+.br
+
+.TP
+.BR \-t ", " \-\-strict
+Equivalent to --strict-mov-imm --strict-sib.
+.br
+
+.TP
+.BR \-s ", " \-\-smart
+Equivalent to --smart-mov-imm.
+.br 
 
 .TP
 .BR \-h ", " \-\-help

@@ -22,6 +22,11 @@
 #include <stdint.h>
 #include <unistd.h>
 
+// different assembly options for mov immediate and SIB
+enum asm_opt { STRICT, NASM, SMART };
+
+#define DEFAULT SMART_MOV_IMM | NASM_SIB
+
 typedef struct assemblyline *assemblyline_t;
 
 /**
@@ -144,34 +149,60 @@ void *asm_get_code(assemblyline_t al);
  * Nasm optimizes a `mov rax, IMM` to `mov eax, imm`, iff imm is <= 0x7fffffff
  * for all destination registers. The following three methods allow the user to
  * specify this behavior.
- */
-
-/**
- * disables nasm-style mov-immediate register-size optimization.
+ *
+ * setting @param option to STRICT disables nasm-style mov-immediate handling.
  * ex: even if immediate size for mov is less than or equal to max signed 32 bit
- * assemblyline will pad the immediate to fit 64bit.
+ *     assemblyline will pad the immediate to fit 64bit.
  * That is:
  * "mov rax, 0x7fffffff" as "mov rax, 0x000000007fffffff"
  * -> 48 b8 ff ff ff 7f 00 00 00 00
- */
-void strict_mov_imm_handling(assemblyline_t al);
-
-/**
- * enables nasm-style mov-immediate register-size optimization.
+ *
+ * setting @param option to NASM enables nasm-style mov-immediate handling.
  * ex: if immediate size for mov is less than or equal to max signed 32 bit
- * assemblyline will emit code to mov to eax rather than rax.
+ *     assemblyline will emit code to mov to eax rather than rax.
  * That is: "mov rax, 0x7fffffff" as "mov eax, 0x7fffffff"
  * -> b8 ff ff ff 7f
+ *
+ * setting @param option to SMART, Assemblyline will check the immediate value
+ * for leading 0's and thus allows manual optimizations. This is currently set
+ * as default.
+ * ex: "mov rax, 0x000000007fffffff" ->  48 b8 ff ff ff 7f 00 00 00 00
+ *     "mov rax, 0x7fffffff" -> b8 ff ff ff 7f
+ *
+ * setting @param option to any other value results in an no-operation function.
  */
-void nasm_mov_imm_handling(assemblyline_t al);
+void asm_mov_imm(assemblyline_t al, enum asm_opt option);
 
 /**
- * With this setting, Assemblyline will check the immediate value for leading
- * 0's and thus allows manual optimizations. This is currently set as default.
- * ex:
- * "mov rax, 0x000000007fffffff" ->  48 b8 ff ff ff 7f 00 00 00 00
- * "mov rax, 0x7fffffff" -> b8 ff ff ff 7f
+ * Since the stack pointer register is non-scalable in SIB, Nasm will swap the
+ * base and index register if the stack pointer register is used as index.
+ *
+ * setting @param option to STRICT disables Nasm SIB handling.
+ * That is:
+ * "lea r15, [rax+rsp]" will be interpreted as is
+ * -> 4c 8d 3c 20
+ *
+ * setting @param option to NASM enables Nasm SIB handling.
+ * That is:
+ * "lea r15, [rax+rsp]" will be interpreted as "lea r15, [rsp+rax]"
+ * -> 4c 8d 3c 04
+ *
+ * setting @param option to SMART or any other value results in an no-operation
+ * function.
  */
-void smart_mov_imm_handling(assemblyline_t al);
+void asm_sib(assemblyline_t al, enum asm_opt option);
+
+/**
+ * setting @param option to STRICT is equivalent to calling both
+ * asm_sib(al,STRICT) and asm_mov_imm(al,STRICT)
+ *
+ * setting @param option to NASM is equivalent to calling both asm_sib(al,NASM)
+ * and asm_mov_imm(al,NASM)
+ *
+ * setting @param option to SMART is equivalent to calling asm_mov_imm(al,SMART)
+ *
+ * setting @param option to any other value results in an no-operation function
+ */
+void asm_set_all(assemblyline_t al, enum asm_opt option);
 
 #endif

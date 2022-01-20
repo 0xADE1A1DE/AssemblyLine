@@ -160,6 +160,11 @@
 #define THIRD_OPERAND 2
 #define FOURTH_OPERAND 3
 
+// assembly mode options
+#define NASM_MOV_IMM 0b00001
+#define NASM_SIB 0b00100
+#define SMART_MOV_IMM 0b00010
+
 #define GET_EN 0b11111100000000000000000
 
 // fail conditions
