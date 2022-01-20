@@ -28,6 +28,8 @@
 
 #define DEFAULT_ARG_LEN 10
 #define BUFFER_SIZE 100
+enum OUTPUT { NONE, BIN_FILE, GENERIC_FILE };
+enum run { DONT_RUN = 0, RUN = 1, RUN_RAND = 2 };
 
 const char *asm_version = PACKAGE_STRING;
 
@@ -36,14 +38,15 @@ void err_print_usage(char *error_msg) {
       stderr,
       "%s\nUsage: asmline "
       "[OPTIONS]... path/to/file.asm\n\n"
-      "  -r, --return\n"
+      "  -r[=LEN], --return[=LEN]\n"
       "\tAssembles given code. Then executes it with six parameters to "
-      "heap-allocated memory.\n\tEach pointer points to an array of ten 64-bit "
-      "elements which can be dereferenced in the asmcode.\n\tAfter execution, "
-      "it prints out the contents of the return (rax) register and frees the "
-      "heap-memory.\n\n"
-      "  -R LEN, --Return LEN\n"
-      "\tlike -r, but allocates LEN elements instead of 10.\n\n"
+      "heap-allocated memory.\n\tEach pointer points to an array of LEN 64-bit "
+      "elements which can be dereferenced in the asm-code, where LEN defaults "
+      "to 10.\n\tAfter execution, it prints out the contents of the return "
+      "(rax) register and frees the heap-memory.\n\n"
+      "  --rand \n"
+      "\t implies -r and will additionally initialize the memory from with "
+      "random data. -r=11 can be used to alter LEN.\n\n"
       "  -p, --print\n"
       "\tThe corresponding machine code will be printed to stdout in hex "
       "form.\n"
@@ -132,7 +135,7 @@ int create_bin_file(assemblyline_t al, const char *file_name) {
 
   return EXIT_SUCCESS;
 }
-void execute_get_ret_value(void *function, int arglen) {
+void execute_get_ret_value(void *function, int arglen, enum run mode) {
   uint64_t *arguments[6];
 
   uint64_t result = 0;
@@ -141,8 +144,15 @@ void execute_get_ret_value(void *function, int arglen) {
     result = f();
   } else {
     // allocate 6 args with arglen uint64_t's
-    for (int i = 0; i < 6; i++)
-      arguments[i] = malloc(arglen * sizeof(uint64_t));
+    for (int arg_idx = 0; arg_idx < 6; arg_idx++) {
+      arguments[arg_idx] = malloc(arglen * sizeof(uint64_t));
+      if (mode & RUN_RAND)
+        for (int qword_idx = 0; qword_idx < arglen; qword_idx++) {
+          uint64_t rand_val = rand();           // lo_limb
+          rand_val |= ((uint64_t)rand()) << 32; // hi_limb
+          arguments[arg_idx][qword_idx] = rand_val;
+        }
+    }
     // cast
     uint64_t (*f)(uint64_t *, uint64_t *, uint64_t *, uint64_t *, uint64_t *,
                   uint64_t *) = function;
@@ -155,9 +165,6 @@ void execute_get_ret_value(void *function, int arglen) {
   }
   printf("\nthe value is 0x%lx\n", result);
 }
-
-enum OUTPUT { NONE, BIN_FILE, GENERIC_FILE };
-enum run { DONT_RUN, RUN };
 
 int main(int argc, char *argv[]) {
 
@@ -172,12 +179,12 @@ int main(int argc, char *argv[]) {
   enum run get_ret = DONT_RUN;
   int arglen = DEFAULT_ARG_LEN;
 
-  static struct option long_options[] = {
+  struct option long_options[] = {
       /* These options set a flag. */
       {"version", no_argument, 0, 'v'},
       {"help", no_argument, 0, 'h'},
-      {"return", no_argument, 0, 'r'},
-      {"Return", no_argument, 0, 'R'},
+      {"rand", no_argument, (int *)&get_ret, RUN_RAND},
+      {"return", optional_argument, 0, 'r'},
       {"print", no_argument, 0, 'p'},
       {"printfile", required_argument, 0, 'P'},
       {"nasm", no_argument, 0, 'n'},
@@ -194,24 +201,21 @@ int main(int argc, char *argv[]) {
     err_print_usage("Error: invalid number of arguments\n");
 
   assemblyline_t al = asm_create_instance(NULL, 0);
-  while ((opt = getopt_long(argc, argv, "hvrR:ntspP:c:o:", long_options,
+  while ((opt = getopt_long(argc, argv, "hvr::ntspP:c:o:", long_options,
                             &option_index)) != -1) {
     switch (opt) {
+    case 0:
+      // intentionally blank for the options with implicit flag setting by
+      // getopt_long, like --rand
+      break;
     case 'v':
       print_version();
       break;
-    case 'h':
-      err_print_usage("");
-      break;
-    case 'R':
-      if (!check_digit(optarg)) {
-        arglen = atoi(optarg);
-        get_ret = RUN;
-      } else
-        err_print_usage("Error: [-r LEN] expects an integer\n");
-      break;
     case 'r':
-      get_ret = RUN;
+      // if there is a optional argument, try to parse it and set the arg len
+      if (optarg && !check_digit(optarg))
+        arglen = atoi(optarg);
+      get_ret |= RUN;
       break;
     case 'p':
       asm_set_debug(al, true);
@@ -243,7 +247,9 @@ int main(int argc, char *argv[]) {
       break;
 
     default: /* '?' */
+    case 'h':
       err_print_usage("");
+      break;
     }
   }
 
@@ -268,9 +274,9 @@ int main(int argc, char *argv[]) {
     }
   }
 
-  if (get_ret == RUN) {
+  if (get_ret != DONT_RUN) {
     void *func = asm_get_code(al);
-    execute_get_ret_value(func, arglen);
+    execute_get_ret_value(func, arglen, get_ret);
   }
 
   switch (create_bin) {
