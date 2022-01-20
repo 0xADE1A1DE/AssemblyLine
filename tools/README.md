@@ -116,7 +116,7 @@ DESCRIPTION:
     the value is 0x124
     ```
 
-**Executing an assembly program with arguments from memory example:**
+**Executing an assembly program with arguments from memory example:**  
 **NOTE:** The `-r[=LEN]` will execute assembly code with 6 parameters consisting of uint64 arrays with length LEN, defaulting to LEN=10.
 That means that they can be dereferenced in the assembly file.
 
