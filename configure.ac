@@ -41,5 +41,4 @@ AC_CONFIG_FILES([
                  Makefile
                  assemblyline.pc
                  ])
-
 AC_OUTPUT
