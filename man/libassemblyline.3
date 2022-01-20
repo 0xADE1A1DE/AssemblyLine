@@ -159,7 +159,7 @@ That is: "lea r15, [rax+rsp]" will be interpreted as "lea r15, [rax+riz]" -> 4c 
 .br
          used in assemblyline as a string ie. assembling "lea r15, [rax+riz]" is invalid
 .br
-         "lea r15, [rsp+rsp]" will be interpreted as "lea r15, [rsp]" -> 4c 8d 3c 24
+         "lea r15, [rsp+rsp]" will produce an error (invalid instruction)
 
 .br
 .br

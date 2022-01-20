@@ -57,13 +57,12 @@ Generates a binary file from path/to/file.asm called \fIFILENAME\fR.bin in the c
 .BR \-\-nasm\-sib
 In SIB addressing if the index register is esp or rsp then the base and index registers
 .br
-will be swapped.
+will be swapped as this is because the stack pointer register is not scalable in SIB.
 .br
 That is: "lea r15, [rax+rsp]" interpreted as "lea r15, [rsp+rax]" -> 4c 8d 3c 04
 .br
          "lea r15, [rsp+rsp]" will produce an error (base and index cannot be swapped)
 .br
-note: this is because the stack pointer register is not scalable in SIB
 
 .TP
 .BR \-\-strict\-sib
@@ -77,7 +76,7 @@ That is: "lea r15, [rax+rsp]" will be interpreted as "lea r15, [rax+riz]" -> 4c 
 .br
          used in assemblyline as a string ie. assembling "lea r15, [rax+riz]" is invalid
 .br
-         "lea r15, [rsp+rsp]" will be interpreted as "lea r15, [rsp]" -> 4c 8d 3c 24
+         "lea r15, [rsp+rsp]" will also produce an error (invalid instruction)
 
 .TP
 .BR \-\-nasm\-mov\-imm
