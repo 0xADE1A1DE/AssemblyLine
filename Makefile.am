@@ -12,25 +12,16 @@
 ## See the License for the specific language governing permissions and
 ## limitations under the License.
 
-PKGCONFIG_FILES = \
-	assemblyline.pc.in
-
+# to tell pkg-config what to place where
+pkgconfig_DATA = assemblyline.pc
 pkgconfigdir = $(libdir)/pkgconfig
 
-pkgconfig_DATA = \
-	assemblyline.pc
-
-
-EXTRA_DIST = $(PKGCONFIG_FILES)
 ACLOCAL_AMFLAGS = -I m4 --install
 AM_CFLAGS = -Wall -std=gnu99
 AM_CPPFLAGS = -I./src
-CLEANFILES = config.h~ \
-			 configure~ \
-			 assemblyline-*.tar.gz
-
-distclean-local:
-	rm -rf autom4te.cache/
+CLEANFILES = assemblyline-*.tar.gz \
+			 config.h~ \
+			 configure~
 
 ##############################################################################################
 ##############################################################################################

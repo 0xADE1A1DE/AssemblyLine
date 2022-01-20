@@ -45,6 +45,7 @@ test/*
 *.in
 aclocal.m4
 configure
+assemblyline.pc
 build-aux/*
 m4/*
 config.h.in
