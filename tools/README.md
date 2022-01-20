@@ -155,10 +155,9 @@ The settings below allow the user to control the following behavior.
     ```
     --nasm-sib
             In SIB addressing if the index register is esp or rsp then the base and index registers
-            will be swapped.
+            will be swapped (this is enabled by default).
             That is: "lea r15, [rax+rsp]" interpreted as "lea r15, [rsp+rax]" -> 4c 8d 3c 04
-                     "lea r15, [rsp+rsp]" will produce an error
-            note: this is because the stack pointer register is not scalable in SIB
+                     "lea r15, [rsp+rsp]" will produce an error  (base and index cannot be swapped)
     ```
 
 ### Set SIB to STRICT
@@ -168,8 +167,10 @@ The settings below allow the user to control the following behavior.
     --strict-sib
             In SIB addressing the base and index registers will not be swapped even if the
             index register is esp or rsp.
-            That is: "lea r15, [rax+rsp] is interpreted as is -> 4c 8d 3c 20
-                     "lea r15, [rsp+rsp]" will not produce an error
+            That is: "lea r15, [rax+rsp]" will be interpreted as "lea r15, [rax+riz]" -> 4c 8d 3c 20
+                     riz is a pseudo-register evaluated by GCC to constant 0 and therefore cannot be
+                     used in assemblyline as a string ie. assembling "lea r15, [rax+riz]" is invalid
+                     "lea r15, [rsp+rsp]" will also produce an error (invalid instruction)
     ```
 
 ### Set mov immediate to NASM
