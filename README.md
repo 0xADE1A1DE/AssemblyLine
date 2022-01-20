@@ -35,7 +35,7 @@ please refer to [tools/README.md](https://github.com/0xADE1A1DE/AssemblyLine/blo
     ```
 1. Allocate an executable buffer of sufficient size (> 20 bytes) using mmap
     ```c
-    // the machince code will be written to this location
+    // the machine code will be written to this location
     uint8_t *mybuffer = mmap(NULL, sizeof(uint8_t) * BUFFER_SIZE,
         PROT_READ | PROT_WRITE | PROT_EXEC, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
     ```
@@ -46,7 +46,7 @@ please refer to [tools/README.md](https://github.com/0xADE1A1DE/AssemblyLine/blo
     // internal memory allocation
     assemblyline_t al = asm_create_instance(NULL, 0);
     ```
-1. OPTIONAL: Enable debug mode to print the machinecode in hex to stdout.
+1. OPTIONAL: Enable debug mode to print the machine code in hex to stdout.
     ```c
     asm_set_debug(al, true);
     ```
@@ -57,7 +57,7 @@ please refer to [tools/README.md](https://github.com/0xADE1A1DE/AssemblyLine/blo
     int chunk_size = 16;
     asm_set_chunk_size(al, chunk_size);
     ```
-1. Assemble a file or string containing x64 assembly code. The machine code will be written to `mybuffer` or the internal buffer. You can call those functions sequentially; the new machinecode will be appended at the end.
+1. Assemble a file or string containing x64 assembly code. The machine code will be written to `mybuffer` or the internal buffer. You can call those functions sequentially; the new machine code will be appended at the end.
     ```c
     asm_assemble_file(al, "./path/to/x64_file.asm");
     asm_assemble_str(al, "mov rax, 0x0\nadd rax, 0x2; adds two");
