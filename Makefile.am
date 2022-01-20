@@ -12,16 +12,16 @@
 ## See the License for the specific language governing permissions and
 ## limitations under the License.
 
-EXTRA_DIST =
+# to tell pkg-config what to place where
+pkgconfig_DATA = assemblyline.pc
+pkgconfigdir = $(libdir)/pkgconfig
+
 ACLOCAL_AMFLAGS = -I m4 --install
 AM_CFLAGS = -Wall -Wextra -std=gnu99
 AM_CPPFLAGS = -I./src
-CLEANFILES = config.h~ \
-			 configure~ \
-			 assemblyline-*.tar.gz
-
-distclean-local:
-	rm -rf autom4te.cache/
+CLEANFILES = assemblyline-*.tar.gz \
+			 config.h~ \
+			 configure~
 
 ##############################################################################################
 ##############################################################################################
