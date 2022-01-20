@@ -63,6 +63,8 @@ In SIB addressing if the index register is esp or rsp then the base and index re
 .br
 will be swapped as this is because the stack pointer register is not scalable in SIB.
 .br
+This is currently set as default.
+.br
 That is: "lea r15, [rax+rsp]" interpreted as "lea r15, [rsp+rax]" -> 4c 8d 3c 04
 .br
          "lea r15, [rsp+rsp]" will produce an error (base and index cannot be swapped)

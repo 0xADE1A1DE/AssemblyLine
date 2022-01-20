@@ -182,9 +182,10 @@ void asm_mov_imm(assemblyline_t al, enum asm_opt option);
  * "lea r15, [rax+rsp]" will be interpreted as is
  * -> 4c 8d 3c 20
  *
- * setting @param option to NASM enables Nasm SIB handling.
- * That is:
- * "lea r15, [rax+rsp]" will be interpreted as "lea r15, [rsp+rax]"
+ * setting @param option to NASM enables Nasm SIB handling. This is currently
+ * set as default.
+ * That is: "lea r15, [rax+rsp]" will be interpreted as "lea r15,
+ * [rsp+rax]"
  * -> 4c 8d 3c 04
  *
  * setting @param option to SMART or any other value results in an no-operation
