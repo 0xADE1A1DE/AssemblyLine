@@ -32,7 +32,18 @@
 enum OUTPUT { NONE, BIN_FILE, GENERIC_FILE };
 enum run { DONT_RUN = 0, RUN = 1, RUN_RAND = 2 };
 
+typedef enum {
+
+  NASM_MOV_IMM = 128,
+  STRICT_MOV_IMM,
+  NASM_SIB,
+  STRICT_SIB,
+  SMART_MOV_IMM
+} asm_options;
+
 const char *asm_version = PACKAGE_STRING;
+static int mov_imm = 0;
+static int sib = 0;
 
 void err_print_usage(char *error_msg) {
   fprintf(
@@ -64,8 +75,15 @@ void err_print_usage(char *error_msg) {
       "\tSets a given CHUNK_SIZE boundary in bytes. Nop padding will be used "
       "to ensure no instruction\n"
       "\topcode will cross the specified CHUNK_SIZE boundary.\n\n"
-      "  -n, --nasm\n"
-      "\tEnables nasm-style mov-immediate register-size optimization.\n"
+      "  --nasm-sib\n"
+      "\tIn SIB addressing if the index register is esp or rsp then\n"
+      "\tthe base and index registers will be swapped.\n"
+      "\tThat is: \"lea r15, [rax+rsp]\" -> \"lea r15, [rsp+rax]\"\n\n"
+      "  --strict-sib\n"
+      "\tIn SIB addressing the base and index registers will not be swapped\n"
+      "\teven if the index register is esp or rsp.\n\n"
+      "  --nasm-mov-imm\n"
+      "\tEnables nasm-style mov-immediate register-size handling.\n"
       "\tex: if immediate size for mov is less than or equal to max "
       "signed 32 bit assemblyline\n"
       "\t    will emit code to mov to the 32-bit register rather than 64-bit.\n"
@@ -74,20 +92,23 @@ void err_print_usage(char *error_msg) {
       "\tnote: rax got optimized to eax for faster immediate to register "
       "transfer\n"
       "\t      and produces a shorter instruction\n\n"
-      "  -t, --strict\n"
-      "\tDisables nasm-style mov-immediate register-size optimization.\n"
+      "  --strict-mov-imm\n"
+      "\tDisables nasm-style mov-immediate register-size handling.\n"
       "\tex: even if immediate size for mov is less than or equal to max "
       "signed 32 bit assemblyline.\n"
       "\t    will pad the immediate to fit 64-bit\n"
       "\tThat is: \"mov rax,0x7fffffff\" as \"mov rax,0x000000007fffffff\"\n"
       "\t          -> 48 b8 ff ff ff 7f 00 00 00 00\n\n"
-      "  -s, --smart\n"
+      "  --smart-mov-imm\n"
       "\tThe immediate value will be checked for leading 0's.\n"
       "\tImmediate must be zero padded to 64-bits exactly to ensure\n"
       "\tit will not optimize. This is currently set as default.\n"
       "\tex: \"mov rax, 0x000000007fffffff\" ->  48 b8 ff ff ff 7f 00 00 00 "
-      "00\n"
-      "\t    \"mov rax, 0x7fffffff\" -> b8 ff ff ff 7f\n\n"
+      "00\n\n"
+      "  -n, --nasm\n"
+      "\tequivalent to --nasm-mov-imm --nasm-sib\n\n"
+      "  -t, --strict\n"
+      "\tequivalent to --strict-mov-imm --strict-sib\n\n"
       "  -h, --help\n"
       "\tPrints usage information to stdout and exits.\n\n"
       "  -v, --version\n"
@@ -183,6 +204,11 @@ int main(int argc, char *argv[]) {
 
   struct option long_options[] = {
       /* These options set a flag. */
+      {"nasm-mov-imm", no_argument, &mov_imm, NASM_MOV_IMM},
+      {"strict-mov-imm", no_argument, &mov_imm, STRICT_MOV_IMM},
+      {"smart-mov-imm", no_argument, &mov_imm, SMART_MOV_IMM},
+      {"nasm-sib", no_argument, &sib, NASM_SIB},
+      {"strict-sib", no_argument, &sib, STRICT_SIB},
       {"version", no_argument, 0, 'v'},
       {"help", no_argument, 0, 'h'},
       {"rand", no_argument, (int *)&get_ret, RUN_RAND},
@@ -213,6 +239,9 @@ int main(int argc, char *argv[]) {
     case 'v':
       print_version();
       break;
+    case 'h':
+      err_print_usage("");
+      break;
     case 'r':
       // if there is a optional argument, try to parse it and set the arg len
       if (optarg && !check_digit(optarg))
@@ -223,13 +252,13 @@ int main(int argc, char *argv[]) {
       asm_set_debug(al, true);
       break;
     case 'n':
-      nasm_mov_imm_handling(al);
+      asm_set_all(al, NASM);
       break;
     case 't':
-      strict_mov_imm_handling(al);
+      asm_set_all(al, STRICT);
       break;
     case 's':
-      smart_mov_imm_handling(al);
+      asm_set_all(al, SMART);
       break;
     case 'c':
       if (check_digit(optarg))
@@ -249,10 +278,39 @@ int main(int argc, char *argv[]) {
       break;
 
     default: /* '?' */
-    case 'h':
+      if (mov_imm || sib)
+        break;
       err_print_usage("");
-      break;
     }
+  }
+
+  switch (mov_imm) {
+  case 0:
+    break;
+  case NASM_MOV_IMM:
+    asm_mov_imm(al, NASM);
+    break;
+  case STRICT_MOV_IMM:
+    asm_mov_imm(al, STRICT);
+    break;
+  case SMART_MOV_IMM:
+    asm_mov_imm(al, SMART);
+    break;
+  default:
+    break;
+  }
+
+  switch (sib) {
+  case 0:
+    break;
+  case NASM_SIB:
+    asm_sib(al, NASM);
+    break;
+  case STRICT_SIB:
+    asm_sib(al, STRICT);
+    break;
+  default:
+    break;
   }
 
   if (optind >= argc) {

@@ -60,7 +60,7 @@ assemblyline_t asm_create_instance(uint8_t *buffer, int len) {
 
   assemblyline_t al = malloc(sizeof(struct assemblyline));
   al->offset = 0;
-  al->mov_imm_handling = SMART;
+  al->assembly_opt = DEFAULT;
   // allocate buffer internally if not directly given
   if (buffer == NULL) {
     al->external = false;
@@ -187,10 +187,54 @@ uint8_t __attribute__((deprecated("use asm_get_code instead"))) *
 
 void *asm_get_code(assemblyline_t al) { return (void *)al->buffer; }
 
-void strict_mov_imm_handling(assemblyline_t al) {
-  al->mov_imm_handling = STRICT;
+void asm_mov_imm(assemblyline_t al, enum asm_opt option) {
+
+  switch (option) {
+  case NASM:
+    al->assembly_opt |= NASM_MOV_IMM;
+    al->assembly_opt &= ~SMART_MOV_IMM;
+    break;
+  case STRICT:
+    al->assembly_opt &= ~(NASM_MOV_IMM | SMART_MOV_IMM);
+    break;
+  case SMART:
+    al->assembly_opt |= SMART_MOV_IMM;
+    al->assembly_opt &= ~NASM_MOV_IMM;
+    break;
+  default:
+    return;
+  }
 }
 
-void nasm_mov_imm_handling(assemblyline_t al) { al->mov_imm_handling = NASM; }
+void asm_sib(assemblyline_t al, enum asm_opt option) {
 
-void smart_mov_imm_handling(assemblyline_t al) { al->mov_imm_handling = SMART; }
+  switch (option) {
+  case NASM:
+    al->assembly_opt |= NASM_SIB;
+    break;
+  case STRICT:
+    al->assembly_opt &= ~NASM_SIB;
+    break;
+  default:
+    return;
+  }
+}
+
+void asm_set_all(assemblyline_t al, enum asm_opt option) {
+
+  switch (option) {
+  case NASM:
+    asm_mov_imm(al, NASM);
+    asm_sib(al, NASM);
+    break;
+  case STRICT:
+    asm_mov_imm(al, STRICT);
+    asm_sib(al, STRICT);
+    break;
+  case SMART:
+    asm_mov_imm(al, SMART);
+    break;
+  default:
+    return;
+  }
+}

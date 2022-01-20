@@ -43,5 +43,6 @@ AM_INIT_AUTOMAKE([-Wall -Werror foreign subdir-objects])
 
 AC_CONFIG_FILES([
                  Makefile
+                 assemblyline.pc
                  ])
 AC_OUTPUT

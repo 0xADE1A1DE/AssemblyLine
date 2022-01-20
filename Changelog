@@ -45,7 +45,14 @@ version 1.1.0-release (2022-01-21)
 
 	- simplified the process for adding new instructions
 	
-	- improvements to autotools
+	- improvements to autotools, including use of pkg-config. That enables
+	  other autotools-based projects to include assemblyline as such:
+	  add to their `configure.ac`:
+	  ```
+		AC_SUBST([LIBASSEMBLYLINE_CFLAGS])
+		AC_SUBST([LIBASSEMBLYLINE_LIBS])
+		PKG_CHECK_MODULES([LIBASSEMBLYLINE], [assemblyline >= 1.1.0])
+	  ```
 
 	- tools/asmline dynamically links to libassemblyline.so
 

@@ -69,7 +69,7 @@ static bool check_zero(struct instr *instruc, unsigned long saved_imm,
   if (IN_RANGE(saved_imm, NEG32BIT_CHECK, MAX_UNSIGNED_32BIT) &&
       !instruc->reduced_imm && type != CONTROL_FLOW) {
     // nasm immediate register handling disabled
-    if (!(instruc->imm_handling & NASM))
+    if (!(instruc->assembly_opt & NASM))
       return true;
     // nasm immediate register handling disabled
     if (type != DATA_TRANSFER)

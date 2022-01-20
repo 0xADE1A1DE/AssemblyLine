@@ -12,16 +12,16 @@
 ## See the License for the specific language governing permissions and
 ## limitations under the License.
 
-EXTRA_DIST =
+# to tell pkg-config what to place where
+pkgconfig_DATA = assemblyline.pc
+pkgconfigdir = $(libdir)/pkgconfig
+
 ACLOCAL_AMFLAGS = -I m4 --install
 AM_CFLAGS = -Wall -Wextra -std=gnu99
 AM_CPPFLAGS = -I./src
-CLEANFILES = config.h~ \
-			 configure~ \
-			 assemblyline-*.tar.gz
-
-distclean-local:
-	rm -rf autom4te.cache/
+CLEANFILES = assemblyline-*.tar.gz \
+			 config.h~ \
+			 configure~
 
 ##############################################################################################
 ##############################################################################################
@@ -99,9 +99,9 @@ link_man = \
 		   man/asm_set_offset.3 \
 		   man/asm_get_buffer.3 \
 		   man/asm_get_code.3 \
-		   man/strict_mov_imm_handling.3 \
-		   man/nasm_mov_imm_handling.3 \
-		   man/smart_mov_imm_handling.3
+		   man/asm_mov_imm.3 \
+		   man/asm_sib.3 \
+		   man/asm_set_all.3
 
 $(link_man): man/libassemblyline.3
 	test -e $@ || $(LN_S) libassemblyline.3 $@

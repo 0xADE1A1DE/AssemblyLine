@@ -100,8 +100,7 @@ uint8_t get_reg(struct instr *instrc, struct operand *m, int r) {
     instrc->hex.reg =
         instrc->mod_disp | ((r & VALUE_MASK) << 3) | (m->reg & VALUE_MASK);
     return EXIT_SUCCESS;
-  } else if ((instrc->imm_handling & (NASM | SMART)) &&
-             (m->index & REG_MASK) == spl) {
+  } else if ((m->index & REG_MASK) == spl) {
     FAIL_IF_MSG((m->reg & REG_MASK) == spl || instrc->sib_disp,
                 "error stack pointer register is not scalable\n");
   }
