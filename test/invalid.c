@@ -35,6 +35,25 @@ const char *const testStrings[] = {
     "lea rax, [rbp+4*rsp] ; invalid memory syntax",
     "lea rax, [r12+2*rsp] ; invalid memory syntax"};
 
+// test invalid instructions with option
+int test_invalid(assemblyline_t al, enum asm_opt option){
+
+  asm_set_all(al,option);
+  size_t i = 0;
+  char const *str;
+  while (i < sizeof(testStrings) / sizeof(testStrings[0])) {
+    str = testStrings[i++];
+    if (asm_assemble_str(al, str) != EXIT_FAILURE) {
+      fprintf(stderr,
+              "should have failed to assemble '%s' and return code '%d' \n",
+              str, EXIT_FAILURE);
+      return EXIT_FAILURE;
+    }
+  }
+  return EXIT_SUCCESS;
+}
+
+
 int main(int argc, char **argv) {
   if (argc > 1) {
     fprintf(stderr,
@@ -48,17 +67,14 @@ int main(int argc, char **argv) {
 
   assemblyline_t al = asm_create_instance(NULL, 0);
 
-  size_t i = 0;
-  char const *str;
-  while (i < sizeof(testStrings) / sizeof(testStrings[0])) {
-    str = testStrings[i++];
-    if (asm_assemble_str(al, str) != EXIT_FAILURE) {
-      fprintf(stderr,
-              "should have failed to assemble '%s' and return code '%d' \n",
-              str, EXIT_FAILURE);
-      return 1;
-    }
-  }
+  if(test_invalid(al,NASM))
+    return EXIT_FAILURE;
+
+  if(test_invalid(al,STRICT))
+    return EXIT_FAILURE;
+
+  if(test_invalid(al,SMART))
+    return EXIT_FAILURE;
 
   asm_destroy_instance(al);
   return 0;
