@@ -9,6 +9,17 @@ ${tool} -r <<EOF
 ret
 EOF
 
+# should not error out without option to '--rand'
+${tool} --rand <<EOF
+ret
+EOF
+
+# should still run with '--rand'
+${tool} --rand <<EOF
+mov rax, [rsi]
+ret
+EOF
+
 # try to dereference args 0..6
 ${tool} -r <<EOF
 mov rax, [rdi]
@@ -105,9 +116,19 @@ mov [r9 + 0x48], rax
 ret
 EOF
 
-# now with -r 11, we shall be able to write to the 11th place
+# now with -r11, we shall be able to write to the 11th place
 # should pretty much not segfault out
-${tool} -R 11 <<EOF
+${tool} -r11 <<EOF
+mov rax, 0xDEADBEEF
+
+mov [rdi + 0x00], rax
+mov [rdi + 0x50], rax
+ret
+EOF
+
+# or -r=11
+
+${tool} -r=11 <<EOF
 mov rax, 0xDEADBEEF
 
 mov [rdi + 0x00], rax

@@ -91,17 +91,19 @@ DESCRIPTION:
 
 1. `$ asmline --return path/to/file.asm` to directly execute `path/to/file.asm` given the following options: 
     ```
-    -r --return
-            Assembles given code. Then executes it with six parameters to heap-allocated memory.
-            Each pointer points to an array of ten 64-bit elements which can be dereferenced in the asmcode.
-            Prints out the contents of the return (rax) register after execution and frees the heap-memory.
+    -r[=LEN], --return[=LEN]
+        Assembles given code. Then executes it with six parameters to heap-allocated memory.
+        Each pointer points to an array of LEN 64-bit elements which can be dereferenced in the asm-code, where LEN defaults to 10.
+        After execution, it prints out the contents of the return (rax) register and frees the heap-memory.
+
+    --rand 
+         implies -r and will additionally initialize the memory from with random data. -r=11 can be used to alter LEN.
     ```
-1. `-r` executes assembly program specified by `path/to/file.asm` and print out the return value of that program
 
 **Executing an assembly program from memory example:**
 1. Create an assembly program file
     ```bash
-    $ cat add_one.asm
+    $ cat path/to/add_one.asm
     mov rcx, 0x123
     add rcx, 1
     mov rax, rcx
@@ -113,26 +115,32 @@ DESCRIPTION:
     $ asmline -r path/to/add_one.asm
     the value is 0x124
     ```
-**Executing an assembly program with arguments from memory example:**
+
+**Executing an assembly program with arguments from memory example:**  
+**NOTE:** The `-r[=LEN]` will execute assembly code with 6 parameters consisting of uint64 arrays with length LEN, defaulting to LEN=10.
+That means that they can be dereferenced in the assembly file.
+
 1. Create an assembly program file
     ```bash
-    $ cat deadbeef.asm
-    mov rax, 0xDEADBEEF
+    $ cat path/to/adelaide.asm
+    mov rax, 0xADELA1DE
     mov [rdi], rax
     mov [rsi], rax
     mov [rdx], rax
-    mov [rcx], rax
+    mov [rcx], rax          ; LEN must be min 1 for this to work, as we access arg3[0]
+    mov [rcx + 0x08], rax   ; LEN must be min 2 for this to work, as we access arg3[1]
     mov [r8], rax
     mov [r9], rax
     ret
     ```
 
 1. Execute the file and get return value with asmline  
-**NOTE:** the `-r` flag will execute assembly code with 6 parameters consisting of uint64 arrays with length 10
     ```bash
-    $ asmline -r path/to/deadbeef.asm
-    the value is 0xdeadbeef
+    $ asmline -r=2 path/to/adelaide.asm
+    the value is 0xadela1de
     ```
+
+**NOTE:** The return value is obvious, but note that the program did not segfault when dereferencing the parameters `rdi`..`r9`.
 
 ## Different modes of assembly
 When moving immediate values to a 64-bit register, if immediate value is less than or equal to 0x7fffffff (max signed 32-bit)

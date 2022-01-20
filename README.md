@@ -16,9 +16,9 @@ please refer to [tools/README.md](https://github.com/0xADE1A1DE/AssemblyLine/blo
 
 ***note: refer to [/src/instructions.c](https://github.com/0xADE1A1DE/AssemblyLine/tree/main/src/instructions.c) for a complete list of supported instructions***
 
-1. `$ ./configure` or `$ CFLAGS='-g -O3' ./configure` to generate Makefiles.
+1. `$ ./configure` to generate Makefiles.
 1. `$ make` to compile
-1. `$ make install prefix=$(pwd)` to install it locally or `$ sudo make install` to install globally
+1. `$ sudo make install` to install it
 1. `$ gcc -o executable your_program.c -lassemblyline` to compile a c program using assemblyline<br><br>   
 
 ## Example
