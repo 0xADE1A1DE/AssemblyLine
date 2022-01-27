@@ -51,14 +51,14 @@ please refer to [tools/README.md](https://github.com/0xADE1A1DE/AssemblyLine/blo
     ```c
     asm_set_debug(al, true);
     ```
-1. OPTIONAL: Set a chunk size boundary to ensure that no instruction opcode will cross the specified chunk boundary length.  
+1. OPTIONAL: Set a chunk size boundary to ensure that no instruction opcode will cross the specified chunk boundary length.
     **note**: refer to instructions: `nop, nop2, ..., nop11` on [/src/instructions.c](https://github.com/0xADE1A1DE/AssemblyLine/tree/main/src/instructions.c)
     ```c
     // It will use the appropriate `nop` instruction for the remaining bytes to fill the chunk boundry.
     int chunk_size = 16;
     asm_set_chunk_size(al, chunk_size);
     ```
-1. Assemble a file or string containing x64 assembly code. The machine code will be written to `mybuffer` or the internal buffer.   
+1. Assemble a file or string containing x64 assembly code. The machine code will be written to `mybuffer` or the internal buffer.
    You can call those functions sequentially; the new machine code will be appended at the end.
     ```c
     asm_assemble_file(al, "./path/to/x64_file.asm");
