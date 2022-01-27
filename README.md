@@ -2,7 +2,7 @@
 
 An ultra-lightweight C library and binary for generating machine code of x86\_64 assembly language and executing on the fly without invoking another compiler, assembler or linker. <br> 
 * Support for MMX, SSE2, AVX, and AVX2 instruction sets.
-* Supports Scaled Index addressing mode (SIB) with the following syntax:  
+* Supports Scaled Index Addressing (SIB) with the following syntax:  
 `[base + index*scale +\- offset]` or `[base + scale*index +\- offset]` 
 * Supports pointer: byte, word, dword, qword
 * Memory chunk alignment by using nop-padding (similar to gcc).
@@ -10,7 +10,7 @@ An ultra-lightweight C library and binary for generating machine code of x86\_64
 `NASM`: binary output will match that of nasm as closely as possible (default for SIB).  
 `STRICT`: binary output will be in an 'as is' state in respect to the instruction.  
 `SMART`: intructions could be manipulated to ensure binary output matches nasm (default).  
-please refer to [tools/README.md](https://github.com/0xADE1A1DE/AssemblyLine/blob/main/tools/README.md) for more information
+please refer to [tools/README.md](https://github.com/0xADE1A1DE/AssemblyLine/blob/main/tools/README.md) **Different Modes of Assembly** section for more information
 * Easy to use command-line tool `asmline` (refer to [tools/README.md](https://github.com/0xADE1A1DE/AssemblyLine/blob/main/tools/README.md)) 
 * High instruction compatibility and easy to add new instructions (refer to [src/README.md](https://github.com/0xADE1A1DE/AssemblyLine/blob/main/src/README.md))   
 ## How to use
@@ -28,18 +28,19 @@ please refer to [tools/README.md](https://github.com/0xADE1A1DE/AssemblyLine/blo
 
 1. Include the required header files and preprocessors
     ```c
-    #include <stdint.h>
-    #include <sys/mman.h>
+    #include <stdint.h> // uint8_t
+    #include <sys/mman.h> // mmap
     #include <assemblyline.h>
     #define BUFFER_SIZE 300
     ```
 1. Allocate an executable buffer of sufficient size (> 20 bytes) using mmap
     ```c
-    // the machince code will be written to this location
+    // the machine code will be written to this location
     uint8_t *mybuffer = mmap(NULL, sizeof(uint8_t) * BUFFER_SIZE,
         PROT_READ | PROT_WRITE | PROT_EXEC, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
     ```
-1. Create an instance of assemblyline_t and attach `mybuffer` or set it to NULL for internal memory allocation (will `realloc` if it was too small)
+1. Create an instance of assemblyline_t and attach `mybuffer` or set it to NULL for internal memory allocation   
+   (will `realloc` if the internal buffer size is insufficient)
     ```c
     // external memory allocation
     assemblyline_t al = asm_create_instance(mybuffer, BUFFER_SIZE);
@@ -50,14 +51,15 @@ please refer to [tools/README.md](https://github.com/0xADE1A1DE/AssemblyLine/blo
     ```c
     asm_set_debug(al, true);
     ```
-1. OPTIONAL: Set a chunk size boundary to ensure that no instruction opcode will cross the specified chunk boundary length.
-    *** note: refer instructions `nop, nop2, ..., nop11`
+1. OPTIONAL: Set a chunk size boundary to ensure that no instruction opcode will cross the specified chunk boundary length.  
+    **note**: refer to instructions: `nop, nop2, ..., nop11` on [/src/instructions.c](https://github.com/0xADE1A1DE/AssemblyLine/tree/main/src/instructions.c)
     ```c
     // It will use the appropriate `nop` instruction for the remaining bytes to fill the chunk boundry.
     int chunk_size = 16;
     asm_set_chunk_size(al, chunk_size);
     ```
-1. Assemble a file or string containing x64 assembly code. The machine code will be written to `mybuffer` or the internal buffer. You can call those functions sequentially; the new machine code will be appended at the end.
+1. Assemble a file or string containing x64 assembly code. The machine code will be written to `mybuffer` or the internal buffer.   
+   You can call those functions sequentially; the new machine code will be appended at the end.
     ```c
     asm_assemble_file(al, "./path/to/x64_file.asm");
     asm_assemble_str(al, "mov rax, 0x0\nadd rax, 0x2; adds two");
