@@ -142,12 +142,12 @@ That means that they can be dereferenced in the assembly file.
 
 **NOTE:** The return value is obvious, but note that the program did not segfault when dereferencing the parameters `rdi`..`r9`.
 
-## Different modes of assembly
+## Different Modes of Assembly
 When moving immediate values to a 64-bit register, if immediate value is less than or equal to 0x7fffffff (max signed 32-bit)
 nasm will interpret 'mov rax, IMM' as 'mov eax, IMM'.  
 Since the stack pointer register is not scalable in SIB when the index register is set to rsp or esp, NASM will swap the index 
-and base register to produce a valid instruction.  
-The settings below allow the user to control the following behavior.
+and base register to produce a valid instruction.   
+#### The settings below allow the user to control the aforementioned behavior.
 
 ### Set SIB to NASM
 
