@@ -28,21 +28,10 @@ as well process any offsets or immediate operands*/
  * @param instrc only support 8-bit registers
  */
 static void auto_set_byte(struct instr *instrc) {
-  // instrctions with M operand encoding that only supports 8 bit registers
-  if (INSTR_TABLE[instrc->key].encode_operand == M) {
-    switch (INSTR_TABLE[instrc->key].name) {
-    case setc:
-    case seto:
-    case prefetcht0:
-    case prefetcht1:
-    case prefetcht2:
-    case prefetchnta:
-    case clflush:
-      instrc->keyword.is_byte = true;
-      instrc->op_offset = 0;
-    default:
-      return;
-    }
+  // instructions that only supports a single 8-bit operand
+  if (INSTR_TABLE[instrc->key].type == BYTE_OPD) {
+    instrc->keyword.is_byte = true;
+    instrc->op_offset = 0;
   }
 }
 
@@ -89,13 +78,14 @@ static int encode_mem(struct instr *instrc, int m) {
 
   if (!instrc->mem_disp)
     return NA;
-  if ((instrc->opd[m].reg & BIT_MASK) == BIT_32)
+  if ((instrc->opd[m].reg & BIT_MASK) == BIT_32 ||
+      (instrc->opd[m].index & BIT_MASK) == BIT_32)
     instrc->hex.is_67H = true;
   if ((instrc->opd[m].reg & BIT_MASK) == BIT_16)
     instrc->hex.is_66H = true;
 
   // auto correct SIB syntax in nasm and smart mode
-  if ((instrc->assembly_opt & NASM_SIB) &&
+  if ((instrc->assembly_opt & NASM_SIB_INDEX_BASE_SWAP) &&
       (instrc->opd[m].index & REG_MASK) == spl && !instrc->sib_disp) {
     asm_reg swap = instrc->opd[m].index;
     instrc->opd[m].index = instrc->opd[m].reg;
@@ -127,8 +117,8 @@ static int encode_two_opds(struct instr *instrc, int r, int m) {
     auto_set_operand(instrc, instrc->opd[r].reg);
   // printf("instrc->keyword.is_word = %d\n", instrc->keyword.is_word);
   // check if a second register exist in memory reference ex: [rax+rcx]
-  instrc->hex.rex = get_rex_prefix(instrc, &instrc->opd[m], &instrc->opd[r]);
   FAIL_IF(get_reg(instrc, &instrc->opd[m], instrc->opd[r].reg));
+  instrc->hex.rex = get_rex_prefix(instrc, &instrc->opd[m], &instrc->opd[r]);
   return EXIT_SUCCESS;
 }
 
@@ -140,11 +130,12 @@ static int encode_three_opds(struct instr *instrc, int r, int m, int v) {
 
   if (encode_mem(instrc, m) != NA)
     auto_set_operand(instrc, instrc->opd[r].reg);
-  // used for RXB and R
-  instrc->hex.rex = get_rex_prefix(instrc, &instrc->opd[m], &instrc->opd[r]);
+
   // get vvvv parameter
   instrc->hex.vvvv = instrc->opd[v].reg & 0xf;
   FAIL_IF(get_reg(instrc, &instrc->opd[m], instrc->opd[r].reg));
+  // used for RXB and R
+  instrc->hex.rex = get_rex_prefix(instrc, &instrc->opd[m], &instrc->opd[r]);
   return EXIT_SUCCESS;
 }
 
@@ -160,17 +151,18 @@ static int encode_special_opd(struct instr *instrc, int m, int i) {
   switch (INSTR_TABLE[instrc->key].encode_operand) {
   case M:
     encode_mem(instrc, m);
-    instrc->hex.rex = get_rex_prefix(instrc, &instrc->opd[m], &no_register);
     FAIL_IF(get_reg(instrc, &instrc->opd[m],
                     INSTR_TABLE[instrc->key].single_reg_r));
+    instrc->hex.rex = get_rex_prefix(instrc, &instrc->opd[m], &no_register);
     break;
 
   case O:
+    FAIL_IF(get_reg(instrc, &instrc->opd[m],
+                    INSTR_TABLE[instrc->key].single_reg_r));
     if ((MODE_MASK & instrc->opd[m].reg) == ext64)
       instrc->hex.rex = rex_ + rex_b;
     instrc->rd_offset = (instrc->opd[m].reg & VALUE_MASK);
-    FAIL_IF(get_reg(instrc, &instrc->opd[m],
-                    INSTR_TABLE[instrc->key].single_reg_r));
+
     break;
 
   case I:

@@ -1,0 +1,6 @@
+; those tests are expected to be nasm-inmpatible (with asmline's defaults)
+; this is not an .eaf test, because we need to compare against nasm. It is part of the XFAIL's in the Makefile, though, i.e. if asmline mismatches with nasm, the test is ok. --- We probably want to change this eventually, and actually check asmline produces the expected results rather than just checking if its different to nasm.
+
+mov rax, 0x0000000000000001 ; fully padded imm64
+
+

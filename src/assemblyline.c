@@ -187,6 +187,20 @@ uint8_t __attribute__((deprecated("use asm_get_code instead"))) *
 
 void *asm_get_code(assemblyline_t al) { return (void *)al->buffer; }
 
+int asm_create_bin_file(assemblyline_t al, const char *file_name) {
+  void *buffer = asm_get_code(al);
+  int len = asm_get_offset(al);
+  FILE *write_ptr = fopen(file_name, "wb");
+
+  FAIL_IF_MSG(write_ptr == NULL, "failed to create binary file")
+
+  fwrite(buffer, sizeof(uint8_t), len, write_ptr);
+
+  fclose(write_ptr);
+
+  return EXIT_SUCCESS;
+}
+
 void asm_mov_imm(assemblyline_t al, enum asm_opt option) {
 
   switch (option) {
@@ -210,10 +224,40 @@ void asm_sib(assemblyline_t al, enum asm_opt option) {
 
   switch (option) {
   case NASM:
-    al->assembly_opt |= NASM_SIB;
+    asm_sib_index_base_swap(al, NASM);
+    asm_sib_no_base(al, NASM);
     break;
   case STRICT:
-    al->assembly_opt &= ~NASM_SIB;
+    asm_sib_index_base_swap(al, STRICT);
+    asm_sib_no_base(al, STRICT);
+    break;
+  default:
+    return;
+  }
+}
+
+void asm_sib_index_base_swap(assemblyline_t al, enum asm_opt option) {
+
+  switch (option) {
+  case NASM:
+    al->assembly_opt |= NASM_SIB_INDEX_BASE_SWAP;
+    break;
+  case STRICT:
+    al->assembly_opt &= ~NASM_SIB_INDEX_BASE_SWAP;
+    break;
+  default:
+    return;
+  }
+}
+
+void asm_sib_no_base(assemblyline_t al, enum asm_opt option) {
+
+  switch (option) {
+  case NASM:
+    al->assembly_opt |= NASM_SIB_NO_BASE;
+    break;
+  case STRICT:
+    al->assembly_opt &= ~NASM_SIB_NO_BASE;
     break;
   default:
     return;
@@ -225,11 +269,13 @@ void asm_set_all(assemblyline_t al, enum asm_opt option) {
   switch (option) {
   case NASM:
     asm_mov_imm(al, NASM);
-    asm_sib(al, NASM);
+    asm_sib_index_base_swap(al, NASM);
+    asm_sib_no_base(al, NASM);
     break;
   case STRICT:
     asm_mov_imm(al, STRICT);
-    asm_sib(al, STRICT);
+    asm_sib_index_base_swap(al, STRICT);
+    asm_sib_no_base(al, STRICT);
     break;
   case SMART:
     asm_mov_imm(al, SMART);

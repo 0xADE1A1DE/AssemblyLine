@@ -114,3 +114,8 @@ add dword [ebp], 0x4
 add dword [ebp], 0x3
 add dword [ebp], 0x2
 add dword [ebp], 0xff
+add eax, dword [rsp]
+add eax, dword [rsp + 0x40]
+add eax, [rsp + 0x40]
+add eax, dword [rbp]
+add eax, ebx

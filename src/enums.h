@@ -220,8 +220,36 @@ typedef enum {
   sar,
   sarx,
   sbb,
-  setc,
-  seto,
+  seta,       
+  setae,       
+  setb,       
+  setbe,       
+  setc,       
+  sete,       
+  setg,       
+  setge,       
+  setl,       
+  setle,       
+  setna,       
+  setnae,       
+  setnb,       
+  setnbe,      
+  setnc,      
+  setne,      
+  setng,     
+  setnge,      
+  setnl,       
+  setnle,       
+  setno,       
+  setnp,       
+  setns,       
+  setnz,       
+  seto,       
+  setp,       
+  setpe,       
+  setpo,       
+  sets,      
+  setz,  
   sfence,
   shl,
   shld,
@@ -286,8 +314,12 @@ typedef enum {
   VECTOR_AVX = 0b011000,
   // this is a test used to bypass old implementation 
   VECTOR_EXT = 0b101000,
+  // used to encode instructions with both an I and M operand encoding
+  OPERATION = 0b1000000,
+  // instructions that only supports a single 8-bit operand
+  BYTE_OPD = 0b1000001,
   // instructions that do not require special encodings
-  OTHER = 0b1000000
+  OTHER = 0b1000010
 } instr_type;
 
 // register bit size and category (ext denotes extended x64 registers)

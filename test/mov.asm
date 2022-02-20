@@ -4140,3 +4140,5 @@ mov eax, r15d
 mov eax, r15d
 mov ax, r15w
 mov al, r15b
+mov rax, -4624529908474429120
+mov rax, 18446744073709551615

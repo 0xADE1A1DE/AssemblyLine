@@ -67,6 +67,11 @@ void get_reg_str(char *opd_str, char *reg) {
   size_t len = strlen(opd_str);
   // copies the register from mem to reg ex: "rax ," -> "rax"
   for (size_t i = 0; i < len; i++) {
+    // exit upon encounting '*' character (it will be an index register)
+    if (opd_str[i] == '*') {
+      reg = NULL;
+      return;
+    }
     if (j > 0 && IN_RANGE(opd_str[i], 'a', 'z'))
       reg[j++] = opd_str[i];
     else if (j > 0 && IN_RANGE(opd_str[i], '0', '9'))
@@ -82,8 +87,9 @@ void get_reg_str(char *opd_str, char *reg) {
 static unsigned int check_sib_disp(struct instr *instruc, char scale,
                                    char next) {
   // scale can only be a 1 digit decimal number
-  if (next != ']' && next != '+' && next != '-')
+  if (next != ']' && next != '+' && next != '-' && next != '[')
     return EXIT_FAILURE;
+
   switch (scale) {
   case '1':
     instruc->sib_disp = SIB;

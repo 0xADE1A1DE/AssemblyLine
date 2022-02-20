@@ -70,8 +70,7 @@ include_HEADERS = src/assemblyline.h
 # 3. Programs may need to be changed, recompiled, and relinked in order to use the new version. Bump current, set revision and age to 0.
 
 # in short, if only patch from configure.ac is bumped, bump the middle number below. If more is changed, read the above
-libassemblyline_la_LDFLAGS = -version-info 2:0:1
-
+libassemblyline_la_LDFLAGS = -version-info 3:0:2
 ##############################################################################################
 ##############################################################################################
 ###############################      BINS       ##############################################
@@ -99,8 +98,9 @@ link_man = \
 		   man/asm_set_offset.3 \
 		   man/asm_get_buffer.3 \
 		   man/asm_get_code.3 \
+		   man/asm_create_bin_file.3 \
 		   man/asm_mov_imm.3 \
-		   man/asm_sib.3 \
+		   man/asm_sib_index_base_swap.3 \
 		   man/asm_set_all.3
 
 $(link_man): man/libassemblyline.3
@@ -126,7 +126,27 @@ TAP_LOG_DRIVER = env AM_TAP_AWK='$(AWK)' $(SHELL) \
 TAP_LOG_COMPILER = ./test/tap/compiler.sh
 
 # add TAP tests here
-TEST_TAP = test/tap/misc.tap
+TEST_TAP = \
+		test/tap/misc.tap \
+		test/tap/lea.tap
+		test/tap/imul.tap \
+		test/tap/nasm_incompatible.tap
+
+# those are the tests, where asmline is expected to fail, for the suite to be ok.
+# eaf stands for 'expected asmline to fail'
+TEST_EXTENSIONS += .eaf
+EAF_LOG_DRIVER = env AM_TAP_AWK='$(AWK)' $(SHELL) \
+                  $(top_srcdir)/build-aux/tap-driver.sh
+
+EAF_LOG_COMPILER = ./test/tap/compiler.sh --no-nasm
+TEST_EAF = \
+		test/tap/imul.eaf \
+		test/tap/misc.eaf
+
+
+# In case you want a test to fail for the suite to pass, add the test here
+XFAIL_TESTS= $(TEST_EAF) \
+		test/tap/nasm_incompatible.tap
 
 # add SH-tests here
 TEST_SH = test/tools/asmline.sh
@@ -153,9 +173,11 @@ TEST_ASM = \
 		  test/bextr.asm \
 		  test/bzhi.asm \
 		  test/clc.asm \
+		  test/cmp.asm \
 		  test/high_low_xmm.asm \
 		  test/imul.asm \
 		  test/lea.asm \
+		  test/lea_no_base.asm \
 		  test/mov.asm \
 		  test/mov_reg_imm.asm \
 		  test/mov_reg_imm32.asm \
@@ -167,8 +189,8 @@ TEST_ASM = \
 		  test/mulx.asm \
 		  test/negative_mem_disp.asm \
 		  test/new_instruction.asm \
-		  test/nop.asm \
 		  test/no_ptr.asm \
+		  test/nop.asm \
 		  test/not.asm \
 		  test/or.asm \
 		  test/paddb.asm \
@@ -198,6 +220,7 @@ TEST_ASM = \
 		  test/sarx.asm \
 		  test/sbb.asm \
 		  test/setc.asm \
+		  test/setcc.asm \
 		  test/seto.asm \
 		  test/shl.asm \
 		  test/shld.asm \
@@ -206,6 +229,7 @@ TEST_ASM = \
 		  test/shrd.asm \
 		  test/shrx.asm \
 		  test/sub.asm \
+		  test/test.asm \
 		  test/vaddpd.asm \
 		  test/vector_add.asm \
 		  test/vector_add_mem.asm \
@@ -222,5 +246,4 @@ TEST_ASM = \
 # if needed, add utility programs, which should be build for the test, to check_PROGRAMS
 check_PROGRAMS = $(bin_PROGRAMS) $(TEST_C)
 
-TESTS = $(TEST_TAP) $(TEST_SH) $(TEST_ASM) $(TEST_C)
-
+TESTS = $(TEST_EAF) $(TEST_TAP) $(TEST_SH) $(TEST_ASM) $(TEST_C)

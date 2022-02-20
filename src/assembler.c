@@ -142,7 +142,7 @@ static int assemble_mem(struct instr *instruc, unsigned char ptr[]) {
       ptr[ptr_pos++] = SIB_CONST;
     if (instruc->mod_disp == MOD8) {
       ptr[ptr_pos++] = instruc->mem_offset;
-    } else if (instruc->mod_disp == MOD16) {
+    } else if (instruc->mod_disp == MOD16 || instruc->no_base) {
       // assemble memory displacement byte by byte using little endian format
       int mbytes = assemble_const(instruc->mem_offset, ptr + ptr_pos);
       ptr_pos += mbytes;

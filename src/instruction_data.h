@@ -37,7 +37,7 @@ struct assemblyline {
   size_t chunk_size;
   bool external : 1;
   ASM_MODE assembly_mode;
-  uint8_t assembly_opt : 3;
+  uint8_t assembly_opt;
   bool debug : 1;
   bool finalized : 1;
   bool table_built : 1;
@@ -95,7 +95,7 @@ struct instr {
   // bitmap for keywords
   union keywords keyword;
   // enable or disable nasm register optimization
-  uint8_t assembly_opt : 3;
+  uint8_t assembly_opt;
   // constants and memory displacement
   bool imm : 1;
   bool reduced_imm : 1;
@@ -104,6 +104,7 @@ struct instr {
   bool mem_disp : 1;
   bool is_sib_const : 1;
   bool is_sib : 1;
+  bool no_base : 1;
   uint32_t mem_offset;
   // displacement for modRM64_m variable based on
   // value of op_en and size of mem_disp

@@ -1,0 +1,2 @@
+imul rax, rax, 0x13           ; imm8
+imul rax, rax, 0x0013         ; imm16, which should be reduced to imm8, as its not fullly padded imm32

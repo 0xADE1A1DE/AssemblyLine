@@ -1,3 +1,28 @@
+version 1.2.0-release (2022-02-19)
+	
+	- binary file can now be generated from libassemblyline 
+	  with asm_create_bin_file()
+
+	- reformatted man page for wide screen
+
+	- added support for all operand encodings for and, or, xor, sub, and add
+	  instructions
+
+	- added support for all setcc instructions - set byte on condition
+
+	- added a command-line option in asmline for setting 
+	  assembly mode to NASM '$ asmline --nasm-sib-no-base' where:
+      in SIB addressing if there is no base register present and scale is equal to 2; 
+      the base register will be set to the index register and the scale will be reduced to 1.
+      That is: "lea r15, [2*rax]" -> "lea r15, [rax+1*rax]" -> 4c 8d 3c 00
+
+	- added a command-line option in asmline for setting 
+	  assembly mode to STRICT '$ asmline --strict-sib-no-base' where:
+	  in SIB addressing when there is no base register present the index and scale would
+	  not change regardless of scale value.  
+      That is: "lea r15, [2*rax]" -> "lea r15, [2*rax]" -> 4c 8d 3c 45 00 00 00 00
+
+
 version 1.1.0-release (2022-01-21)
 
 	- added support for scaled index addressing mode
@@ -75,6 +100,7 @@ version 1.0.5-release (2021-09-29)
 
 	- FIX another bug where 'mov reg, imm' results in a wrong instruction
 
+
 version 1.0.4-release (2021-09-27)
 	
 	- FIX bug where 'mov reg, imm' is interpreted as  movntqda
@@ -120,3 +146,4 @@ version 1.0.0-release (2021-08-26)
 	
 	- initial release
 
+© 2022 GitHub, Inc.

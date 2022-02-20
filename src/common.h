@@ -153,6 +153,7 @@
 
 // scaled indexed addressing
 #define SIB_CONST 0x24
+#define NO_BASE 0b101
 
 // operand position
 #define FIRST_OPERAND 0
@@ -162,7 +163,8 @@
 
 // assembly mode options
 #define NASM_MOV_IMM 0b00001
-#define NASM_SIB 0b00100
+#define NASM_SIB_INDEX_BASE_SWAP 0b00100
+#define NASM_SIB_NO_BASE 0b01000
 #define SMART_MOV_IMM 0b00010
 
 #define GET_EN 0b11111100000000000000000

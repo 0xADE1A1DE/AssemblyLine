@@ -24,3 +24,5 @@ movzx rcx, r12b
 movzx rdx, dl
 movzx rdx, r8b
 movzx rdx, r9b
+movzx eax, al ; r/32 <- r/8
+movzx ebx, byte [ rsp + 0xa8 ] ;r/32 m/8

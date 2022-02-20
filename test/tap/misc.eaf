@@ -1,0 +1,11 @@
+; All .eaf files are run with compiler.sh --no-nasm, which means, they are not compared against nasm.
+; The compiler then only checks, if the line could be assembled or if asmline failed.
+
+invalid instruction ; fairly obvious
+
+and not_a_register  ; fairly obvious
+
+mulx al,  [rsp], rax  ; mulx does not support byte as op1
+mulx rax, [rsp], ax   ; mulx does not support byte as op3
+mulx rax, [rsp], 0x01 ; mulx does not support imms
+

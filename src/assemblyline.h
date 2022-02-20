@@ -25,7 +25,7 @@
 // different assembly options for mov immediate and SIB
 enum asm_opt { STRICT, NASM, SMART };
 
-#define DEFAULT SMART_MOV_IMM | NASM_SIB
+#define DEFAULT SMART_MOV_IMM | NASM_SIB_INDEX_BASE_SWAP | NASM_SIB_NO_BASE
 
 typedef struct assemblyline *assemblyline_t;
 
@@ -146,6 +146,12 @@ uint8_t __attribute__((deprecated("use asm_get_code instead"))) *
 void *asm_get_code(assemblyline_t al);
 
 /**
+ * Generates a binary file @param file_name from assembled machine code up to
+ * the memory offset of the current instance @param al
+ */
+int asm_create_bin_file(assemblyline_t al, const char *file_name);
+
+/**
  * Nasm optimizes a `mov rax, IMM` to `mov eax, imm`, iff imm is <= 0x7fffffff
  * for all destination registers. The following three methods allow the user to
  * specify this behavior.
@@ -191,14 +197,45 @@ void asm_mov_imm(assemblyline_t al, enum asm_opt option);
  * setting @param option to SMART or any other value results in an no-operation
  * function.
  */
+void asm_sib_index_base_swap(assemblyline_t al, enum asm_opt option);
+
+/**
+ * In SIB, when no base register is present and the scale is equal to 2
+ * NASM will set the base to the index register and reduce the scale by 1.
+ * ex: [2*rax] -> [rax+1*rax]
+ *
+ * setting @param option to STRICT disables Nasm SIB handling with no base.
+ * That is:
+ * "lea r15, [2*rax]" will be interpreted as is
+ * -> 4c 8d 3c 45 00 00 00 00
+ *
+ * setting @param option to NASM enables Nasm SIB handling with no base.
+ * This is currently set as default.
+ * "lea r15, [2*rax]" will be interpreted as "lea r15, [rax+1*rax]"
+ * -> 4c 8d 3c 00
+ *
+ * setting @param option to SMART or any other value results in an no-operation
+ * function.
+ */
+void asm_sib_no_base(assemblyline_t al, enum asm_opt option);
+
+/**
+ * setting @param option to STRICT is equivalent to calling both
+ * asm_sib_index_base_swap(al,STRICT) and asm_sib_no_base(al,STRICT)
+ *
+ * setting @param option to NASM is equivalent to calling both
+ * asm_sib_index_base_swap(al,NASM) and asm_sib_no_base(al,NASM)
+ *
+ * setting @param option to any other value results in an no-operation function
+ */
 void asm_sib(assemblyline_t al, enum asm_opt option);
 
 /**
  * setting @param option to STRICT is equivalent to calling both
- * asm_sib(al,STRICT) and asm_mov_imm(al,STRICT)
+ * asm_sib_index_base_swap(al,STRICT) and asm_mov_imm(al,STRICT)
  *
- * setting @param option to NASM is equivalent to calling both asm_sib(al,NASM)
- * and asm_mov_imm(al,NASM)
+ * setting @param option to NASM is equivalent to calling both
+ * asm_sib_index_base_swap(al,NASM) and asm_mov_imm(al,NASM)
  *
  * setting @param option to SMART is equivalent to calling asm_mov_imm(al,SMART)
  *

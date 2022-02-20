@@ -2,20 +2,23 @@
 
 An ultra-lightweight C library and binary for generating machine code of x86\_64 assembly language and executing on the fly without invoking another compiler, assembler or linker. <br> 
 * Support for MMX, SSE2, AVX, and AVX2 instruction sets.
-* Supports Scaled Index Addressing (SIB) with the following syntax:  
-`[base + index*scale +\- offset]` or `[base + scale*index +\- offset]` 
+* Supports Scaled Index addressing mode (SIB) with the following syntax:  
+`[base + index*scale +\- offset]`, `[base + scale*index +\- offset]`  
+`[scale*index +\- offset]`
 * Supports pointer: byte, word, dword, qword
 * Memory chunk alignment by using nop-padding (similar to gcc).
 * Different modes for assembling instructions.  
 `NASM`: binary output will match that of nasm as closely as possible (default for SIB).  
 `STRICT`: binary output will be in an 'as is' state in respect to the instruction.  
 `SMART`: intructions could be manipulated to ensure binary output matches nasm (default).  
-please refer to [tools/README.md](https://github.com/0xADE1A1DE/AssemblyLine/blob/main/tools/README.md) **Different Modes of Assembly** section for more information
-* Easy to use command-line tool `asmline` (refer to [tools/README.md](https://github.com/0xADE1A1DE/AssemblyLine/blob/main/tools/README.md)) 
-* High instruction compatibility and easy to add new instructions (refer to [src/README.md](https://github.com/0xADE1A1DE/AssemblyLine/blob/main/src/README.md))   
+please refer to [tools/README.md](/tools/README.md) **Different Modes of Assembly** section for more information
+* Easy to use command-line tool `asmline` (refer to [tools/README.md](/tools/README.md)) 
+* High instruction compatibility and easy to add new instructions (refer to [src/README.md](src/README.md))    
+
 ## How to use
 
-***note: refer to [/src/instructions.c](https://github.com/0xADE1A1DE/AssemblyLine/tree/main/src/instructions.c) for a complete list of supported instructions***
+To get a stable release clone the repo from a tag or download the tarball. <br> 
+***note: refer to [/src/instructions.c](/src/instructions.c) for a complete list of supported instructions***
 
 1. `$ ./configure` to generate Makefiles.
 1. `$ make` to compile
@@ -23,8 +26,8 @@ please refer to [tools/README.md](https://github.com/0xADE1A1DE/AssemblyLine/blo
 1. `$ gcc -o executable your_program.c -lassemblyline` to compile a c program using assemblyline<br><br>   
 
 ## Example
-
-***note: refer to [/src/assemblyline.h](https://github.com/0xADE1A1DE/AssemblyLine/tree/main/src/assemblyline.h) or run `$ man libassemblyline` for more information***
+  
+***note: refer to [/src/assemblyline.h](/src/assemblyline.h) or run `$ man libassemblyline` for more information***
 
 1. Include the required header files and preprocessors
     ```c
@@ -52,7 +55,7 @@ please refer to [tools/README.md](https://github.com/0xADE1A1DE/AssemblyLine/blo
     asm_set_debug(al, true);
     ```
 1. OPTIONAL: Set a chunk size boundary to ensure that no instruction opcode will cross the specified chunk boundary length.
-    **note**: refer to instructions: `nop, nop2, ..., nop11` on [/src/instructions.c](https://github.com/0xADE1A1DE/AssemblyLine/tree/main/src/instructions.c)
+    **note**: refer to instructions: `nop, nop2, ..., nop11` on [/src/instructions.c](/src/instructions.c)
     ```c
     // It will use the appropriate `nop` instruction for the remaining bytes to fill the chunk boundry.
     int chunk_size = 16;
@@ -103,7 +106,7 @@ please refer to [tools/README.md](https://github.com/0xADE1A1DE/AssemblyLine/blo
     <br>
 ## Test files
 
-`$ make check` to run all test suites
+`$ make check` to run all test suites (repo must be cloned for this to work)
 
 * To run only one testsuite `TESTS=seto.asm make -e check`, then check `./test/seto.log`
 * Or run the `./al_nasm_compare.sh seto.asm` in the `test` directory
@@ -112,11 +115,11 @@ then run `$ make clean check`. Finally, add `Makefile.am` and `sub.asm` to git.<
 
 ## Command-line tool: asmline
 
-Please refer to: [tools/README.md](https://github.com/0xADE1A1DE/AssemblyLine/blob/main/tools/README.md)<br><br>     
+Please refer to: [tools/README.md](/tools/README.md)<br><br>     
   
 ## Adding new instructions
 
-To add support for new instructions please refer to: [src/README.md](https://github.com/0xADE1A1DE/AssemblyLine/blob/main/src/README.md)<br><br>  
+To add support for new instructions please refer to: [src/README.md](/src/README.md)<br><br>  
 
 ## Acknowledgements
 #### Authors:

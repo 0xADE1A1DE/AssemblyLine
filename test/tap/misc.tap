@@ -97,3 +97,5 @@ shrd rbx, r12, 44
 sub rsp, 0x40
 xor r12, r12
 xor rbx, rbx
+mov rax, -4624529908474429120
+mov rax, 18446744073709551615

@@ -70,15 +70,7 @@ int str_to_instr_key(char *instruction, operand_format opd_layout) {
 
 int to_special_instr_key(int key) {
   // converts special instructions to their corresponding key
-  switch (INSTR_TABLE[key].name) {
-  case sub:
-  case sbb:
-  case add:
-  case adc:
-  case xor:
-    if (INSTR_TABLE[key].encode_operand == M)
-      return key + 1;
-    break;
-  }
+  if (INSTR_TABLE[key].type == OPERATION)
+    return key + 1;
   return EOI;
 }

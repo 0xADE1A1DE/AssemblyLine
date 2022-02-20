@@ -1,0 +1,18 @@
+lea rax, [rax+  rax]; *2
+lea rax, [    2*rax]; *2
+lea rax, [rax+2*rax]; *3
+lea rax, [    4*rax]; *4
+lea rax, [    4*rax + 0x0]; *4
+lea rax, [rax+4*rax]; *5
+lea rax, [rax+8*rax]; *6
+lea rax, [    8*rax]; *8
+lea rax, [rax+8*rax]; *9
+
+;with rsp here
+lea rax, [rsp+  rax]; *2
+lea rax, [rsp+2*rax]; *3
+lea rax, [    4*rax]; *4
+lea rax, [rsp+4*rax]; *5
+lea rax, [rsp+8*rax]; *6
+lea rax, [    8*rax]; *8
+lea rax, [rsp+8*rax]; *9

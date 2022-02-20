@@ -38,12 +38,18 @@ typedef enum {
   STRICT_MOV_IMM,
   NASM_SIB,
   STRICT_SIB,
+  NASM_SIB_INDEX_BASE_SWAP,
+  STRICT_SIB_INDEX_BASE_SWAP,
+  NASM_SIB_NO_BASE,
+  STRICT_SIB_NO_BASE,
   SMART_MOV_IMM
 } asm_options;
 
 const char *asm_version = PACKAGE_STRING;
 static int mov_imm = 0;
-static int sib = 0;
+static int sib_all = 0;
+static int sib_swap = 0;
+static int sib_no_base = 0;
 
 void err_print_usage(char *error_msg) {
   fprintf(
@@ -76,13 +82,7 @@ void err_print_usage(char *error_msg) {
       "\tSets a given CHUNK_SIZE boundary in bytes. Nop padding will be used "
       "to ensure no instruction\n"
       "\topcode will cross the specified CHUNK_SIZE boundary.\n\n"
-      "  --nasm-sib\n"
-      "\tIn SIB addressing if the index register is esp or rsp then\n"
-      "\tthe base and index registers will be swapped.\n"
-      "\tThat is: \"lea r15, [rax+rsp]\" -> \"lea r15, [rsp+rax]\"\n\n"
-      "  --strict-sib\n"
-      "\tIn SIB addressing the base and index registers will not be swapped\n"
-      "\teven if the index register is esp or rsp.\n\n"
+
       "  --nasm-mov-imm\n"
       "\tEnables nasm-style mov-immediate register-size handling.\n"
       "\tex: if immediate size for mov is less than or equal to max "
@@ -106,6 +106,30 @@ void err_print_usage(char *error_msg) {
       "\tit will not optimize. This is currently set as default.\n"
       "\tex: \"mov rax, 0x000000007fffffff\" ->  48 b8 ff ff ff 7f 00 00 00 "
       "00\n\n"
+
+      "  --nasm-sib-index-base-swap\n"
+      "\tIn SIB addressing if the index register is esp or rsp then\n"
+      "\tthe base and index registers will be swapped.\n"
+      "\tThat is: \"lea r15, [rax+rsp]\" -> \"lea r15, [rsp+rax]\"\n\n"
+      "  --strict-sib-index-base-swap\n"
+      "\tIn SIB addressing the base and index registers will not be swapped\n"
+      "\teven if the index register is esp or rsp.\n\n"
+
+      "  --nasm-sib-no-base\n"
+      "\tIn SIB addressing if there is no base register present and scale\n"
+      "\tis equal to 2; the base register will be set to the index register\n"
+      "\tand the scale will be reduced to 1.\n"
+      "\tThat is: \"lea r15, [2*rax]\" -> \"lea r15, [rax+1*rax]\"\n\n"
+      "  --strict-sib-no-base\n"
+      "\tIn SIB addressing when there is no base register present the index\n"
+      "\tand scale would not change regardless of scale value.\n"
+      "\tThat is: \"lea r15, [2*rax]\" -> \"lea r15, [2*rax]\"\n\n"
+
+      "  --nasm-sib\n"
+      "\tequivalent to --nasm-sib-index-base-swap --nasm-sib-no-base\n\n"
+      "  --strict-sib\n"
+      "\tequivalent to --strict-sib-index-base-swap --strict-sib-no-base\n\n"
+
       "  -n, --nasm\n"
       "\tequivalent to --nasm-mov-imm --nasm-sib\n\n"
       "  -t, --strict\n"
@@ -144,20 +168,6 @@ int check_digit(char *optarg) {
   return EXIT_SUCCESS;
 }
 
-int create_bin_file(assemblyline_t al, const char *file_name) {
-  void *buffer = asm_get_code(al);
-  int len = asm_get_offset(al);
-  FILE *write_ptr = fopen(file_name, "wb");
-
-  if (write_ptr == NULL)
-    return EXIT_FAILURE;
-
-  fwrite(buffer, sizeof(uint8_t), len, write_ptr);
-
-  fclose(write_ptr);
-
-  return EXIT_SUCCESS;
-}
 void execute_get_ret_value(void *function, int arglen, enum run mode) {
   uint64_t *arguments[6];
 
@@ -208,8 +218,14 @@ int main(int argc, char *argv[]) {
       {"nasm-mov-imm", no_argument, &mov_imm, NASM_MOV_IMM},
       {"strict-mov-imm", no_argument, &mov_imm, STRICT_MOV_IMM},
       {"smart-mov-imm", no_argument, &mov_imm, SMART_MOV_IMM},
-      {"nasm-sib", no_argument, &sib, NASM_SIB},
-      {"strict-sib", no_argument, &sib, STRICT_SIB},
+      {"nasm-sib", no_argument, &sib_all, NASM_SIB},
+      {"strict-sib", no_argument, &sib_all, STRICT_SIB},
+      {"nasm-sib-index-base-swap", no_argument, &sib_swap,
+       NASM_SIB_INDEX_BASE_SWAP},
+      {"strict-sib-index-base-swap", no_argument, &sib_swap,
+       STRICT_SIB_INDEX_BASE_SWAP},
+      {"nasm-sib-no-base", no_argument, &sib_no_base, NASM_SIB_NO_BASE},
+      {"strict-sib-no-base", no_argument, &sib_no_base, STRICT_SIB_NO_BASE},
       {"version", no_argument, 0, 'v'},
       {"help", no_argument, 0, 'h'},
       {"rand", no_argument, (int *)&get_ret, RUN_RAND},
@@ -279,7 +295,7 @@ int main(int argc, char *argv[]) {
       break;
 
     default: /* '?' */
-      if (mov_imm || sib)
+      if (mov_imm || sib_swap || sib_no_base || sib_all)
         break;
       err_print_usage("");
     }
@@ -301,14 +317,42 @@ int main(int argc, char *argv[]) {
     break;
   }
 
-  switch (sib) {
+  switch (sib_swap) {
+  case 0:
+    break;
+  case NASM_SIB_INDEX_BASE_SWAP:
+    asm_sib_index_base_swap(al, NASM);
+    break;
+  case STRICT_SIB_INDEX_BASE_SWAP:
+    asm_sib_index_base_swap(al, STRICT);
+    break;
+  default:
+    break;
+  }
+
+  switch (sib_no_base) {
+  case 0:
+    break;
+  case NASM_SIB_NO_BASE:
+    asm_sib_no_base(al, NASM);
+    break;
+  case STRICT_SIB_NO_BASE:
+    asm_sib_no_base(al, STRICT);
+    break;
+  default:
+    break;
+  }
+
+  switch (sib_all) {
   case 0:
     break;
   case NASM_SIB:
-    asm_sib(al, NASM);
+    asm_sib_no_base(al, NASM);
+    asm_sib_index_base_swap(al, NASM);
     break;
   case STRICT_SIB:
-    asm_sib(al, STRICT);
+    asm_sib_no_base(al, STRICT);
+    asm_sib_index_base_swap(al, STRICT);
     break;
   default:
     break;
@@ -357,7 +401,7 @@ int main(int argc, char *argv[]) {
     write_file = param_file;
     break;
   }
-  if (create_bin_file(al, write_file) == EXIT_FAILURE) {
+  if (asm_create_bin_file(al, write_file) == EXIT_FAILURE) {
     fprintf(stderr, "failed to create %s\n", param_file);
     exit(EXIT_FAILURE);
   }

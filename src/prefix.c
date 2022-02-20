@@ -95,6 +95,29 @@ unsigned int get_rex_prefix(struct instr *all_instr, struct operand *m,
 }
 
 uint8_t get_reg(struct instr *instrc, struct operand *m, int r) {
+  // check for base register (sib with not base)
+  if (m->reg == reg_none && m->index != reg_none) {
+    // this is the strict implementation
+    if (instrc->assembly_opt & NASM_SIB_NO_BASE) {
+      switch (instrc->sib_disp) {
+      case SIB:
+        m->reg = m->index;
+        m->index = reg_none;
+        break;
+      case SIB2:
+        m->reg = m->index;
+        instrc->sib_disp = SIB;
+        break;
+      default:
+        m->reg = NO_BASE;
+        instrc->no_base = true;
+        break;
+      }
+    } else {
+      m->reg = NO_BASE;
+      instrc->no_base = true;
+    }
+  }
   // check for index register
   if (m->index == reg_none) {
     instrc->hex.reg =
@@ -104,6 +127,7 @@ uint8_t get_reg(struct instr *instrc, struct operand *m, int r) {
     FAIL_IF_MSG((m->reg & REG_MASK) == spl || instrc->sib_disp,
                 "error stack pointer register is not scalable\n");
   }
+  // SIB addressing mode
   instrc->is_sib = true;
   instrc->hex.sib =
       instrc->sib_disp | ((m->index & VALUE_MASK) << 3) | (m->reg & VALUE_MASK);
