@@ -128,7 +128,7 @@ TAP_LOG_COMPILER = ./test/tap/compiler.sh
 # add TAP tests here
 TEST_TAP = \
 		test/tap/misc.tap \
-		test/tap/lea.tap
+		test/tap/lea.tap \
 		test/tap/imul.tap \
 		test/tap/nasm_incompatible.tap
 
