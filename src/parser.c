@@ -17,7 +17,7 @@
 /*implements functions for filtering a string containing assembly instructions
 and converting that filtered string into its respective struct instr
 representation*/
-#define _GNU_SOURCE 1
+
 #include "parser.h"
 #include "assembler.h"
 #include "encoder.h"
@@ -28,7 +28,12 @@ representation*/
 #include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
+
+#if defined(__linux__)
+#define _GNU_SOURCE 1
 #include <sys/mman.h>
+#endif
+
 
 /**
  * checks the validity of each register within @param check_instr
@@ -210,7 +215,7 @@ static int check_len_or_resize(assemblyline_t al, int buf_pos) {
     FAIL_IF_VAR(al->external,
                 "exceeded memory buffer length: al->buffer_len = %d\n",
                 al->buffer_len)
-#ifdef __linux__
+#if defined(__linux__)
     // resize internal memory buffer
     void *resize = mremap(al->buffer, al->buffer_len,
                           al->buffer_len + MEM_BUFFER, MREMAP_MAYMOVE);

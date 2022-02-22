@@ -1,3 +1,4 @@
+
 /**
  * Copyright 2022 University of Adelaide
  *
@@ -21,6 +22,10 @@
 #include "instruction_data.h"
 #include "instructions.h"
 #include <string.h>
+
+#ifdef _MSC_VER
+#define strcasecmp _stricmp
+#endif
 
 operand_format get_opd_format(char *opd_en) {
 

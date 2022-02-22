@@ -19,9 +19,15 @@
 #include "tokenizer.h"
 #include "instr_parser.h"
 #include "reg_parser.h"
-#include <stdbool.h>
-#include <stdlib.h>
 #include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <stdbool.h>
+
+#ifdef _MSC_VER
+#define strtok_r strtok_s
+#endif
+
 
 /**
  * sets @param len number of characters to ' ' for @param str

@@ -21,12 +21,16 @@
 #if HAVE_CONFIG_H
 #include <config.h> // from autotools
 #endif
-#include <fcntl.h> //open
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#if defined(__linux)
+#define _GNU_SOURCE 1
+#include <fcntl.h> //open
 #include <sys/mman.h>
 #include <sys/stat.h>
+#endif
+
 
 /**
  * called when an instance of @param al is created and maps the index of
@@ -65,10 +69,17 @@ assemblyline_t asm_create_instance(uint8_t *buffer, int len) {
   if (buffer == NULL) {
     al->external = false;
     al->buffer_len = MEM_BUFFER + BUFFER_TOLERANCE;
+#if defined(__linux__)
     al->buffer = mmap(NULL, sizeof(uint8_t) * al->buffer_len,
                       PROT_READ | PROT_WRITE | PROT_EXEC,
                       MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
     if (al->buffer == MAP_FAILED) {
+#else
+    al->buffer = VirtualAlloc(NULL, sizeof(uint8_t) * al->buffer_len,
+                      MEM_COMMIT,
+                      PAGE_EXECUTE_READWRITE);
+    if (al->buffer == NULL) {
+#endif
       fprintf(stderr, "failed to allocate internal memory buffer\n");
       perror("Error: ");
       free(al);
@@ -91,7 +102,11 @@ assemblyline_t asm_create_instance(uint8_t *buffer, int len) {
 int asm_destroy_instance(assemblyline_t instance) {
   // free internal buffer
   if (!instance->external)
+#if defined(__linux__)
     if (munmap((void *)instance->buffer, instance->buffer_len) == -1)
+#else
+    if (VirtualFree((void *)instance->buffer, instance->buffer_len, MEM_DECOMMIT) == FALSE)
+#endif
       perror("Error: ");
   free(instance);
   return EXIT_SUCCESS;
@@ -145,7 +160,8 @@ int assemble_file(assemblyline_t al, char *asm_file) {
   return asm_assemble_file(al, asm_file);
 }
 
-int asm_assemble_file(assemblyline_t al, char *asm_file) {
+#ifdef __linux__
+static inline int asm_assemble_file_linux(assemblyline_t al, char *asm_file) {
   // open file for reading
   int fd = open(asm_file, O_RDONLY, S_IRUSR | S_IRUSR);
   FAIL_SYS(fd == -1, "failed to open file\n");
@@ -162,6 +178,37 @@ int asm_assemble_file(assemblyline_t al, char *asm_file) {
   FAIL_SYS(munmap((void *)assembly_str, str_len) == -1,
            "Error: failed to free memory\n");
   return exit_status;
+}
+#else
+static inline int asm_assemble_file_windows(assemblyline_t al, char *asm_file) {
+  // open file for reading
+  HANDLE hFile = CreateFileA(asm_file, GENERIC_READ, 0, NULL, OPEN_ALWAYS, 0, NULL);
+  FAIL_SYS((hFile == INVALID_HANDLE_VALUE), "failed to open file\n");
+
+  // map file contents to a string
+  HANDLE hMapFile = CreateFileMappingA(hFile, NULL, PAGE_READONLY, 0, 0, NULL);
+  FAIL_SYS((hMapFile == NULL), "Error: failed to map memory\n");
+
+  LPCSTR assembly_str = (LPCSTR) MapViewOfFile(hMapFile, FILE_MAP_READ, 0, 0, GetFileSize(hFile, NULL));
+  FAIL_SYS((assembly_str == NULL), "Error: failed to map memory\n");
+
+  int exit_status = asm_assemble_str(al, assembly_str);
+
+  // free mmap memory used for reading file
+  FAIL_SYS(UnmapViewOfFile(assembly_str) == FALSE, "Error: failed to unmap memory handle\n");
+  FAIL_SYS(CloseHandle(hMapFile) == FALSE, "Error: failed to close memory handle\n");
+  FAIL_SYS(CloseHandle(hFile) == FALSE, "Error: failed to close file handle\n");
+
+  return exit_status;
+}
+#endif
+
+int asm_assemble_file(assemblyline_t al, char *asm_file) {
+#ifdef __linux__
+  return asm_assemble_file_linux(al, asm_file);
+#else
+  return asm_assemble_file_windows(al, asm_file);
+#endif
 }
 
 void asm_set_chunk_size(assemblyline_t al, size_t chunk_size) {
@@ -180,8 +227,8 @@ int asm_get_offset(assemblyline_t al) { return al->offset; }
 
 void asm_set_offset(assemblyline_t al, int offset) { al->offset = offset; }
 
-uint8_t __attribute__((deprecated("use asm_get_code instead"))) *
-    asm_get_buffer(assemblyline_t al) {
+DEPRECATED("use asm_get_code instead")
+uint8_t *asm_get_buffer(assemblyline_t al) {
   return al->buffer;
 }
 
@@ -204,14 +251,14 @@ int asm_create_bin_file(assemblyline_t al, const char *file_name) {
 void asm_mov_imm(assemblyline_t al, enum asm_opt option) {
 
   switch (option) {
-  case NASM:
+  case ASM_OPT_NASM:
     al->assembly_opt |= NASM_MOV_IMM;
     al->assembly_opt &= ~SMART_MOV_IMM;
     break;
-  case STRICT:
+  case ASM_OPT_STRICT:
     al->assembly_opt &= ~(NASM_MOV_IMM | SMART_MOV_IMM);
     break;
-  case SMART:
+  case ASM_OPT_SMART:
     al->assembly_opt |= SMART_MOV_IMM;
     al->assembly_opt &= ~NASM_MOV_IMM;
     break;
@@ -223,13 +270,13 @@ void asm_mov_imm(assemblyline_t al, enum asm_opt option) {
 void asm_sib(assemblyline_t al, enum asm_opt option) {
 
   switch (option) {
-  case NASM:
-    asm_sib_index_base_swap(al, NASM);
-    asm_sib_no_base(al, NASM);
+  case ASM_OPT_NASM:
+    asm_sib_index_base_swap(al, ASM_OPT_NASM);
+    asm_sib_no_base(al, ASM_OPT_NASM);
     break;
-  case STRICT:
-    asm_sib_index_base_swap(al, STRICT);
-    asm_sib_no_base(al, STRICT);
+  case ASM_OPT_STRICT:
+    asm_sib_index_base_swap(al, ASM_OPT_STRICT);
+    asm_sib_no_base(al, ASM_OPT_STRICT);
     break;
   default:
     return;
@@ -239,10 +286,10 @@ void asm_sib(assemblyline_t al, enum asm_opt option) {
 void asm_sib_index_base_swap(assemblyline_t al, enum asm_opt option) {
 
   switch (option) {
-  case NASM:
+  case ASM_OPT_NASM:
     al->assembly_opt |= NASM_SIB_INDEX_BASE_SWAP;
     break;
-  case STRICT:
+  case ASM_OPT_STRICT:
     al->assembly_opt &= ~NASM_SIB_INDEX_BASE_SWAP;
     break;
   default:
@@ -253,10 +300,10 @@ void asm_sib_index_base_swap(assemblyline_t al, enum asm_opt option) {
 void asm_sib_no_base(assemblyline_t al, enum asm_opt option) {
 
   switch (option) {
-  case NASM:
+  case ASM_OPT_NASM:
     al->assembly_opt |= NASM_SIB_NO_BASE;
     break;
-  case STRICT:
+  case ASM_OPT_STRICT:
     al->assembly_opt &= ~NASM_SIB_NO_BASE;
     break;
   default:
@@ -267,18 +314,18 @@ void asm_sib_no_base(assemblyline_t al, enum asm_opt option) {
 void asm_set_all(assemblyline_t al, enum asm_opt option) {
 
   switch (option) {
-  case NASM:
-    asm_mov_imm(al, NASM);
-    asm_sib_index_base_swap(al, NASM);
-    asm_sib_no_base(al, NASM);
+  case ASM_OPT_NASM:
+    asm_mov_imm(al, ASM_OPT_NASM);
+    asm_sib_index_base_swap(al, ASM_OPT_NASM);
+    asm_sib_no_base(al, ASM_OPT_NASM);
     break;
-  case STRICT:
-    asm_mov_imm(al, STRICT);
-    asm_sib_index_base_swap(al, STRICT);
-    asm_sib_no_base(al, STRICT);
+  case ASM_OPT_STRICT:
+    asm_mov_imm(al, ASM_OPT_STRICT);
+    asm_sib_index_base_swap(al, ASM_OPT_STRICT);
+    asm_sib_no_base(al, ASM_OPT_STRICT);
     break;
-  case SMART:
-    asm_mov_imm(al, SMART);
+  case ASM_OPT_SMART:
+    asm_mov_imm(al, ASM_OPT_SMART);
     break;
   default:
     return;

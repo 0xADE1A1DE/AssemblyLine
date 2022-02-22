@@ -20,10 +20,16 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#if defined(__linux__)
 #include <unistd.h>
+#define DEPRECATED(x) __attribute__((deprecated(x)))
+#else
+#include <windows.h>
+#define DEPRECATED(x) __pragma(deprecated(x))
+#endif
 
 // different assembly options for mov immediate and SIB
-enum asm_opt { STRICT, NASM, SMART };
+enum asm_opt { ASM_OPT_STRICT, ASM_OPT_NASM, ASM_OPT_SMART };
 
 #define DEFAULT SMART_MOV_IMM | NASM_SIB_INDEX_BASE_SWAP | NASM_SIB_NO_BASE
 
@@ -50,8 +56,8 @@ int asm_destroy_instance(assemblyline_t instance);
  * memory location specified by al->buffer.
  * (DEPRECATED: use asm_assemble_str() instead)
  */
-int __attribute__((deprecated("use asm_assemble_str instead")))
-assemble_str(assemblyline_t al, const char *assembly_str);
+DEPRECATED("use asm_assemble_str instead")
+int assemble_str(assemblyline_t al, const char *assembly_str);
 
 /**
  * assembles the given string @param assembly_str containing valid x64 assembly
@@ -66,8 +72,8 @@ int asm_assemble_str(assemblyline_t al, const char *assembly_str);
  * memory location specified by al->buffer.
  * (DEPRECATED: use asm_assemble_file() instead)
  */
-int __attribute__((deprecated("use asm_assemble_file instead")))
-assemble_file(assemblyline_t al, char *asm_file);
+DEPRECATED("use asm_assemble_file instead")
+int assemble_file(assemblyline_t al, char *asm_file);
 
 /**
  * assembles the given file path @param asm_file containing valid x64 assembly
@@ -86,9 +92,8 @@ int asm_assemble_file(assemblyline_t al, char *asm_file);
  * string will be altered.
  * (DEPRECATED: use asm_assemble_string_counting_chunks() instead)
  */
-int __attribute__((
-    deprecated("use asm_assemble_string_counting_chunks instead")))
-assemble_string_counting_chunks(assemblyline_t al, char *string, int chunk_size,
+DEPRECATED("use asm_assemble_string_counting_chunks instead")
+int assemble_string_counting_chunks(assemblyline_t al, char *string, int chunk_size,
                                 int *dest);
 
 /**
@@ -136,8 +141,8 @@ void asm_set_offset(assemblyline_t al, int offset);
  * returns the buffer associated with @param al
  * (DEPRECATED: use asm_get_code() instead)
  */
-uint8_t __attribute__((deprecated("use asm_get_code instead"))) *
-    asm_get_buffer(assemblyline_t al);
+DEPRECATED("use asm_get_code instead")
+uint8_t* asm_get_buffer(assemblyline_t al);
 
 /**
  * returns the buffer associated with @param al as type void* for easy
@@ -156,7 +161,7 @@ int asm_create_bin_file(assemblyline_t al, const char *file_name);
  * for all destination registers. The following three methods allow the user to
  * specify this behavior.
  *
- * setting @param option to STRICT disables nasm-style mov-immediate handling.
+ * setting @param option to ASM_OPT_STRICT disables nasm-style mov-immediate handling.
  * ex: even if immediate size for mov is less than or equal to max signed 32 bit
  *     assemblyline will pad the immediate to fit 64bit.
  * That is:
@@ -183,7 +188,7 @@ void asm_mov_imm(assemblyline_t al, enum asm_opt option);
  * Since the stack pointer register is non-scalable in SIB, Nasm will swap the
  * base and index register if the stack pointer register is used as index.
  *
- * setting @param option to STRICT disables Nasm SIB handling.
+ * setting @param option to ASM_OPT_STRICT disables Nasm SIB handling.
  * That is:
  * "lea r15, [rax+rsp]" will be interpreted as is
  * -> 4c 8d 3c 20
@@ -204,7 +209,7 @@ void asm_sib_index_base_swap(assemblyline_t al, enum asm_opt option);
  * NASM will set the base to the index register and reduce the scale by 1.
  * ex: [2*rax] -> [rax+1*rax]
  *
- * setting @param option to STRICT disables Nasm SIB handling with no base.
+ * setting @param option to ASM_OPT_STRICT disables Nasm SIB handling with no base.
  * That is:
  * "lea r15, [2*rax]" will be interpreted as is
  * -> 4c 8d 3c 45 00 00 00 00
@@ -220,8 +225,8 @@ void asm_sib_index_base_swap(assemblyline_t al, enum asm_opt option);
 void asm_sib_no_base(assemblyline_t al, enum asm_opt option);
 
 /**
- * setting @param option to STRICT is equivalent to calling both
- * asm_sib_index_base_swap(al,STRICT) and asm_sib_no_base(al,STRICT)
+ * setting @param option to ASM_OPT_STRICT is equivalent to calling both
+ * asm_sib_index_base_swap(al,ASM_OPT_STRICT) and asm_sib_no_base(al,ASM_OPT_STRICT)
  *
  * setting @param option to NASM is equivalent to calling both
  * asm_sib_index_base_swap(al,NASM) and asm_sib_no_base(al,NASM)
@@ -231,8 +236,8 @@ void asm_sib_no_base(assemblyline_t al, enum asm_opt option);
 void asm_sib(assemblyline_t al, enum asm_opt option);
 
 /**
- * setting @param option to STRICT is equivalent to calling both
- * asm_sib_index_base_swap(al,STRICT) and asm_mov_imm(al,STRICT)
+ * setting @param option to ASM_OPT_STRICT is equivalent to calling both
+ * asm_sib_index_base_swap(al,ASM_OPT_STRICT) and asm_mov_imm(al,ASM_OPT_STRICT)
  *
  * setting @param option to NASM is equivalent to calling both
  * asm_sib_index_base_swap(al,NASM) and asm_mov_imm(al,NASM)
