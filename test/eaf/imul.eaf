@@ -1,0 +1,4 @@
+; All .eaf files are run with compiler.sh --no-nasm, which means, they are not compared against nasm.
+; The compiler then only checks, if the line could be assembled or if asmline failed.
+
+imul [rax], rax, 0x1          ; cannot have a memory reference as the first operand in the three-operand-form

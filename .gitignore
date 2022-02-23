@@ -43,6 +43,7 @@ test/*
 !test/*.asm
 !test/tools/*.sh
 !test/tap
+!test/eaf
 
 man/*
 !man/libassemblyline.3
