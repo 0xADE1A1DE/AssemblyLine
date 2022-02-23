@@ -1,35 +1,37 @@
+set(ASSEMBLYLINE_SRC_DIR ${ASSEMBLYLINE_ROOT_DIR}/src CACHE INTERNAL "ASSEMBLYLINE_SRC_DIR")
+
 include (GenerateExportHeader)
 
 set(
     HEADER_FILES
 
-    ./assembler.h
-    ./common.h
-    ./encoder.h
-    ./enums.h
-    ./instr_parser.h
-    ./instruction_data.h
-    ./instructions.h
-    ./parser.h
-    ./prefix.h
-    ./reg_parser.h
-    ./registers.h
-    ./tokenizer.h
+    ${ASSEMBLYLINE_SRC_DIR}/assembler.h
+    ${ASSEMBLYLINE_SRC_DIR}/common.h
+    ${ASSEMBLYLINE_SRC_DIR}/encoder.h
+    ${ASSEMBLYLINE_SRC_DIR}/enums.h
+    ${ASSEMBLYLINE_SRC_DIR}/instr_parser.h
+    ${ASSEMBLYLINE_SRC_DIR}/instruction_data.h
+    ${ASSEMBLYLINE_SRC_DIR}/instructions.h
+    ${ASSEMBLYLINE_SRC_DIR}/parser.h
+    ${ASSEMBLYLINE_SRC_DIR}/prefix.h
+    ${ASSEMBLYLINE_SRC_DIR}/reg_parser.h
+    ${ASSEMBLYLINE_SRC_DIR}/registers.h
+    ${ASSEMBLYLINE_SRC_DIR}/tokenizer.h
 )
 
 set(
     SOURCE_FILES
 
-    ./assembler.c
-    ./assemblyline.c
-    ./encoder.c
-    ./instr_parser.c
-    ./instructions.c
-    ./parser.c
-    ./prefix.c
-    ./reg_parser.c
-    ./registers.c
-    ./tokenizer.c
+    ${ASSEMBLYLINE_SRC_DIR}/assembler.c
+    ${ASSEMBLYLINE_SRC_DIR}/assemblyline.c
+    ${ASSEMBLYLINE_SRC_DIR}/encoder.c
+    ${ASSEMBLYLINE_SRC_DIR}/instr_parser.c
+    ${ASSEMBLYLINE_SRC_DIR}/instructions.c
+    ${ASSEMBLYLINE_SRC_DIR}/parser.c
+    ${ASSEMBLYLINE_SRC_DIR}/prefix.c
+    ${ASSEMBLYLINE_SRC_DIR}/reg_parser.c
+    ${ASSEMBLYLINE_SRC_DIR}/registers.c
+    ${ASSEMBLYLINE_SRC_DIR}/tokenizer.c
 )
 
 
@@ -45,6 +47,7 @@ if (MSVC)
     )
 else()
     add_compile_definitions(_GNU_SOURCE=1)
+    add_compile_option(-Wall -Wextra -std=gnu99 -fPIC)
     set(
         LINKING_LIBS
 
@@ -52,8 +55,8 @@ else()
     )
 endif()
 
-target_include_directories(AssemblyLine PUBLIC src/)
-target_sources(AssemblyLine PRIVATE src/)
+target_include_directories(AssemblyLine PUBLIC ${ASSEMBLYLINE_SRC_DIR}/)
+target_sources(AssemblyLine PRIVATE ${ASSEMBLYLINE_SRC_DIR}/)
 
 GENERATE_EXPORT_HEADER(
     AssemblyLine

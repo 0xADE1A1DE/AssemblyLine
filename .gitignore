@@ -57,4 +57,7 @@ m4/*
 config.h.in
 
 
-build
+build-linux
+build-win32
+
+.vscode

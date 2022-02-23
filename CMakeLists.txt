@@ -14,6 +14,9 @@ option(BUILD_TOOLKIT               "Compile the tools"                          
 option(BUILD_TEST                  "Compile the test suite"                                                    ON)
 
 
+set(ASSEMBLYLINE_ROOT_DIR ${CMAKE_CURRENT_LIST_DIR})
+
+
 #
 # Build library
 #
@@ -21,16 +24,18 @@ add_subdirectory(src)
 
 
 if(BUILD_TOOLKIT)
-#
-# Build toolkit
-#
-add_subdirectory(tools)
+    #
+    # Build toolkit
+    #
+    add_subdirectory(tools)
 endif()
 
 
 if(BUILD_TEST)
-#
-# Build toolkit
-#
-# add_subdirectory(test)
+    #
+    # Build toolkit
+    #
+    if (UNIX)
+        add_subdirectory(test)
+    endif (UNIX)
 endif()
