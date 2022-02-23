@@ -316,10 +316,11 @@ typedef enum {
   VECTOR_EXT = 0b101000,
   // used to encode instructions with both an I and M operand encoding
   OPERATION = 0b1000000,
-  // instructions that only supports a single 8-bit operand
-  BYTE_OPD = 0b1000001,
+  PAD_ALWAYS = 0b1000010,
+  // operand can only be a byte
+  BYTE_OPD = 0b1000011,
   // instructions that do not require special encodings
-  OTHER = 0b1000010
+  OTHER
 } instr_type;
 
 // register bit size and category (ext denotes extended x64 registers)

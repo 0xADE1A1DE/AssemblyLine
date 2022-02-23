@@ -244,20 +244,31 @@ void encode_imm(struct instr *instrc) {
   // return register rax for imm instrctions sub, sbb, add, adc
   asm_instr sp_instr = EOI;
   if (INSTR_TABLE[instrc->key].encode_operand == M) {
-    if ((instrc->opd[0].reg == al && instrc->cons != NEG64BIT) ||
-        ((instrc->opd[0].reg & REG_MASK) == al &&
-         IN_RANGE(instrc->cons, MAX_SIGNED_8BIT + 1, NEG64BIT - 1)))
+    // special case for the al register
+    if ((instrc->opd[0].reg == al && instrc->cons != NEG64BIT)) {
+      sp_instr = to_special_instr_key(instrc->key);
+    } else if (((instrc->opd[0].reg & REG_MASK) == al &&
+                IN_RANGE(instrc->cons, MAX_SIGNED_8BIT + 1, NEG64BIT - 1) &&
+                !(IN_RANGE(instrc->cons, NEG80BIT, NEG64BIT - 1))))
       sp_instr = to_special_instr_key(instrc->key);
     // return if instruction has special encoding
     if (sp_instr)
       instrc->key = sp_instr;
   }
   // vector shift instrctions
-  if ((instrc->opd[0].reg & MODE_MASK) == mmx64)
+  if ((instrc->opd[0].reg & MODE_MASK) == mmx64) {
     instrc->reduced_imm = true;
-  // 16 to 64 bit register and 8 bit immediate combination
-  if (instrc->op_offset == 1 &&
-      INSTR_TABLE[instrc->key].type != DATA_TRANSFER) {
+    // special case for test
+  } else if (instrc->op_offset == 1 &&
+             INSTR_TABLE[instrc->key].type == PAD_ALWAYS) {
+    if (IN_RANGE(instrc->cons, NEG32BIT + 1, NEG64BIT)) {
+      DO_NOT_PAD(instrc->cons, instrc->reduced_imm);
+    }
+    if ((instrc->opd[0].reg & REG_MASK) == al)
+      instrc->key++;
+    // 16 to 64 bit register and 8 bit immediate combination
+  } else if (instrc->op_offset == 1 &&
+             INSTR_TABLE[instrc->key].type != DATA_TRANSFER) {
     //-0x1 and 0x0 are always 8 bits except for mov
     // 8 bit positive
     if (instrc->cons <= 0xe0)
@@ -271,8 +282,7 @@ void encode_imm(struct instr *instrc) {
       instrc->cons &= MAX_UNSIGNED_8BIT;
       instrc->op_offset += 2;
     } else if (IN_RANGE(instrc->cons, NEG32BIT + 1, NEG64BIT)) {
-      instrc->cons &= MAX_UNSIGNED_32BIT;
-      instrc->reduced_imm = true;
+      DO_NOT_PAD(instrc->cons, instrc->reduced_imm);
     }
     // special condition for to mov instruction
   } else if (INSTR_TABLE[instrc->key].type == DATA_TRANSFER) {
@@ -285,10 +295,7 @@ void encode_imm(struct instr *instrc) {
         ((instrc->opd[0].reg & reg64) || instrc->mem_disp)) {
       // set mov I operand encoding to M
       instrc->key++;
-      // clear most significant 4 bytes
-      instrc->cons &= MAX_UNSIGNED_32BIT;
-      // do not zero pad immediate
-      instrc->reduced_imm = true;
+      DO_NOT_PAD(instrc->cons, instrc->reduced_imm);
       return;
     } else if (instrc->cons <= MAX_UNSIGNED_32BIT) {
       if ((instrc->assembly_opt & NASM_MOV_IMM) && !instrc->mem_disp)

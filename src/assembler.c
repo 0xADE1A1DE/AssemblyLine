@@ -89,6 +89,8 @@ static int assemble_imm(struct instr *instruc, unsigned char ptr[]) {
   // check is there is a constant in the instruction and if not, return
   if (!instruc->imm)
     return ptr_pos;
+  if (instruc->keyword.is_byte)
+    imm_operand &= 0xff;
   // assemble the constant
   unsigned int bytes = assemble_const(imm_operand, ptr + ptr_pos);
   ptr_pos += bytes;
@@ -98,7 +100,7 @@ static int assemble_imm(struct instr *instruc, unsigned char ptr[]) {
     bytes++;
   }
   // no need to zero pad if the immediate operand has been reduced
-  if (instruc->reduced_imm)
+  if (instruc->reduced_imm || instruc->keyword.is_byte)
     return ptr_pos;
   // get the register size for the first operand
   int opd0_mode = instruc->opd[0].reg & MODE_MASK;
@@ -108,7 +110,8 @@ static int assemble_imm(struct instr *instruc, unsigned char ptr[]) {
         instruc->op_offset != 3 &&    // and cannot have op_offset 3
         !instruc->keyword.is_byte) && // and cannot be a byte
        opd0_mode > noext8) ||         // and op0 mode must be bigger than noext8
-      (INSTR_TABLE[instruc->key].encode_operand > I); // >I (i.e. O D S)
+      (INSTR_TABLE[instruc->key].encode_operand > I) ||
+      (type == PAD_ALWAYS);
   // return if zero padding is not required
   if (!zero_pad)
     return ptr_pos;
