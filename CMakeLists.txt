@@ -20,13 +20,17 @@ option(BUILD_TEST                  "Compile the test suite"                     
 add_subdirectory(src)
 
 
+if(BUILD_TOOLKIT)
 #
 # Build toolkit
 #
-# add_subdirectory(tests)
+add_subdirectory(tools)
+endif()
 
 
+if(BUILD_TEST)
 #
 # Build toolkit
 #
-# add_subdirectory(tools)
+# add_subdirectory(test)
+endif()

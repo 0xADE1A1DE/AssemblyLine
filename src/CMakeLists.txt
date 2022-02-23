@@ -53,7 +53,7 @@ else()
 endif()
 
 target_include_directories(AssemblyLine PUBLIC src/)
-target_sources(AssemblyLine PUBLIC src/)
+target_sources(AssemblyLine PRIVATE src/)
 
 GENERATE_EXPORT_HEADER(
     AssemblyLine
@@ -63,4 +63,4 @@ GENERATE_EXPORT_HEADER(
     STATIC_DEFINE assemblyline_built_as_static
 )
 
-target_link_libraries(AssemblyLine PRIVATE ${LINKING_LIBS})
+target_link_libraries(AssemblyLine PUBLIC ${LINKING_LIBS})

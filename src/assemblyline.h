@@ -23,9 +23,11 @@
 #if defined(__linux__)
 #include <unistd.h>
 #define DEPRECATED(x) __attribute__((deprecated(x)))
+#define EXPORTABLE
 #else
 #include <windows.h>
 #define DEPRECATED(x) __pragma(deprecated(x))
+#define EXPORTABLE  __declspec(dllexport)
 #endif
 
 // different assembly options for mov immediate and SIB
@@ -43,11 +45,13 @@ typedef struct assemblyline *assemblyline_t;
  * allocation. In this case @param len would be irrelevant and could be set to
  * any number.
  */
+EXPORTABLE
 assemblyline_t asm_create_instance(uint8_t *buffer, int len);
 
 /**
  * frees all memory associated with @param instance
  */
+EXPORTABLE
 int asm_destroy_instance(assemblyline_t instance);
 
 /**
@@ -56,6 +60,7 @@ int asm_destroy_instance(assemblyline_t instance);
  * memory location specified by al->buffer.
  * (DEPRECATED: use asm_assemble_str() instead)
  */
+EXPORTABLE
 DEPRECATED("use asm_assemble_str instead")
 int assemble_str(assemblyline_t al, const char *assembly_str);
 
@@ -64,6 +69,7 @@ int assemble_str(assemblyline_t al, const char *assembly_str);
  * code with instance @param al It writes the corresponding machine code to the
  * memory location specified by al->buffer.
  */
+EXPORTABLE
 int asm_assemble_str(assemblyline_t al, const char *assembly_str);
 
 /**
@@ -72,6 +78,7 @@ int asm_assemble_str(assemblyline_t al, const char *assembly_str);
  * memory location specified by al->buffer.
  * (DEPRECATED: use asm_assemble_file() instead)
  */
+EXPORTABLE
 DEPRECATED("use asm_assemble_file instead")
 int assemble_file(assemblyline_t al, char *asm_file);
 
@@ -80,6 +87,7 @@ int assemble_file(assemblyline_t al, char *asm_file);
  * code with instance @param al It writes the corresponding machine code to the
  * memory location specified by al->buffer.
  */
+EXPORTABLE
 int asm_assemble_file(assemblyline_t al, char *asm_file);
 
 /**
@@ -92,6 +100,7 @@ int asm_assemble_file(assemblyline_t al, char *asm_file);
  * string will be altered.
  * (DEPRECATED: use asm_assemble_string_counting_chunks() instead)
  */
+EXPORTABLE
 DEPRECATED("use asm_assemble_string_counting_chunks instead")
 int assemble_string_counting_chunks(assemblyline_t al, char *string, int chunk_size,
                                 int *dest);
@@ -105,6 +114,7 @@ int assemble_string_counting_chunks(assemblyline_t al, char *string, int chunk_s
  * NOTE: you cannot pass const char* as @param string, it will segfault, because
  * string will be altered.
  */
+EXPORTABLE
 int asm_assemble_string_counting_chunks(assemblyline_t al, char *string,
                                         int chunk_size, int *dest);
 
@@ -116,6 +126,7 @@ int asm_assemble_string_counting_chunks(assemblyline_t al, char *string,
  * NOTE: @param chunk_size must be greater than 2 in order to
  * be classified as a valid memory chunk boundary
  */
+EXPORTABLE
 void asm_set_chunk_size(assemblyline_t al, size_t chunk_size);
 
 /**
@@ -123,11 +134,13 @@ void asm_set_chunk_size(assemblyline_t al, size_t chunk_size);
  * set @param debug to true machine code represented in hexidecimal will be
  * printed to stdout.
  */
+EXPORTABLE
 void asm_set_debug(assemblyline_t al, bool debug);
 
 /**
  * returns the offset associated with @param al
  */
+EXPORTABLE
 int asm_get_offset(assemblyline_t al);
 
 /**
@@ -135,12 +148,14 @@ int asm_get_offset(assemblyline_t al);
  * for writting machine code with instance @param al.
  * NOTE: @param offset could be set to 0 for the resulting memory block.
  */
+EXPORTABLE
 void asm_set_offset(assemblyline_t al, int offset);
 
 /**
  * returns the buffer associated with @param al
  * (DEPRECATED: use asm_get_code() instead)
  */
+EXPORTABLE
 DEPRECATED("use asm_get_code instead")
 uint8_t* asm_get_buffer(assemblyline_t al);
 
@@ -148,12 +163,14 @@ uint8_t* asm_get_buffer(assemblyline_t al);
  * returns the buffer associated with @param al as type void* for easy
  * typecasting to any function pointer format.
  */
+EXPORTABLE
 void *asm_get_code(assemblyline_t al);
 
 /**
  * Generates a binary file @param file_name from assembled machine code up to
  * the memory offset of the current instance @param al
  */
+EXPORTABLE
 int asm_create_bin_file(assemblyline_t al, const char *file_name);
 
 /**
@@ -182,6 +199,7 @@ int asm_create_bin_file(assemblyline_t al, const char *file_name);
  *
  * setting @param option to any other value results in an no-operation function.
  */
+EXPORTABLE
 void asm_mov_imm(assemblyline_t al, enum asm_opt option);
 
 /**
@@ -202,6 +220,7 @@ void asm_mov_imm(assemblyline_t al, enum asm_opt option);
  * setting @param option to SMART or any other value results in an no-operation
  * function.
  */
+EXPORTABLE
 void asm_sib_index_base_swap(assemblyline_t al, enum asm_opt option);
 
 /**
@@ -222,6 +241,7 @@ void asm_sib_index_base_swap(assemblyline_t al, enum asm_opt option);
  * setting @param option to SMART or any other value results in an no-operation
  * function.
  */
+EXPORTABLE
 void asm_sib_no_base(assemblyline_t al, enum asm_opt option);
 
 /**
@@ -233,6 +253,7 @@ void asm_sib_no_base(assemblyline_t al, enum asm_opt option);
  *
  * setting @param option to any other value results in an no-operation function
  */
+EXPORTABLE
 void asm_sib(assemblyline_t al, enum asm_opt option);
 
 /**
@@ -246,6 +267,7 @@ void asm_sib(assemblyline_t al, enum asm_opt option);
  *
  * setting @param option to any other value results in an no-operation function
  */
+EXPORTABLE
 void asm_set_all(assemblyline_t al, enum asm_opt option);
 
 #endif

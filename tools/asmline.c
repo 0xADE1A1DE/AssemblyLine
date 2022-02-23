@@ -16,16 +16,81 @@
 
 /*command-tool for generating machine code from a x64 assembly file*/
 #include <assemblyline.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
+#include <string.h>
+
 #if HAVE_CONFIG_H
 #include <config.h> // from autotools
 #endif
+#if defined(__linux__)
 #include <getopt.h>
+#include <unistd.h>
+#else
+#include "getopt.h"
+#include <BaseTsd.h>
+typedef SSIZE_T ssize_t;
+
+ssize_t getline(char **lineptr, size_t *n, FILE *stream)
+{
+    char *bufptr = NULL;
+    char *p = bufptr;
+    size_t size;
+    int c;
+
+    if (lineptr == NULL) {
+        return -1;
+    }
+    if (stream == NULL) {
+        return -1;
+    }
+    if (n == NULL) {
+        return -1;
+    }
+    bufptr = *lineptr;
+    size = *n;
+
+    c = fgetc(stream);
+    if (c == 0) {
+        return -1;
+    }
+    if (bufptr == NULL) {
+        bufptr = malloc(128);
+        if (bufptr == NULL) {
+            return -1;
+        }
+        size = 128;
+    }
+    p = bufptr;
+    while(c != 0) {
+        if ((p - bufptr) > (size - 1)) {
+            size = size + 128;
+            bufptr = realloc(bufptr, size);
+            if (bufptr == NULL) {
+                return -1;
+            }
+        }
+        *p++ = c;
+        if (c == '\n') {
+            break;
+        }
+        c = fgetc(stream);
+    }
+
+    *p++ = '\0';
+    *lineptr = bufptr;
+    *n = size;
+
+    return p - bufptr - 1;
+}
+#endif
+
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include <unistd.h>
 
 #define DEFAULT_ARG_LEN 10
 #define BUFFER_SIZE 100
@@ -44,6 +109,10 @@ typedef enum {
   STRICT_SIB_NO_BASE,
   SMART_MOV_IMM
 } asm_options;
+
+#ifndef PACKAGE_STRING
+#define PACKAGE_STRING "0.0"
+#endif
 
 const char *asm_version = PACKAGE_STRING;
 static int mov_imm = 0;
@@ -197,7 +266,7 @@ void execute_get_ret_value(void *function, int arglen, enum run mode) {
     for (int i = 0; i < 6; i++)
       free(arguments[i]);
   }
-  printf("\nthe value is 0x%lx\n", result);
+  printf("\nthe value is 0x%llx\n", result);
 }
 
 int main(int argc, char *argv[]) {
@@ -269,13 +338,13 @@ int main(int argc, char *argv[]) {
       asm_set_debug(al, true);
       break;
     case 'n':
-      asm_set_all(al, NASM);
+      asm_set_all(al, ASM_OPT_NASM);
       break;
     case 't':
       asm_set_all(al, STRICT);
       break;
     case 's':
-      asm_set_all(al, SMART);
+      asm_set_all(al, ASM_OPT_SMART);
       break;
     case 'c':
       if (check_digit(optarg))
@@ -305,13 +374,13 @@ int main(int argc, char *argv[]) {
   case 0:
     break;
   case NASM_MOV_IMM:
-    asm_mov_imm(al, NASM);
+    asm_mov_imm(al, ASM_OPT_NASM);
     break;
   case STRICT_MOV_IMM:
-    asm_mov_imm(al, STRICT);
+    asm_mov_imm(al, ASM_OPT_STRICT);
     break;
   case SMART_MOV_IMM:
-    asm_mov_imm(al, SMART);
+    asm_mov_imm(al, ASM_OPT_SMART);
     break;
   default:
     break;
@@ -321,10 +390,10 @@ int main(int argc, char *argv[]) {
   case 0:
     break;
   case NASM_SIB_INDEX_BASE_SWAP:
-    asm_sib_index_base_swap(al, NASM);
+    asm_sib_index_base_swap(al, ASM_OPT_NASM);
     break;
   case STRICT_SIB_INDEX_BASE_SWAP:
-    asm_sib_index_base_swap(al, STRICT);
+    asm_sib_index_base_swap(al, ASM_OPT_STRICT);
     break;
   default:
     break;
@@ -334,10 +403,10 @@ int main(int argc, char *argv[]) {
   case 0:
     break;
   case NASM_SIB_NO_BASE:
-    asm_sib_no_base(al, NASM);
+    asm_sib_no_base(al, ASM_OPT_NASM);
     break;
   case STRICT_SIB_NO_BASE:
-    asm_sib_no_base(al, STRICT);
+    asm_sib_no_base(al, ASM_OPT_STRICT);
     break;
   default:
     break;
@@ -347,12 +416,12 @@ int main(int argc, char *argv[]) {
   case 0:
     break;
   case NASM_SIB:
-    asm_sib_no_base(al, NASM);
-    asm_sib_index_base_swap(al, NASM);
+    asm_sib_no_base(al, ASM_OPT_NASM);
+    asm_sib_index_base_swap(al, ASM_OPT_NASM);
     break;
   case STRICT_SIB:
-    asm_sib_no_base(al, STRICT);
-    asm_sib_index_base_swap(al, STRICT);
+    asm_sib_no_base(al, ASM_OPT_STRICT);
+    asm_sib_index_base_swap(al, ASM_OPT_STRICT);
     break;
   default:
     break;
