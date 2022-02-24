@@ -20,10 +20,11 @@ please refer to [tools/README.md](/tools/README.md) **Different Modes of Assembl
 To get a stable release clone the repo from a tag or download the tarball. <br> 
 ***note: refer to [/src/instructions.c](/src/instructions.c) for a complete list of supported instructions***
 
-1. `$ ./configure` to generate Makefiles.
-1. `$ make` to compile
-1. `$ sudo make install` to install it
-1. `$ gcc -o executable your_program.c -lassemblyline` to compile a c program using assemblyline<br><br>   
+1. `$ mkdir build && cd build` 
+1. `$ cmake ..` to generate Makefiles
+1. `make` (Linux) or `msbuild.exe` (Windows) to build the library
+1. `$ sudo make install` (Linux) to install it
+
 
 ## Example
   
