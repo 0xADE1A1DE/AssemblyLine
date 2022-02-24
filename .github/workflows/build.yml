@@ -15,9 +15,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ 'ubuntu-latest']
+        os: [ 'ubuntu-latest', 'windows-latest']
         platform: ['x64']
-        configuration: ['RelWithDebInfo']
+        configuration: ['RelWithDebInfo', 'Debug']
 
     runs-on: ${{ matrix.os }}
     steps:
@@ -50,8 +50,6 @@ jobs:
       if: matrix.os == 'ubuntu-latest'
       shell: bash
       run: |
-        pwd
-        ls 
         mkdir ./build
         cd ./build
         cmake .. ${{ env.CMAKE_FLAGS }}
@@ -66,7 +64,7 @@ jobs:
 
     - name: Run Linux tests
       if: matrix.os == 'ubuntu-latest'
-      shell: pwsh
+      shell: bash
       run: |
         build/test/run
 
