@@ -36,6 +36,7 @@ run_test
 stamp-h1
 tools/*
 !tools/*.[ch]
+!tools/CMakeLists.txt
 
 test/*
 !test/*.c

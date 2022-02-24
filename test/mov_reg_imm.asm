@@ -1,225 +1,171 @@
-SECTION .text
+SECTION .test
 GLOBAL test
 test:
-mov rax, 0x2
-mov rax, 0x7f
-mov rax, 0x80
-mov rax, 0x80
-mov rax, 0xff
-mov rax, 0x7ff
-mov eax, 0x2
-mov eax, 0x7f
-mov eax, 0x80
-mov eax, 0x80
-mov eax, 0xff
-mov eax, 0x7ff
-mov rax, 0x7fffffff
-mov rax, 0x8fffffff
-mov r13, 0x80000000
-mov rax, 0xffffffff
-mov rax, 0x7fffffffff
-mov rax, 0xafffffffff
-mov rax, 0xffffffff0000000e
-mov rax, 0xff0fffff0000000e
-mov rax, 0xffffffff000000ee
-mov rax, 0xffffffff00000eee
-mov rax, 0xffffffff000eeeee
-mov rax, 0xffffffff00eeeeee
-mov rax, 0xffffffff0eeeeeee
-mov rax, 0xffffffffe0000000
-mov rax, 0xfffffffff0000001
-mov rax, 0xffffffff80000001
-mov rax, 0xffffffffe0000001
-mov rax, 0xffffffff72000001
-mov rax, 0xffffffff60100001
-mov rax, 0xffffffff500d0001
-mov rax, 0xffffffff4000d001
-mov rax, 0xffffffff30000d01
-mov rax, 0xffffffff200000d1
-mov rax, 0xffffffff10000001
-mov rax, 0xffffffff01111111
-mov rax, 0xfffffffef0000000
-mov rax, 0xffffffffeeeeeeee
-mov rax, 0xfffffeeeeeeeeeee
-mov rax, 0xfffff77777777777
-mov rax, 0xfffff22222222222
-mov rax, 0xf000000000000001
-mov rax, 0xffffffffffffffff
-mov rax, 0xffffffff00000001
-
-mov rax, -0x2
-mov rax, -0x1
-mov rax, -0x2
-mov rsi, 0x2
-mov rsi, 0x7f
-mov rsi, 0x80
-mov rsi, 0x80
-mov rsi, 0xff
-mov rsi, 0x7ff
-mov esi, 0x2
-mov esi, 0x7f
-mov esi, 0x80
-mov esi, 0x80
-mov esi, 0xff
-mov esi, 0x7ff
-mov rsi, 0x7fffffff
-mov rsi, 0x8fffffff
-mov rsi, 0xffffffff
-mov rsi, 0x7fffffffff
-mov rsi, 0xafffffffff
-mov rsi, 0xfffffeeeeeeeeeee
-mov rsi, 0xffffffffeeeeeeee
-mov rsi, -0x2
-mov rsi, 0x2
-mov rsi, 0x7f
-mov rsi, 0x80
-mov rsi, 0x80
-mov rsi, 0xff
-mov rsi, 0x7ff
-mov esi, 0x2
-mov esi, 0x7f
-mov esi, 0x80
-mov esi, 0x80
-mov esi, 0xff
-mov esi, 0x7ff
-mov rsi, 0x7fffffff
-mov rsi, 0x8fffffff
-mov rsi, 0xffffffff
-mov rsi, 0x7fffffffff
-mov rsi, 0xafffffffff
-mov rsi, 0xfffffeeeeeeeeeee
-mov rsi, 0xffffffffeeeeeeee
-mov rsi, -0x2
-mov r13, 0x2
-mov r13, 0x7f
-mov r13, 0x80
-mov r13, 0x80
-mov r13, 0xff
-mov r13, 0x7ff
-mov r13d, 0x2
-mov r13d, 0x7f
-mov r13d, 0x80
-mov r13d, 0x80
-mov r13d, 0xff
-mov r13d, 0x7ff
-mov r13, 0x7fffffff
-mov r13, 0x8fffffff
-mov r13, 0xffffffff
-mov r13, 0x7fffffffff
-mov r13, 0xafffffffff
-mov r13, 0xfffffeeeeeeeeeee
-mov r13, 0xffffffffeeeeeeee
-mov r13, -0x2
-mov r15, 0x2
-mov r15, 0x7f
-mov r15, 0x80
-mov r15, 0x80
-mov r15, 0xff
-mov r15, 0x7ff
-mov r15w, 0x2
-mov r15w, 0x7f
-mov r15w, 0x80
-mov r15w, 0x80
-mov r15w, 0xff
-mov r15w, 0x7ff
-mov r15, 0x7fffffff
-mov r15, 0x8fffffff
-mov r15, 0xffffffff
-mov r15, 0x7fffffffff
-mov r15, 0xafffffffff
-mov r15, 0xfffffeeeeeeeeeee
-mov r15, 0xffffffffeeeeeeee
-mov r15, -0x2
-mov r15b, -0x2
-mov r15b, 0x2
-mov r15b, 0x7f
-mov r15b, 0x80
-mov r15b, 0x80
-mov r15b, 0xff
-mov rsi, -0x1
-mov rbp, -0x2efd9f53
-mov rbp, -0x2efa9f53
-mov rbp, 0x2efa
-mov r8, -0x2
-mov r9, -0x2
-mov r10, -0x2
-mov r10b, -0x2
-mov r11b, -0x2
-mov r12b, -0x2
-mov al, -0x2
-mov al, -0x1
-mov al, 0x1
-mov cl, -0x2
-mov cl, -0x1
-mov cl, 0x1
-mov ax, -0x2
-mov ax, -0x1
-mov ax, 0x1
-mov cx, -0x2efd
-mov cx, -0x2efa
-mov cx, 0x2efa
-mov si, -0x2efd
-mov si, -0x2efa
-mov si, 0x2efa
-mov rcx, -0x2efd
-mov rcx, -0x2efa
-mov rcx, 0x2efa
-mov rsi, -0x2efd
-mov rsi, -0x2efa
-mov rsi, 0x2efa
-mov rcx, -0x2efdeeeeee
-mov rcx, -0x2efaeeeeee
-mov rcx, 0x2efaeeeee
-mov rsi, -0x2efdeeee
-mov rsi, -0x2efaeee
-mov rsi, 0x2efaeeeee
-mov qword [rax], -0x1
-mov qword [rax], 0x2
-mov qword [rax], 0x7f
-mov qword [rax], 0x80
-mov qword [rax], 0x80
-mov qword [rax], 0xff
-mov qword [rax], 0x7ff
-mov qword [rax], 0x7fff
-mov qword [rax], 0x8fff
-mov qword [r13], 0x8000
-mov qword [rax], 0xfffff
-mov qword [rax], 0x7ffff
-mov qword [rax], 0xaff
-mov qword [rax], 0xffff
-mov qword [rax], 0xff0ff
-mov qword [rax], 0xfffff
-mov qword [rax], 0xff00e
-mov qword [rax], 0xfeee
-mov qword [rax], 0xf0ee
-mov qword [rax], 0xfee
-mov qword [rax], 0xffe
-mov qword [rax], 0x1
-mov qword [rax], 0xff801
-mov qword [rax], 0xffe01
-mov qword [rax], 0xff721
-mov qword [rax], 0xff611
-mov qword [rax], 0xff5d1
-mov qword [rax], 0xff4d1
-mov qword [rax], 0xff3d1
-mov qword [rax], 0xff2d1
-mov qword [rax], 0xff11
-mov qword [rax], 0xff1
-mov qword [rax], 0xff
-mov dword [eax], 0x2
-mov dword [eax], -0x2
-mov dword [eax], 0x7f
-mov dword [eax], 0x80
-mov dword [eax], 0x80
-mov dword [eax], 0xff
-mov dword [r15d], 0x7ff
-mov dword [r13d], 0x7ff
-mov dword [ebp], -0xf
-mov dword [ebp], -0xe
-mov dword [ebp], -0xd
-mov dword [ebp], -0x7
-mov dword [ebp], -0x4
-mov dword [ebp], -0x3
-mov dword [ebp], -0x2
-mov dword [ebp], -0xff
-mov rsi, 0x2efaeeeee
+MOV RAX, 0x2
+MOV RAX, 0x7F
+MOV RAX, 0x80
+MOV RAX, 0x80
+MOV RAX, 0xFF
+MOV RAX, 0x7FF
+MOV EAX, 0x2
+MOV EAX, 0x7F
+MOV EAX, 0x80
+MOV EAX, 0x80
+MOV EAX, 0xFF
+MOV EAX, 0x7FF
+MOV RAX, 0x7FFFFFFF
+MOV RAX, 0x8FFFFFFF
+MOV RAX, 0xFFFFFFFF
+MOV RAX, 0x7FFFFFFFFF
+MOV RAX, 0xAFFFFFFFFF
+MOV RAX, 0xFFFFFFFF0000000E
+MOV RAX, 0xFF0FFFFF0000000E
+MOV RAX, 0xFFFFFFFF000000EE
+MOV RAX, 0xFFFFFFFF00000EEE
+MOV RAX, 0xFFFFFFFF000EEEEE
+MOV RAX, 0xFFFFFFFF00EEEEEE
+MOV RAX, 0xFFFFFFFF0EEEEEEE
+MOV RAX, 0xFFFFFFFFE0000000
+MOV RAX, 0xFFFFFFFFF0000001
+MOV RAX, 0xFFFFFFFF80000001
+MOV RAX, 0xFFFFFFFFE0000001
+MOV RAX, 0xFFFFFFFF72000001
+MOV RAX, 0xFFFFFFFF60100001
+MOV RAX, 0xFFFFFFFF500D0001
+MOV RAX, 0xFFFFFFFF4000D001
+MOV RAX, 0xFFFFFFFF30000D01
+MOV RAX, 0xFFFFFFFF200000D1
+MOV RAX, 0xFFFFFFFF10000001
+MOV RAX, 0xFFFFFFFF01111111
+MOV RAX, 0xFFFFFFFEF0000000
+MOV RAX, 0xFFFFFFFFEEEEEEEE
+MOV RAX, 0xFFFFFEEEEEEEEEEE
+MOV RAX, 0xFFFFF77777777777
+MOV RAX, 0xFFFFF22222222222
+MOV RAX, 0xF000000000000001
+MOV RAX, 0xFFFFFFFFFFFFFFFF
+MOV RAX, -0x1
+MOV RAX, -0x2
+MOV RSI, 0x2
+MOV RSI, 0x7F
+MOV RSI, 0x80
+MOV RSI, 0x80
+MOV RSI, 0xFF
+MOV RSI, 0x7FF
+MOV ESI, 0x2
+MOV ESI, 0x7F
+MOV ESI, 0x80
+MOV ESI, 0x80
+MOV ESI, 0xFF
+MOV ESI, 0x7FF
+MOV RSI, 0x7FFFFFFF
+MOV RSI, 0x8FFFFFFF
+MOV RSI, 0xFFFFFFFF
+MOV RSI, 0x7FFFFFFFFF
+MOV RSI, 0xAFFFFFFFFF
+MOV RSI, 0xFFFFFEEEEEEEEEEE
+MOV RSI, 0xFFFFFFFFEEEEEEEE
+MOV RSI, -0x2
+MOV RSI, 0x2
+MOV RSI, 0x7F
+MOV RSI, 0x80
+MOV RSI, 0x80
+MOV RSI, 0xFF
+MOV RSI, 0x7FF
+MOV ESI, 0x2
+MOV ESI, 0x7F
+MOV ESI, 0x80
+MOV ESI, 0x80
+MOV ESI, 0xFF
+MOV ESI, 0x7FF
+MOV RSI, 0x7FFFFFFF
+MOV RSI, 0x8FFFFFFF
+MOV RSI, 0xFFFFFFFF
+MOV RSI, 0x7FFFFFFFFF
+MOV RSI, 0xAFFFFFFFFF
+MOV RSI, 0xFFFFFEEEEEEEEEEE
+MOV RSI, 0xFFFFFFFFEEEEEEEE
+MOV RSI, -0x2
+MOV R13, 0x2
+MOV R13, 0x7F
+MOV R13, 0x80
+MOV R13, 0x80
+MOV R13, 0xFF
+MOV R13, 0x7FF
+MOV R13D, 0x2
+MOV R13D, 0x7F
+MOV R13D, 0x80
+MOV R13D, 0x80
+MOV R13D, 0xFF
+MOV R13D, 0x7FF
+MOV R13, 0x7FFFFFFF
+MOV R13, 0x8FFFFFFF
+MOV R13, 0xFFFFFFFF
+MOV R13, 0x7FFFFFFFFF
+MOV R13, 0xAFFFFFFFFF
+MOV R13, 0xFFFFFEEEEEEEEEEE
+MOV R13, 0xFFFFFFFFEEEEEEEE
+MOV R13, -0x2
+MOV R15, 0x2
+MOV R15, 0x7F
+MOV R15, 0x80
+MOV R15, 0x80
+MOV R15, 0xFF
+MOV R15, 0x7FF
+MOV R15W, 0x2
+MOV R15W, 0x7F
+MOV R15W, 0x80
+MOV R15W, 0x80
+MOV R15W, 0xFF
+MOV R15W, 0x7FF
+MOV R15, 0x7FFFFFFF
+MOV R15, 0x8FFFFFFF
+MOV R15, 0xFFFFFFFF
+MOV R15, 0x7FFFFFFFFF
+MOV R15, 0xAFFFFFFFFF
+MOV R15, 0xFFFFFEEEEEEEEEEE
+MOV R15, 0xFFFFFFFFEEEEEEEE
+MOV R15, -0x2
+MOV R15B, -0x2
+MOV R15B, 0x2
+MOV R15B, 0x7F
+MOV R15B, 0x80
+MOV R15B, 0x80
+MOV R15B, 0xFF
+MOV RSI, -0x1
+MOV RBP, -0x2EFD9F53
+MOV RBP, -0x2EFA9F53
+MOV RBP, 0x2EFA
+MOV R8, -0x2
+MOV R9, -0x2
+MOV R10, -0x2
+MOV R10B, -0x2
+MOV R11B, -0x2
+MOV R12B, -0x2
+MOV AL, -0x2
+MOV AL, -0x1
+MOV AL, 0x1
+MOV CL, -0x2
+MOV CL, -0x1
+MOV CL, 0x1
+MOV AX, -0x2
+MOV AX, -0x1
+MOV AX, 0x1
+MOV CX, -0x2EFD
+MOV CX, -0x2EFA
+MOV CX, 0x2EFA
+MOV SI, -0x2EFD
+MOV SI, -0x2EFA
+MOV SI, 0x2EFA
+MOV RCX, -0x2EFD
+MOV RCX, -0x2EFA
+MOV RCX, 0x2EFA
+MOV RSI, -0x2EFD
+MOV RSI, -0x2EFA
+MOV RSI, 0x2EFA
+MOV RCX, -0x2EFDEEEEEE
+MOV RCX, -0x2EFAEEEEEE
+MOV RCX, 0x2EFAEEEEE
+MOV RSI, -0x2EFDEEEE
+MOV RSI, -0x2EFAEEE
+MOV RSI, 0x2EFAEEEEE
