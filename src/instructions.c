@@ -16,29 +16,30 @@
 
 /*declares all supported x86_64 assembly instructions*/
 #include "instructions.h"
+
 #include "common.h"
 #include "enums.h"
 
 // clang-format off
 const struct opd_format_table OPD_FORMAT_TABLE[] = {
                         // first operand does not exist or is an immediate
-                        {n,   {'\0'}}, {n,   "i"},    
+                        {n,   {'\0'}}, {n,   "i"},
                         // first operand is a memory reference
-                        {m,   "m"},   {mi,  "mi"},  {mr,  "mr"},   
-                        {mri, "mri"}, {mrr, "mrr"}, {mv,   "mv"},    
-                        {my,  "my"}, 
+                        {m,   "m"},   {mi,  "mi"},  {mr,  "mr"},
+                        {mri, "mri"}, {mrr, "mrr"}, {mv,   "mv"},
+                        {my,  "my"},
                         // first operand is a register
-                        {r,   "r"},   {ri,  "ri"},  {rm,  "rm"},   
-                        {rmi, "rmi"}, {rmr, "rmr"}, {rr,  "rr"},    
-                        {rri, "rri"}, {rrm, "rrm"}, {rrr, "rrr"},  
-                        {rv,  "rv"},  
-                        // first operand is a xmm register 
-                        {vi,  "vi"},  {vr,  "vr"},  {vm,  "vm"},   
-                        {vv,  "vv"},  {vvm, "vvm"}, {vvmi,"vvmi"}, 
+                        {r,   "r"},   {ri,  "ri"},  {rm,  "rm"},
+                        {rmi, "rmi"}, {rmr, "rmr"}, {rr,  "rr"},
+                        {rri, "rri"}, {rrm, "rrm"}, {rrr, "rrr"},
+                        {rv,  "rv"},
+                        // first operand is a xmm register
+                        {vi,  "vi"},  {vr,  "vr"},  {vm,  "vm"},
+                        {vv,  "vv"},  {vvm, "vvm"}, {vvmi,"vvmi"},
                         {vvv, "vvv"}, {vvvi,"vvvi"},
-                        // first operand is a ymm register 
-                        {ym,  "ym"},   {yy,  "yy"},  {yym, "yym"},  
-                        {yymi,"yymi"}, {yyy, "yyy"}, {yyyi,"yyyi"}, 
+                        // first operand is a ymm register
+                        {ym,  "ym"},   {yy,  "yy"},  {yym, "yym"},
+                        {yymi,"yymi"}, {yyy, "yyy"}, {yyyi,"yyyi"},
                         // operand format not found
                         {opd_error, "error"}};
 
@@ -58,7 +59,7 @@ const struct instr_table INSTR_TABLE[] = {
     {{'\0'},        add,         {NA, NA},   I,   OPERATION,      1,   NA,  2,  {REX, 0x04}},
     {"adox",        adox,        {rr, rm},   RM,  OTHER,          NA,  NA,  6,  {0xf3, REX, 0x0f, 0x38, 0xf6, REG}},
     {"and",         and,         {rr, mr},   MR,  OPERATION,      1,   NA,  3,  {REX, 0x20, REG}},
-    {{'\0'},        and,         {NA, rm},   RM,  OPERATION,      1,   NA,  3,  {REX, 0x22, REG}}, 
+    {{'\0'},        and,         {NA, rm},   RM,  OPERATION,      1,   NA,  3,  {REX, 0x22, REG}},
     {{'\0'},        and,         {mi, ri},   M,   OPERATION,      1,   4,   3,  {REX, 0x80, REG}},
     {{'\0'},        and,         {NA, NA},   I,   OPERATION,      1,   NA,  2,  {REX, 0x24}},
     {"bextr",       bextr,       {rrr, rmr}, RMV, VECTOR_EXT,     NA,  NA,  3,  {VEX(NDS,LZ,NONE,X0F38,W0_W1), 0xf7, REG}},
@@ -92,7 +93,7 @@ const struct instr_table INSTR_TABLE[] = {
     {"cmovnp",      cmovnp,      {rr, rm},   RM,  DATA_TRANSFER,  NA,  NA,  4,  {REX, 0x0f, 0x4b, REG}},
     {"cmovns",      cmovns,      {rr, rm},   RM,  DATA_TRANSFER,  NA,  NA,  4,  {REX, 0x0f, 0x49, REG}},
     {"cmovnz",      cmovnz,      {rr, rm},   RM,  DATA_TRANSFER,  NA,  NA,  4,  {REX, 0x0f, 0x45, REG}},
-    {"cmovo",       cmovo,       {rr, rm},   RM,  DATA_TRANSFER,  NA,  NA,  4,  {REX, 0x0f, 0x40, REG}},    
+    {"cmovo",       cmovo,       {rr, rm},   RM,  DATA_TRANSFER,  NA,  NA,  4,  {REX, 0x0f, 0x40, REG}},
     {"cmovp",       cmovp,       {rr, rm},   RM,  DATA_TRANSFER,  NA,  NA,  4,  {REX, 0x0f, 0x4a, REG}},
     {"cmovpe",      cmovpe,      {rr, rm},   RM,  DATA_TRANSFER,  NA,  NA,  4,  {REX, 0x0f, 0x4a, REG}},
     {"cmovpo",      cmovpo,      {rr, rm},   RM,  DATA_TRANSFER,  NA,  NA,  4,  {REX, 0x0f, 0x4b, REG}},
@@ -128,10 +129,10 @@ const struct instr_table INSTR_TABLE[] = {
     {{'\0'},        jl,          {NA, NA},   S,   CONTROL_FLOW,   NA,  NA,  2,  {0x7c, ib}},
     {"jle",         jle,         {n,  n},    D,   CONTROL_FLOW,   NA,  NA,  2,  {0x0f, 0x8e}},
     {{'\0'},        jle,         {NA, NA},   S,   CONTROL_FLOW,   NA,  NA,  2,  {0x7e, ib}},
-    {"jmp",         jmp,         {n,  n},    D,   CONTROL_FLOW,   NA,  NA,  1,  {0xe9}},    
+    {"jmp",         jmp,         {n,  n},    D,   CONTROL_FLOW,   NA,  NA,  1,  {0xe9}},
     {{'\0'},        jmp,         {NA, NA},   S,   CONTROL_FLOW,   NA,  NA,  2,  {0xeb, ib}},
     {{'\0'},        jmp,         {r,  m},    O,   CONTROL_FLOW,   NA,  4,   3,  {REX, 0xff, REG}},
-    {{'\0'},        jmp,         {NA, NA},   D,   CONTROL_FLOW,   NA,  NA,  3,  {0xff, 0x24, 0x25}},    
+    {{'\0'},        jmp,         {NA, NA},   D,   CONTROL_FLOW,   NA,  NA,  3,  {0xff, 0x24, 0x25}},
     {"jne",         jne,         {n,  n},    D,   CONTROL_FLOW,   NA,  NA,  2,  {0x0f, 0x85}},
     {{'\0'},        jne,         {NA, NA},   S,   CONTROL_FLOW,   NA,  NA,  2,  {0x75, ib}},
     {"jno",         jno,         {n,  n},    D,   CONTROL_FLOW,   NA,  NA,  2,  {0x0f, 0x81}},
@@ -223,7 +224,7 @@ const struct instr_table INSTR_TABLE[] = {
     {{'\0'},        psubw,       {rm, rr},   RM,  VECTOR,         NA,  NA,  4,  {REX, 0x0f, 0xf9, REG}},
     {"pxor",        pxor,        {vm, vv},   RM,  VECTOR,         NA,  NA,  5,  {0x66, REX, 0x0f, 0xef, REG}},
     {{'\0'},        pxor,        {rm, rr},   RM,  VECTOR,         NA,  NA,  4,  {REX, 0x0f, 0xef, REG}},
-    {"punpcklqdq",  punpcklqdq,  {NA, vv},   RM,  VECTOR,         NA,  NA,  5,  {0x66, REX, 0x0f, 0x6c, REG}},      
+    {"punpcklqdq",  punpcklqdq,  {NA, vv},   RM,  VECTOR,         NA,  NA,  5,  {0x66, REX, 0x0f, 0x6c, REG}},
     {"push",        push,        {NA, r },   O,   DATA_TRANSFER,  NA,  NA,  2,  {REX, 0x50+rd}},
     {"rcr",         rcr,         {mi, ri},   M,   SHIFT,          1,   3,   4,  {REX, 0xd0, REG, ib}},
     {{'\0'},        rcr,         {NA, NA},   M,   SHIFT,          1,   2,   4,  {REX, 0xc1, REG, ib}},
@@ -285,7 +286,9 @@ const struct instr_table INSTR_TABLE[] = {
     {{'\0'},        sub,         {NA, rm},   RM,  OPERATION,      1,   NA,  3,  {REX, 0x2a, REG}},
     {{'\0'},        sub,         {mi, ri},   M,   OPERATION,      1,   5,   3,  {REX, 0x80, REG}},
     {{'\0'},        sub,         {NA, NA},   I,   OPERATION,      1,   NA,  2,  {REX, 0x2c}},
-    {"test",        test,        {rr, mr},   MR,  OTHER,          1,   NA,  3,  {REX, 0x84, REG}},
+    {"test",        test,        {rr, mr},   MR,  PAD_ALWAYS,     1,   NA,  3,  {REX, 0x84, REG}},
+    {{'\0'},        test,        {mi, ri},   M,   PAD_ALWAYS,     1,   0,   3,  {REX, 0xf6, REG}},
+    {{'\0'},        test,        {NA, NA},   I,   PAD_ALWAYS,     1,   NA,  2,  {REX, 0xa8}},
     {"vaddpd",      vaddpd,      {yym, yyy}, RVM, VECTOR_AVX,     NA,  NA,  3,  {VEX(NDS,B256,X66,X0F,WIG), 0x58, REG}},
     {"vdivpd",      vdivpd,      {yym, yyy}, RVM, VECTOR_AVX,     NA,  NA,  3,  {VEX(NDS,B256,X66,X0F,WIG), 0x5e, REG}},
     {"vmovupd",     vmovupd,     {ym, yy},   RM,  VECTOR_AVX,     NA,  NA,  3,  {VEX(NNN,B256,X66,X0F,WIG), 0x10, REG}},
@@ -325,7 +328,7 @@ const struct instr_table INSTR_TABLE[] = {
     {"vpor",        vpor,        {yym, yyy}, RVM, VECTOR_AVX,     NA,  NA,  3,  {VEX(NDS,B256,X66,X0F,WIG), 0xeb, REG}},
     {{'\0'},        vpor,        {vvm, vvv}, RVM, VECTOR_AVX,     NA,  NA,  3,  {VEX(NDS,B128,X66,X0F,WIG), 0xeb, REG}},
     {"vpsubb",      vpsubb,      {yym, yyy}, RVM, VECTOR_AVX,     NA,  NA,  3,  {VEX(NDS,B256,X66,X0F,WIG), 0xf8, REG}},
-    {{'\0'},        vpsubb,      {vvm, vvv}, RVM, VECTOR_AVX,     NA,  NA,  3,  {VEX(NDS,B128,X66,X0F,WIG), 0xf8, REG}},    
+    {{'\0'},        vpsubb,      {vvm, vvv}, RVM, VECTOR_AVX,     NA,  NA,  3,  {VEX(NDS,B128,X66,X0F,WIG), 0xf8, REG}},
     {"vpsubd",      vpsubd,      {yym, yyy}, RVM, VECTOR_AVX,     NA,  NA,  3,  {VEX(NDS,B256,X66,X0F,WIG), 0xfa, REG}},
     {{'\0'},        vpsubd,      {vvm, vvv}, RVM, VECTOR_AVX,     NA,  NA,  3,  {VEX(NDS,B128,X66,X0F,WIG), 0xfa, REG}},
     {"vpsubq",      vpsubq,      {yym, yyy}, RVM, VECTOR_AVX,     NA,  NA,  3,  {VEX(NDS,B256,X66,X0F,WIG), 0xfb, REG}},

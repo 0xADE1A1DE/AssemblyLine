@@ -42,6 +42,7 @@
 #define NEG64BIT 0xffffffffffffffff
 #define NEG32BIT 0xffffffff00000000
 #define NEG8BIT 0xffffffffffffff00
+#define NEG80BIT 0xffffffffffffff80
 #define MAX_SIGNED_8BIT 0x7f
 #define MAX_UNSIGNED_8BIT 0xff
 #define MAX_UNSIGNED_16BIT 0xffff
@@ -133,6 +134,9 @@
 
 // used only in tokenizer
 #define IN_RANGE(var, lower, upper) ((var >= lower) && (var <= upper))
+#define DO_NOT_PAD(reduce, set)                                                                                        \
+    reduce &= MAX_UNSIGNED_32BIT;                                                                                      \
+    set = true;
 
 // keyword length
 #define DWORD_LEN 5
@@ -170,33 +174,38 @@
 #define GET_EN 0b11111100000000000000000
 
 // fail conditions
-#define FAIL_IF(EXP)                                                           \
-  if (EXP) {                                                                   \
-    return EXIT_FAILURE;                                                       \
-  }
+#define FAIL_IF(EXP)                                                                                                   \
+    if ( EXP )                                                                                                         \
+    {                                                                                                                  \
+        return EXIT_FAILURE;                                                                                           \
+    }
 
-#define FAIL_SYS(EXP, MSG)                                                     \
-  if (EXP) {                                                                   \
-    fprintf(stderr, "assembyline: " MSG);                                      \
-    perror("error: ");                                                         \
-    return EXIT_FAILURE;                                                       \
-  }
+#define FAIL_SYS(EXP, MSG)                                                                                             \
+    if ( EXP )                                                                                                         \
+    {                                                                                                                  \
+        fprintf(stderr, "assembyline: " MSG);                                                                          \
+        perror("error: ");                                                                                             \
+        return EXIT_FAILURE;                                                                                           \
+    }
 
-#define FAIL_IF_ERR(EXP)                                                       \
-  if (EXP) {                                                                   \
-    return ASM_ERROR;                                                          \
-  }
+#define FAIL_IF_ERR(EXP)                                                                                               \
+    if ( EXP )                                                                                                         \
+    {                                                                                                                  \
+        return ASM_ERROR;                                                                                              \
+    }
 
-#define FAIL_IF_MSG(EXP, MSG)                                                  \
-  if (EXP) {                                                                   \
-    fprintf(stderr, "assembyline: " MSG);                                      \
-    return EXIT_FAILURE;                                                       \
-  }
+#define FAIL_IF_MSG(EXP, MSG)                                                                                          \
+    if ( EXP )                                                                                                         \
+    {                                                                                                                  \
+        fprintf(stderr, "assembyline: " MSG);                                                                          \
+        return EXIT_FAILURE;                                                                                           \
+    }
 
-#define FAIL_IF_VAR(EXP, MSG, VAR)                                             \
-  if (EXP) {                                                                   \
-    fprintf(stderr, "assembyline: " MSG, VAR);                                 \
-    return EXIT_FAILURE;                                                       \
-  }
+#define FAIL_IF_VAR(EXP, MSG, VAR)                                                                                     \
+    if ( EXP )                                                                                                         \
+    {                                                                                                                  \
+        fprintf(stderr, "assembyline: " MSG, VAR);                                                                     \
+        return EXIT_FAILURE;                                                                                           \
+    }
 
 #endif

@@ -1,7 +1,7 @@
 SECTION .text
 GLOBAL test
 test:
-cmp rsp, 0x39a8 
+cmp rsp, 0x39a8
 cmp r10, r11
 cmp r10, r12
 cmp r10, r13
@@ -484,7 +484,7 @@ cmp sp, 0x34ef
 cmp r8w, 0x1
 cmp rax, [ rbx ]
 cmp rax, [ rbx + 0x10 ]
-cmp rax, 0x0 
+cmp rax, 0x0
 cmp rax, 0x0 ; with a comment
 cmp r12, r14
 cmp r12, rbx
@@ -499,7 +499,8 @@ cmp rbx, r9
 cmp rbx, rdi
 cmp rdi, r10
 cmp rdx, r14
-cmp rsp, 0x138 
-cmp rsp, 0x48 
-cmp rsp, 0x50 
-cmp rsp, 0x80 
+cmp rsp, 0x138
+cmp rsp, 0x48
+cmp rsp, 0x50
+cmp rsp, 0x80
+cmp rax, -0xf
