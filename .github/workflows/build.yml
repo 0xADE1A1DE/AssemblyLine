@@ -2,7 +2,6 @@ name: CI Build
 
 env:
   REPO: hugsy/AssemblyLine
-  NB_CPU: "$env:NUMBER_OF_PROCESSORS"
   VERBOSE: "1"
   CMAKE_FLAGS: "-DDEBUG=ON -DBUILD_TOOLKIT=ON -DBUILD_TEST=ON"
 
@@ -27,6 +26,17 @@ jobs:
 
     - name: Inject slug/short variables
       uses: rlespinasse/github-slug-action@v3.x
+
+    - name: Sets Windows specific environment variables
+      shell: powershell
+      run: |
+        echo "NB_CPU=$env:NUMBER_OF_PROCESSORS" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+      if: matrix.os == 'windows-latest'
+
+    - name: Sets Linux specific environment variables
+      run: |
+        echo "NB_CPU=$(grep -c ^processor /proc/cpuinfo)" >> $GITHUB_ENV
+      if: matrix.os == 'ubuntu-latest'
 
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v1
