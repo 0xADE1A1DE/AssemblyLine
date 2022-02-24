@@ -3,10 +3,11 @@ set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
 
 project(AssemblyLine LANGUAGES C)
 
-set(PROGNAME AssemblyLine)
-set(AUTHOR hugsy)
-set(LICENSE MIT)
-
+set(PROGRAM_NAME AssemblyLine)
+set(PROGRAM_AUTHOR hugsy)
+set(PROGRAM_LICENSE "Apache License 2.0")
+set(PROGRAM_VERSION_MAJOR 1)
+set(PROGRAM_VERSION_MINOR 2)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 

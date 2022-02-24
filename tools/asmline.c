@@ -21,9 +21,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#if HAVE_CONFIG_H
-#include <config.h> // from autotools
-#endif
+#include "config.h"
 #if defined(__linux__)
 #include <getopt.h>
 #include <unistd.h>
@@ -132,10 +130,6 @@ typedef enum
     STRICT_SIB_NO_BASE,
     SMART_MOV_IMM
 } asm_options;
-
-#ifndef PACKAGE_STRING
-#define PACKAGE_STRING "0.0" // TODO gen constants with cmake
-#endif
 
 const char* asm_version = PACKAGE_STRING;
 static int mov_imm      = 0;

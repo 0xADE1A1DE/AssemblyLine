@@ -1,0 +1,30 @@
+#ifndef HAVE_CONFIG_H
+#define HAVE_CONFIG_H
+
+#define TO_STRING(s) #s
+#define AS_STRING(s) TO_STRING(s)
+
+// clang-format off
+#define PROGRAM_NAME                    "@PROGRAM_NAME@"
+#define PROGRAM_AUTHOR                  "@PROGRAM_AUTHOR@"
+#define PROGRAM_LICENSE                 "@PROGRAM_LICENSE@"
+#define PROGRAM_VERSION_MAJOR           @PROGRAM_VERSION_MAJOR@
+#define PROGRAM_VERSION_MAJOR_STRING    AS_STRING(PROGRAM_VERSION_MAJOR)
+#define PROGRAM_VERSION_MINOR           @PROGRAM_VERSION_MINOR@
+#define PROGRAM_VERSION_MINOR_STRING    AS_STRING(PROGRAM_VERSION_MINOR)
+#define PROGRAM_VERSION                 PROGRAM_VERSION_MAJOR_STRING "." PROGRAM_VERSION_MINOR_STRING
+#define PACKAGE_STRING                  PROGRAM_VERSION
+// clang-format on
+
+
+/*************************/
+/* OS specific constants */
+/*************************/
+#if defined(__linux__)
+
+#else
+
+#endif
+
+
+#endif // HAVE_CONFIG_H

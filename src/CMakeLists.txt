@@ -34,6 +34,10 @@ set(
     ${ASSEMBLYLINE_SRC_DIR}/tokenizer.c
 )
 
+configure_file(
+    "${ASSEMBLYLINE_SRC_DIR}/config.h.in"
+    "${ASSEMBLYLINE_SRC_DIR}/config.h"
+)
 
 add_library(AssemblyLine SHARED ${SOURCE_FILES})
 
