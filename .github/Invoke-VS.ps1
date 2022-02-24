@@ -12,13 +12,13 @@ Function Invoke-CmdScript {
 }
 
 
-Function Invoke-VisualStudio2019x86
+Function Invoke-VisualStudio2022x86
 {
-  Invoke-CmdScript "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars32.bat"
+  Invoke-CmdScript "C:/Program Files (x86)/Microsoft Visual Studio/2022/Enterprise/VC/Auxiliary/Build/vcvars32.bat"
 }
 
 
-Function Invoke-VisualStudio2019x64
+Function Invoke-VisualStudio2022x64
 {
-  Invoke-CmdScript "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat"
+  Invoke-CmdScript "C:/Program Files (x86)/Microsoft Visual Studio/2022/Enterprise/VC/Auxiliary/Build/vcvars64.bat"
 }

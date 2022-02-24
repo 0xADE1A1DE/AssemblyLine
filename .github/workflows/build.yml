@@ -38,8 +38,10 @@ jobs:
       if: matrix.os == 'windows-latest'
       shell: pwsh
       run: |
-        Import-Module .\.github\Invoke-VS.ps1
-        Invoke-VisualStudio2019${{ matrix.platform }}
+        pwd
+        ls
+        Import-Module .github\Invoke-VS.ps1
+        Invoke-VisualStudio2022${{ matrix.platform }}
         New-Item -Type Directory -Name build
         Set-Location .\build
         cmake .. ${{ env.CMAKE_FLAGS }}
@@ -67,6 +69,10 @@ jobs:
       shell: bash
       run: |
         build/test/run
+        for i in test/*asm
+        do
+          build/tool/asmline $i
+        done
 
     - name: Perform CodeQL Analysis
       if: matrix.os == 'ubuntu-latest'
@@ -92,7 +98,7 @@ jobs:
       run: |
         mkdir -p artifact/include/linux/
         cp -v build/src/libAssemblyLine.so artifact/
-        cp -v build/src/asmline artifact/
+        cp -v build/tool/asmline artifact/
         cp -v src/*.h artifact/include/
 
     - name: Publish artifact
