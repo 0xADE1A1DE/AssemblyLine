@@ -1,0 +1,105 @@
+name: CI Build
+
+env:
+  REPO: hugsy/AssemblyLine
+  NB_CPU: "$env:NUMBER_OF_PROCESSORS"
+  VERBOSE: "1"
+  CMAKE_FLAGS: "-DDEBUG=ON -DBUILD_TOOLKIT=ON -DBUILD_TEST=ON"
+
+on: push
+
+jobs:
+  mini_build:
+    name: "${{ matrix.configuration }} build AssemblyLine for ${{ matrix.os }}/${{ matrix.platform }}"
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ['windows-latest', 'ubuntu-latest']
+        platform: ['x64']
+        configuration: ['RelWithDebInfo', 'Debug']
+
+    runs-on: ${{ matrix.os }}
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: true
+
+    - name: Inject slug/short variables
+      uses: rlespinasse/github-slug-action@v3.x
+
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v1
+      with:
+        languages: cpp
+      if: matrix.os == 'ubuntu-latest'
+
+    - name: Build assemblyline.dll
+      if: matrix.os == 'windows-latest'
+      shell: pwsh
+      run: |
+        Import-Module .\.github\Invoke-VS.ps1
+        Invoke-VisualStudio2019${{ matrix.platform }}
+        New-Item -Type Directory -Name build
+        Set-Location .\build
+        cmake .. ${{ env.CMAKE_FLAGS }}
+        msbuild.exe ALL_BUILD.vcxproj -nologo /maxCpuCount:${{ env.NB_CPU }} /verbosity:n /m /p:Configuration=${{ matrix.configuration }} /p:Platform=${{ matrix.platform }}
+        Set-Location ..
+
+    - name: Build libassemblyline.so
+      if: matrix.os == 'ubuntu-latest'
+      shell: bash
+      run: |
+        mkdir ./build
+        cd ./build
+        cmake .. ${{ env.CMAKE_FLAGS }}
+        make
+        cd ..
+
+    - name: Run Windows tests
+      if: matrix.os == 'windows-latest'
+      shell: pwsh
+      run: |
+        Start-Process build\test\${{ matrix.configuration }}\run.exe
+
+    - name: Run Linux tests
+      if: matrix.os == 'ubuntu-latest'
+      shell: pwsh
+      run: |
+        build/test/run
+
+    - name: Perform CodeQL Analysis
+      if: matrix.os == 'ubuntu-latest'
+      uses: github/codeql-action/analyze@v1
+
+    - name: Prepare Windows artifact
+      if: matrix.os == 'windows-latest'
+      shell: pwsh
+      run: |
+        New-Item -Type Directory -Name artifact\
+        Copy-Item -Verbose build\src\${{ matrix.configuration }}\AssemblyLine\AssemblyLine.lib artifact\
+        Copy-Item -Verbose build\src\${{ matrix.configuration }}\AssemblyLine\AssemblyLine.dll artifact\
+        Copy-Item -Verbose build\src\${{ matrix.configuration }}\AssemblyLine\AssemblyLine.pdb artifact\
+
+        Copy-Item -Verbose build\tools\${{ matrix.configuration }}\asmline.exe artifact\
+        Copy-Item -Verbose build\test\${{ matrix.configuration }}\run.exe artifact\
+
+        New-Item -Type Directory -Name artifact\include\
+        Copy-Item src\*.h artifact\include\
+
+    - name: Prepare Linux artifact
+      if: matrix.os == 'ubuntu-latest'
+      shell: bash
+      run: |
+        mkdir -p artifact/include/linux/
+        cp -v build/src/libAssemblyLine.so artifact/
+        cp -v build/src/asmline artifact/
+        cp -v build/src/run artifact/
+        cp -v src/*.h artifact/include/
+
+    - name: Publish artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: assemblyline_${{ env.GITHUB_REF_SLUG }}_${{ matrix.os }}_${{ matrix.platform }}_${{ env.GITHUB_SHA_SHORT }}
+        path: artifact/
+

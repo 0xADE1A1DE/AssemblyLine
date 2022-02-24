@@ -35,7 +35,5 @@ if(BUILD_TEST)
     #
     # Build toolkit
     #
-    if (UNIX)
-        add_subdirectory(test)
-    endif (UNIX)
+    add_subdirectory(test)
 endif()

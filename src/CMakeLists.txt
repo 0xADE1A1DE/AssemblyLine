@@ -47,7 +47,7 @@ if (MSVC)
     )
 else()
     add_compile_definitions(_GNU_SOURCE=1)
-    add_compile_option(-Wall -Wextra -std=gnu99 -fPIC)
+    add_compile_options(-Wall -Wextra -std=gnu99 -fPIC)
     set(
         LINKING_LIBS
 
