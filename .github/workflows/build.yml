@@ -15,9 +15,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: ['windows-latest', 'ubuntu-latest']
+        os: [ 'ubuntu-latest']
         platform: ['x64']
-        configuration: ['RelWithDebInfo', 'Debug']
+        configuration: ['RelWithDebInfo']
 
     runs-on: ${{ matrix.os }}
     steps:
@@ -38,7 +38,6 @@ jobs:
       if: matrix.os == 'windows-latest'
       shell: pwsh
       run: |
-        Set-Location AssemblyLine
         Import-Module .\.github\Invoke-VS.ps1
         Invoke-VisualStudio2019${{ matrix.platform }}
         New-Item -Type Directory -Name build
@@ -51,7 +50,8 @@ jobs:
       if: matrix.os == 'ubuntu-latest'
       shell: bash
       run: |
-        cd AssemblyLine
+        pwd
+        ls 
         mkdir ./build
         cd ./build
         cmake .. ${{ env.CMAKE_FLAGS }}
