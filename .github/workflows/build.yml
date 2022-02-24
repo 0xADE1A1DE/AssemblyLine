@@ -57,7 +57,7 @@ jobs:
         mkdir ./build
         cd ./build
         cmake .. ${{ env.CMAKE_FLAGS }}
-        make
+        make -j${{ env.NB_CPU }}
         cd ..
 
     - name: Run Windows tests
@@ -85,9 +85,9 @@ jobs:
       shell: pwsh
       run: |
         New-Item -Type Directory -Name artifact\
-        Copy-Item -Verbose build\src\${{ matrix.configuration }}\AssemblyLine\AssemblyLine.lib artifact\
-        Copy-Item -Verbose build\src\${{ matrix.configuration }}\AssemblyLine\AssemblyLine.dll artifact\
-        Copy-Item -Verbose build\src\${{ matrix.configuration }}\AssemblyLine\AssemblyLine.pdb artifact\
+        Copy-Item -Verbose build\src\${{ matrix.configuration }}\AssemblyLine.lib artifact\
+        Copy-Item -Verbose build\src\${{ matrix.configuration }}\AssemblyLine.dll artifact\
+        Copy-Item -Verbose build\src\${{ matrix.configuration }}\AssemblyLine.pdb artifact\
 
         Copy-Item -Verbose build\tools\${{ matrix.configuration }}\asmline.exe artifact\
 
