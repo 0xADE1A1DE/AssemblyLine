@@ -60,7 +60,7 @@ jobs:
       if: matrix.os == 'windows-latest'
       shell: pwsh
       run: |
-        Start-Process build\test\${{ matrix.configuration }}\run.exe
+        Write-Output "Todo"
 
     - name: Run Linux tests
       if: matrix.os == 'ubuntu-latest'
@@ -82,7 +82,6 @@ jobs:
         Copy-Item -Verbose build\src\${{ matrix.configuration }}\AssemblyLine\AssemblyLine.pdb artifact\
 
         Copy-Item -Verbose build\tools\${{ matrix.configuration }}\asmline.exe artifact\
-        Copy-Item -Verbose build\test\${{ matrix.configuration }}\run.exe artifact\
 
         New-Item -Type Directory -Name artifact\include\
         Copy-Item src\*.h artifact\include\
@@ -94,7 +93,6 @@ jobs:
         mkdir -p artifact/include/linux/
         cp -v build/src/libAssemblyLine.so artifact/
         cp -v build/src/asmline artifact/
-        cp -v build/src/run artifact/
         cp -v src/*.h artifact/include/
 
     - name: Publish artifact

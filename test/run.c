@@ -401,7 +401,7 @@ main()
     if ( buffer == MAP_FAILED )
     {
 #else
-        (uint8_t*)VirtualAlloc(NULL, sizeof(uint8_t) * 60000, PAGE_EXECUTE_READWRITE, MEM_COMMIT);
+        (uint8_t*)VirtualAlloc(NULL, sizeof(uint8_t) * 60000, PAGE_EXECUTE_READWRITE, MEM_PRIVATE | MEM_COMMIT);
     if ( buffer == NULL )
     {
 #endif
