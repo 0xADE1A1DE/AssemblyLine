@@ -17,16 +17,14 @@
 /*implements an interface between the calling function and the assembler*/
 #include "assemblyline.h"
 
-#include "common.h"
-#include "parser.h"
-#if HAVE_CONFIG_H
-#include <config.h> // from autotools
-#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "common.h"
+#include "parser.h"
+
 #if defined(__linux)
-#define _GNU_SOURCE 1
 #include <fcntl.h> //open
 #include <sys/mman.h>
 #include <sys/stat.h>

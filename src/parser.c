@@ -32,7 +32,6 @@ representation*/
 #include "tokenizer.h"
 
 #if defined(__linux__)
-#define _GNU_SOURCE 1
 #include <sys/mman.h>
 #endif
 
@@ -241,6 +240,7 @@ check_len_or_resize(assemblyline_t al, int buf_pos)
             "internal buffer too small. Not running on Linux, "
             "Thus there is no mremap. Use your own buffer, or "
             "implement another strategy. ");
+        return EXIT_FAILURE;
 #endif
     }
     return EXIT_SUCCESS;

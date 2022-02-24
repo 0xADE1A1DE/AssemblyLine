@@ -27,15 +27,20 @@
 #else
 #include <windows.h>
 #define DEPRECATED(x) __pragma(deprecated(x))
-#define EXPORTABLE  __declspec(dllexport)
+#define EXPORTABLE __declspec(dllexport)
 #endif
 
 // different assembly options for mov immediate and SIB
-enum asm_opt { ASM_OPT_STRICT, ASM_OPT_NASM, ASM_OPT_SMART };
+enum asm_opt
+{
+    ASM_OPT_STRICT,
+    ASM_OPT_NASM,
+    ASM_OPT_SMART
+};
 
 #define DEFAULT SMART_MOV_IMM | NASM_SIB_INDEX_BASE_SWAP | NASM_SIB_NO_BASE
 
-typedef struct assemblyline *assemblyline_t;
+typedef struct assemblyline* assemblyline_t;
 
 /**
  * allocates an instance of assemblyline_t and attaches a pointer to a memory
@@ -46,13 +51,15 @@ typedef struct assemblyline *assemblyline_t;
  * any number.
  */
 EXPORTABLE
-assemblyline_t asm_create_instance(uint8_t *buffer, int len);
+assemblyline_t
+asm_create_instance(uint8_t* buffer, int len);
 
 /**
  * frees all memory associated with @param instance
  */
 EXPORTABLE
-int asm_destroy_instance(assemblyline_t instance);
+int
+asm_destroy_instance(assemblyline_t instance);
 
 /**
  * assembles the given string @param assembly_str containing valid x64 assembly
@@ -62,7 +69,8 @@ int asm_destroy_instance(assemblyline_t instance);
  */
 EXPORTABLE
 DEPRECATED("use asm_assemble_str instead")
-int assemble_str(assemblyline_t al, const char *assembly_str);
+int
+assemble_str(assemblyline_t al, const char* assembly_str);
 
 /**
  * assembles the given string @param assembly_str containing valid x64 assembly
@@ -70,7 +78,8 @@ int assemble_str(assemblyline_t al, const char *assembly_str);
  * memory location specified by al->buffer.
  */
 EXPORTABLE
-int asm_assemble_str(assemblyline_t al, const char *assembly_str);
+int
+asm_assemble_str(assemblyline_t al, const char* assembly_str);
 
 /**
  * assembles the given file path @param asm_file containing valid x64 assembly
@@ -80,7 +89,8 @@ int asm_assemble_str(assemblyline_t al, const char *assembly_str);
  */
 EXPORTABLE
 DEPRECATED("use asm_assemble_file instead")
-int assemble_file(assemblyline_t al, char *asm_file);
+int
+assemble_file(assemblyline_t al, char* asm_file);
 
 /**
  * assembles the given file path @param asm_file containing valid x64 assembly
@@ -88,7 +98,8 @@ int assemble_file(assemblyline_t al, char *asm_file);
  * memory location specified by al->buffer.
  */
 EXPORTABLE
-int asm_assemble_file(assemblyline_t al, char *asm_file);
+int
+asm_assemble_file(assemblyline_t al, char* asm_file);
 
 /**
  * assembles the given null-terminated @param string with instance @param al.
@@ -102,8 +113,8 @@ int asm_assemble_file(assemblyline_t al, char *asm_file);
  */
 EXPORTABLE
 DEPRECATED("use asm_assemble_string_counting_chunks instead")
-int assemble_string_counting_chunks(assemblyline_t al, char *string, int chunk_size,
-                                int *dest);
+int
+assemble_string_counting_chunks(assemblyline_t al, char* string, int chunk_size, int* dest);
 
 /**
  * assembles the given null-terminated @param string with instance @param al.
@@ -115,8 +126,8 @@ int assemble_string_counting_chunks(assemblyline_t al, char *string, int chunk_s
  * string will be altered.
  */
 EXPORTABLE
-int asm_assemble_string_counting_chunks(assemblyline_t al, char *string,
-                                        int chunk_size, int *dest);
+int
+asm_assemble_string_counting_chunks(assemblyline_t al, char* string, int chunk_size, int* dest);
 
 /**
  * sets a given chunk size boundary @param chunk_size in bytes with instance
@@ -127,7 +138,8 @@ int asm_assemble_string_counting_chunks(assemblyline_t al, char *string,
  * be classified as a valid memory chunk boundary
  */
 EXPORTABLE
-void asm_set_chunk_size(assemblyline_t al, size_t chunk_size);
+void
+asm_set_chunk_size(assemblyline_t al, size_t chunk_size);
 
 /**
  * set debug flag @param debug to true or false with instance @param al. When is
@@ -135,13 +147,15 @@ void asm_set_chunk_size(assemblyline_t al, size_t chunk_size);
  * printed to stdout.
  */
 EXPORTABLE
-void asm_set_debug(assemblyline_t al, bool debug);
+void
+asm_set_debug(assemblyline_t al, bool debug);
 
 /**
  * returns the offset associated with @param al
  */
 EXPORTABLE
-int asm_get_offset(assemblyline_t al);
+int
+asm_get_offset(assemblyline_t al);
 
 /**
  * sets a memory offset @param offset to specify exact location in memory block
@@ -149,7 +163,8 @@ int asm_get_offset(assemblyline_t al);
  * NOTE: @param offset could be set to 0 for the resulting memory block.
  */
 EXPORTABLE
-void asm_set_offset(assemblyline_t al, int offset);
+void
+asm_set_offset(assemblyline_t al, int offset);
 
 /**
  * returns the buffer associated with @param al
@@ -157,21 +172,24 @@ void asm_set_offset(assemblyline_t al, int offset);
  */
 EXPORTABLE
 DEPRECATED("use asm_get_code instead")
-uint8_t* asm_get_buffer(assemblyline_t al);
+uint8_t*
+asm_get_buffer(assemblyline_t al);
 
 /**
  * returns the buffer associated with @param al as type void* for easy
  * typecasting to any function pointer format.
  */
 EXPORTABLE
-void *asm_get_code(assemblyline_t al);
+void*
+asm_get_code(assemblyline_t al);
 
 /**
  * Generates a binary file @param file_name from assembled machine code up to
  * the memory offset of the current instance @param al
  */
 EXPORTABLE
-int asm_create_bin_file(assemblyline_t al, const char *file_name);
+int
+asm_create_bin_file(assemblyline_t al, const char* file_name);
 
 /**
  * Nasm optimizes a `mov rax, IMM` to `mov eax, imm`, iff imm is <= 0x7fffffff
@@ -200,7 +218,8 @@ int asm_create_bin_file(assemblyline_t al, const char *file_name);
  * setting @param option to any other value results in an no-operation function.
  */
 EXPORTABLE
-void asm_mov_imm(assemblyline_t al, enum asm_opt option);
+void
+asm_mov_imm(assemblyline_t al, enum asm_opt option);
 
 /**
  * Since the stack pointer register is non-scalable in SIB, Nasm will swap the
@@ -221,7 +240,8 @@ void asm_mov_imm(assemblyline_t al, enum asm_opt option);
  * function.
  */
 EXPORTABLE
-void asm_sib_index_base_swap(assemblyline_t al, enum asm_opt option);
+void
+asm_sib_index_base_swap(assemblyline_t al, enum asm_opt option);
 
 /**
  * In SIB, when no base register is present and the scale is equal to 2
@@ -242,7 +262,8 @@ void asm_sib_index_base_swap(assemblyline_t al, enum asm_opt option);
  * function.
  */
 EXPORTABLE
-void asm_sib_no_base(assemblyline_t al, enum asm_opt option);
+void
+asm_sib_no_base(assemblyline_t al, enum asm_opt option);
 
 /**
  * setting @param option to ASM_OPT_STRICT is equivalent to calling both
@@ -254,7 +275,8 @@ void asm_sib_no_base(assemblyline_t al, enum asm_opt option);
  * setting @param option to any other value results in an no-operation function
  */
 EXPORTABLE
-void asm_sib(assemblyline_t al, enum asm_opt option);
+void
+asm_sib(assemblyline_t al, enum asm_opt option);
 
 /**
  * setting @param option to ASM_OPT_STRICT is equivalent to calling both
@@ -268,6 +290,7 @@ void asm_sib(assemblyline_t al, enum asm_opt option);
  * setting @param option to any other value results in an no-operation function
  */
 EXPORTABLE
-void asm_set_all(assemblyline_t al, enum asm_opt option);
+void
+asm_set_all(assemblyline_t al, enum asm_opt option);
 
 #endif

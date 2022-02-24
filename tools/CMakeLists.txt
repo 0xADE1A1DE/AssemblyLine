@@ -26,6 +26,10 @@ else()
 
         ${ASSEMBLYLINE_SRC_DIR}
     )
+
+    if(DEBUG)
+        add_compile_options(-ggdb)
+    endif(DEBUG)
 endif()
 
 add_executable(asmline ${SOURCE_FILES})

@@ -48,6 +48,11 @@ if (MSVC)
 else()
     add_compile_definitions(_GNU_SOURCE=1)
     add_compile_options(-Wall -Wextra -std=gnu99 -fPIC)
+
+    if(DEBUG)
+        add_compile_options(-ggdb)
+    endif(DEBUG)
+
     set(
         LINKING_LIBS
 

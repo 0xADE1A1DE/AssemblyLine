@@ -10,8 +10,9 @@ set(LICENSE MIT)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-option(BUILD_TOOLKIT               "Compile the tools"                                                         ON)
-option(BUILD_TEST                  "Compile the test suite"                                                    ON)
+option(DEBUG             "Compile with debug symbols"                       ON)
+option(BUILD_TOOLKIT     "Compile the tools"                                ON)
+option(BUILD_TEST        "Compile the test suite"                           ON)
 
 
 set(ASSEMBLYLINE_ROOT_DIR ${CMAKE_CURRENT_LIST_DIR})
