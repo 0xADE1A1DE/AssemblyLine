@@ -44,6 +44,7 @@ test/*
 !test/*.asm
 !test/tools/*.sh
 !test/tap
+!test/CMakeLists.txt
 
 man/*
 !man/libassemblyline.3
