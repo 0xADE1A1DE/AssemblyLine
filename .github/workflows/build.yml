@@ -34,14 +34,16 @@ jobs:
         languages: cpp
       if: matrix.os == 'ubuntu-latest'
 
+    - name: Add msbuild to PATH
+      uses: microsoft/setup-msbuild@v1.1
+      with:
+        msbuild-architecture: ${{ matrix.platform }}
+      if: matrix.os == 'windows-latest'
+
     - name: Build assemblyline.dll
       if: matrix.os == 'windows-latest'
       shell: pwsh
       run: |
-        pwd
-        ls
-        Import-Module .\.github\Invoke-VS.ps1
-        Invoke-VisualStudio2022${{ matrix.platform }}
         New-Item -Type Directory -Name build
         Set-Location .\build
         cmake .. ${{ env.CMAKE_FLAGS }}
@@ -71,7 +73,7 @@ jobs:
         build/test/run
         for i in test/*asm
         do
-          build/tools/asmline $i
+          build/tools/asmline $i || echo
         done
 
     - name: Perform CodeQL Analysis
