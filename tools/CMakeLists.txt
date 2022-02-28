@@ -44,3 +44,5 @@ add_custom_command(
     $<TARGET_FILE:AssemblyLine>
     $<TARGET_FILE_DIR:asmline>
 )
+
+install(TARGETS asmline DESTINATION bin)

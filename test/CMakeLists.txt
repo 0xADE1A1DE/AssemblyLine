@@ -8,3 +8,5 @@ target_link_libraries(run $<TARGET_LINKER_FILE:AssemblyLine>)
 add_custom_command(TARGET run POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
     $<TARGET_FILE:AssemblyLine> $<TARGET_FILE_DIR:run>)
+
+install(TARGETS AssemblyLine DESTINATION test)

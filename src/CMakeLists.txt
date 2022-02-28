@@ -64,6 +64,9 @@ else()
     )
 endif()
 
+#
+# Linking directives
+#
 target_include_directories(AssemblyLine PUBLIC ${ASSEMBLYLINE_SRC_DIR}/)
 target_sources(AssemblyLine PRIVATE ${ASSEMBLYLINE_SRC_DIR}/)
 
@@ -76,3 +79,9 @@ GENERATE_EXPORT_HEADER(
 )
 
 target_link_libraries(AssemblyLine PUBLIC ${LINKING_LIBS})
+
+#
+# Install directives
+#
+install(TARGETS AssemblyLine DESTINATION lib)
+install(FILES ${HEADER_FILES} DESTINATION include)
