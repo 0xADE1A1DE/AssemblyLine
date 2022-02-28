@@ -26,21 +26,24 @@
  * being assembled than the internal buffer could store when initially
  * allocated.
  */
-int main() {
+int
+main()
+{
 
-  // use internal memory allocation
-  assemblyline_t al = asm_create_instance(NULL, 0);
+    // use internal memory allocation
+    assemblyline_t al = asm_create_instance(NULL, 0);
 
-  char *long_asm_file_path = {
-      "./test/mov.asm"}; // also, this file is very long in itself
-  // assemble file multiple times to ensure the internal buffer is exceeded
-  for (int i = 0; i <= 1; i++) {
-    if (asm_assemble_file(al, long_asm_file_path) == EXIT_FAILURE) {
-      fprintf(stderr, "failed to assemble %s\n", long_asm_file_path);
-      return EXIT_FAILURE;
+    char* long_asm_file_path = {"./asm/mov.asm"}; // also, this file is very long in itself
+    // assemble file multiple times to ensure the internal buffer is exceeded
+    for ( int i = 0; i <= 1; i++ )
+    {
+        if ( asm_assemble_file(al, long_asm_file_path) == EXIT_FAILURE )
+        {
+            fprintf(stderr, "failed to assemble %s\n", long_asm_file_path);
+            return EXIT_FAILURE;
+        }
     }
-  }
 
-  asm_destroy_instance(al);
-  return 0;
+    asm_destroy_instance(al);
+    return 0;
 }
