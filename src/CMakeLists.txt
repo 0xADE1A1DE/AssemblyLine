@@ -1,4 +1,5 @@
 set(ASSEMBLYLINE_SRC_DIR ${ASSEMBLYLINE_ROOT_DIR}/src CACHE INTERNAL "ASSEMBLYLINE_SRC_DIR")
+set(ASSEMBLYLINE_MAN_DIR ${ASSEMBLYLINE_ROOT_DIR}/man CACHE INTERNAL "ASSEMBLYLINE_MAN_DIR")
 
 include (GenerateExportHeader)
 
@@ -85,3 +86,8 @@ target_link_libraries(AssemblyLine PUBLIC ${LINKING_LIBS})
 #
 install(TARGETS AssemblyLine DESTINATION lib)
 install(FILES ${HEADER_FILES} DESTINATION include)
+
+if(NOT WIN32)
+    install(FILES ${ASSEMBLYLINE_MAN_DIR}/asmline.1 DESTINATION man/man1)
+    install(FILES ${ASSEMBLYLINE_MAN_DIR}/libassemblyline.3 DESTINATION man/man3)
+endif()
