@@ -1,13 +1,11 @@
 cmake_minimum_required(VERSION 3.16)
 set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
 
-project(AssemblyLine LANGUAGES C)
+project(AssemblyLine LANGUAGES C VERSION 1.2.0)
 
 set(PROGRAM_NAME AssemblyLine)
 set(PROGRAM_AUTHOR hugsy)
 set(PROGRAM_LICENSE "Apache License 2.0")
-set(PROGRAM_VERSION_MAJOR 1)
-set(PROGRAM_VERSION_MINOR 2)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
