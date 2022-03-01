@@ -12,7 +12,6 @@ enable_testing()
 
 add_compile_definitions(DEBUG)
 
-
 set(
     TEST_SOURCE_FILES
 
@@ -36,6 +35,8 @@ foreach(TESTFILE_SRC ${TEST_SOURCE_FILES})
 
     # create a target for the test binary
     add_executable(${TEST_TARGET_FILENAME} ${TESTFILE_SRC})
+
+    add_dependencies(${TEST_TARGET_FILENAME} AssemblyLine)
 
     # include the source headers
     target_include_directories(

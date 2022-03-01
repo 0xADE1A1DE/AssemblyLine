@@ -34,6 +34,8 @@ endif()
 
 add_executable(asmline ${SOURCE_FILES})
 
+add_dependencies(asmline AssemblyLine)
+
 target_include_directories(asmline PUBLIC ${HEADER_DIRS})
 
 target_link_libraries(asmline $<TARGET_LINKER_FILE:AssemblyLine>)
