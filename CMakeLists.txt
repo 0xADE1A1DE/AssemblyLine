@@ -1,11 +1,15 @@
 cmake_minimum_required(VERSION 3.16)
 set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
 
-project(AssemblyLine LANGUAGES C VERSION 1.2.0)
+project(AssemblyLine
+    LANGUAGES C
+    VERSION 1.2.0
+    DESCRIPTION "A C library and binary for generating machine code of x86_64 assembly language and executing on the fly."
+    HOMEPAGE_URL https://github.com/0xADE1A1DE/AssemblyLine
+)
 
-set(PROGRAM_NAME AssemblyLine)
-set(PROGRAM_AUTHOR hugsy)
-set(PROGRAM_LICENSE "Apache License 2.0")
+set(PROJECT_AUTHOR 0xADE1A1DE)
+set(PROJECT_LICENSE "Apache License 2.0")
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
@@ -36,4 +40,12 @@ if(BUILD_TEST)
     # Build toolkit
     #
     add_subdirectory(test)
+endif()
+
+
+#
+# Populate the pkgconfig file
+#
+if(NOT WIN32)
+    configure_file(assemblyline.pc.in assemblyline.pc @ONLY)
 endif()

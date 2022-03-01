@@ -21,3 +21,4 @@ build-win32
 .vscode
 
 src/config.h
+assemblyline.pc
