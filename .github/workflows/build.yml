@@ -74,17 +74,25 @@ jobs:
       if: matrix.os == 'windows-latest'
       shell: pwsh
       run: |
-        Write-Output "Todo"
+        Set-Location .\build\tools\${{ matrix.configuration }}\
+        Get-ChildItem ..\..\test\asm\ | ForEach-Object {
+          .\asmline.exe $_.Name
+        }
+        Set-Location ..\..\test\
+        ctest -N
+        Set-Location ..\
 
     - name: Run Linux tests
       if: matrix.os == 'ubuntu-latest'
       shell: bash
       run: |
-        build/test/run
-        for i in test/*asm
+        for i in test/*.asm
         do
-          build/tools/asmline $i || echo
+          build/tools/asmline -p $i || echo
         done
+        cd build/test
+        ctest -N
+        cd ../..
 
     - name: Perform CodeQL Analysis
       if: matrix.os == 'ubuntu-latest'
