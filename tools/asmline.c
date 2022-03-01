@@ -295,7 +295,7 @@ execute_get_ret_value(void* function, int arglen, enum run mode)
         for ( int i = 0; i < 6; i++ )
             free(arguments[i]);
     }
-    printf("\nthe value is 0x%lx\n", result);
+    printf("\nthe value is 0x%p\n", (void*)result);
 }
 
 int

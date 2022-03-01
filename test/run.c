@@ -41,7 +41,7 @@ execute_test(void (*exe)(uint64_t*, uint64_t*, ...))
     {
         if ( out[it] != expected_out[it] )
         {
-            fprintf(stderr, "👎 out[it]=%lu (expected_out[it]=%lu)\n", out[it], expected_out[it]);
+            fprintf(stderr, "👎 out[it]=%p (expected_out[it]=%p)\n", (void*)out[it], (void*)expected_out[it]);
             return EXIT_FAILURE;
         }
     }
