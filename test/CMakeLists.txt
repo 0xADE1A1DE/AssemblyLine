@@ -1,13 +1,5 @@
 set(ASSEMBLYLINE_TEST_DIR ${ASSEMBLYLINE_ROOT_DIR}/test CACHE INTERNAL "ASSEMBLYLINE_TEST_DIR")
 
-
-# add_executable(run ${ASSEMBLYLINE_TEST_DIR}/run.c)
-# target_include_directories(run PUBLIC ${TEST_DIR} ${ASSEMBLYLINE_SRC_DIR})
-# target_link_libraries(run $<TARGET_LINKER_FILE:AssemblyLine>)
-# add_custom_command(TARGET run POST_BUILD
-#     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-#     $<TARGET_FILE:AssemblyLine> $<TARGET_FILE_DIR:run>)
-
 enable_testing()
 
 add_compile_definitions(DEBUG)
@@ -22,6 +14,7 @@ set(
     ${ASSEMBLYLINE_TEST_DIR}/optimization_disabled.c
     ${ASSEMBLYLINE_TEST_DIR}/run.c
     ${ASSEMBLYLINE_TEST_DIR}/vector_operations.c
+    ${ASSEMBLYLINE_TEST_DIR}/compile_asm.c
 )
 
 
@@ -37,6 +30,8 @@ foreach(TESTFILE_SRC ${TEST_SOURCE_FILES})
     add_executable(${TEST_TARGET_FILENAME} ${TESTFILE_SRC})
 
     add_dependencies(${TEST_TARGET_FILENAME} assemblyline)
+
+    add_compile_options(-masm=intel -O0 -fomit-frame-pointer)
 
     # include the source headers
     target_include_directories(
