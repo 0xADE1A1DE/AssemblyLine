@@ -35,7 +35,9 @@ foreach(TESTFILE_SRC ${TEST_SOURCE_FILES})
 
     add_dependencies(${TEST_TARGET_FILENAME} assemblyline)
 
-    add_compile_options(-masm=intel -O0 -fomit-frame-pointer)
+    if(TEST_TARGET_FILENAME STREQUAL "compile_asm")
+        target_compile_options(${TEST_TARGET_FILENAME} PRIVATE -masm=intel)
+    endif()
 
     # include the source headers
     target_include_directories(
@@ -60,6 +62,7 @@ foreach(TESTFILE_SRC ${TEST_SOURCE_FILES})
     # set the installation rule
     install(TARGETS ${TEST_TARGET_FILENAME} DESTINATION test)
 
+    unset(TEST_TARGET_FILENAME)
 endforeach()
 
 file(
