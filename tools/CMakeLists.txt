@@ -34,16 +34,16 @@ endif()
 
 add_executable(asmline ${SOURCE_FILES})
 
-add_dependencies(asmline AssemblyLine)
+add_dependencies(asmline assemblyline)
 
 target_include_directories(asmline PUBLIC ${HEADER_DIRS})
 
-target_link_libraries(asmline $<TARGET_LINKER_FILE:AssemblyLine>)
+target_link_libraries(asmline $<TARGET_LINKER_FILE:assemblyline>)
 
 add_custom_command(
     TARGET asmline POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-    $<TARGET_FILE:AssemblyLine>
+    $<TARGET_FILE:assemblyline>
     $<TARGET_FILE_DIR:asmline>
 )
 

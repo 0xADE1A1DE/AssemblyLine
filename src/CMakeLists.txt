@@ -40,7 +40,7 @@ configure_file(
     "${ASSEMBLYLINE_SRC_DIR}/config.h"
 )
 
-add_library(AssemblyLine SHARED ${SOURCE_FILES})
+add_library(assemblyline SHARED ${SOURCE_FILES})
 
 if (MSVC)
     add_compile_options(/W3 /WX /Wall /sdl /guard:cf /guard:ehcont /CETCOMPAT)
@@ -68,24 +68,30 @@ endif()
 #
 # Linking directives
 #
-target_include_directories(AssemblyLine PUBLIC ${ASSEMBLYLINE_SRC_DIR}/)
-target_sources(AssemblyLine PRIVATE ${ASSEMBLYLINE_SRC_DIR}/)
+target_include_directories(assemblyline PUBLIC ${ASSEMBLYLINE_SRC_DIR}/)
+target_sources(assemblyline PRIVATE ${ASSEMBLYLINE_SRC_DIR}/)
 
 GENERATE_EXPORT_HEADER(
-    AssemblyLine
-    BASE_NAME AssemblyLine
-    EXPORT_MACRO_NAME AssemblyLine_EXPORT
+    assemblyline
+    BASE_NAME assemblyline
+    EXPORT_MACRO_NAME assemblyline_export
     EXPORT_FILE_NAME assemblyline_export.hpp
     STATIC_DEFINE assemblyline_built_as_static
 )
 
-target_link_libraries(AssemblyLine PUBLIC ${LINKING_LIBS})
+target_link_libraries(assemblyline PUBLIC ${LINKING_LIBS})
+set_target_properties(
+    assemblyline
+    PROPERTIES
+    VERSION ${PROJECT_VERSION}
+    SOVERSION ${PROJECT_VERSION_MAJOR}
+)
 
 #
 # Install directives
 #
-install(TARGETS AssemblyLine DESTINATION lib)
-install(FILES ${HEADER_FILES} DESTINATION include)
+install(TARGETS assemblyline DESTINATION lib)
+install(FILES ${ASSEMBLYLINE_SRC_DIR}/assemblyline.h DESTINATION include)
 
 if(NOT WIN32)
     install(FILES ${ASSEMBLYLINE_MAN_DIR}/asmline.1 DESTINATION man/man1)

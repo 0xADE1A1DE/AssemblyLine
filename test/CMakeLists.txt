@@ -36,7 +36,7 @@ foreach(TESTFILE_SRC ${TEST_SOURCE_FILES})
     # create a target for the test binary
     add_executable(${TEST_TARGET_FILENAME} ${TESTFILE_SRC})
 
-    add_dependencies(${TEST_TARGET_FILENAME} AssemblyLine)
+    add_dependencies(${TEST_TARGET_FILENAME} assemblyline)
 
     # include the source headers
     target_include_directories(
@@ -48,7 +48,7 @@ foreach(TESTFILE_SRC ${TEST_SOURCE_FILES})
     )
 
     # link the test binary with assemblyline
-    target_link_libraries(${TEST_TARGET_FILENAME} PRIVATE $<TARGET_LINKER_FILE:AssemblyLine>)
+    target_link_libraries(${TEST_TARGET_FILENAME} PRIVATE $<TARGET_LINKER_FILE:assemblyline>)
 
     # create the test case that will be run by `ctest`
     add_test(
