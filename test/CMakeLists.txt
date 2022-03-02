@@ -26,6 +26,10 @@ foreach(TESTFILE_SRC ${TEST_SOURCE_FILES})
     # get just the filename
     get_filename_component(TEST_TARGET_FILENAME ${TESTFILE_BIN} NAME)
 
+    if(TEST_TARGET_FILENAME STREQUAL "compile_asm" AND MSVC)
+        continue()
+    endif()
+
     # create a target for the test binary
     add_executable(${TEST_TARGET_FILENAME} ${TESTFILE_SRC})
 

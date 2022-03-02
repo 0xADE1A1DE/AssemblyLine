@@ -110,17 +110,17 @@ jobs:
         Copy-Item -Verbose build\tools\${{ matrix.configuration }}\asmline.exe artifact\
 
         New-Item -Type Directory -Name artifact\include\
-        Copy-Item src\*.h artifact\include\
+        Copy-Item src\assemblyline.h artifact\include\
 
     - name: Prepare Linux artifact
       if: matrix.os == 'ubuntu-latest'
       shell: bash
       run: |
         mkdir -p artifact/include/linux/
-        cp -v build/src/libAssemblyLine.so artifact/
+        cp -v build/src/libassemblyline.so* artifact/
         cp -v build/assemblyline.pc artifact/
         cp -v build/tools/asmline artifact/
-        cp -v src/*.h artifact/include/
+        cp -v src/assemblyline.h artifact/include/
 
     - name: Publish artifact
       uses: actions/upload-artifact@v2
