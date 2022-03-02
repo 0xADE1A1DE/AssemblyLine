@@ -48,4 +48,5 @@ endif()
 #
 if(NOT WIN32)
     configure_file(assemblyline.pc.in assemblyline.pc @ONLY)
+    install(FILES assemblyline.pc DESTINATION lib/pkgconfig/)
 endif()
