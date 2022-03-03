@@ -70,6 +70,8 @@ file(
 
 
 
+if(NOT MSVC)
+
 set(ASSEMBLYLINE_TEST_ASM_DIR ${ASSEMBLYLINE_TEST_DIR}/inc)
 set(
     ASM_TEST_CASES
@@ -86,7 +88,6 @@ foreach(ASM_TEST_CASE ${ASM_TEST_CASES})
     add_executable(${ASM_TEST_CASE} ${ASSEMBLYLINE_TEST_DIR}/compile_asm.c)
 
     add_dependencies(${ASM_TEST_CASE} assemblyline)
-
     target_compile_options(${ASM_TEST_CASE} PRIVATE -masm=intel)
     target_include_directories(${ASM_TEST_CASE} PUBLIC ${ASSEMBLYLINE_TEST_ASM_DIR} $<TARGET_PROPERTY:assemblyline,INCLUDE_DIRECTORIES>)
 
@@ -95,3 +96,5 @@ foreach(ASM_TEST_CASE ${ASM_TEST_CASES})
 
     unset(ASM_TEST_CASE)
 endforeach()
+
+endif()
