@@ -74,11 +74,7 @@ jobs:
       if: matrix.os == 'windows-latest'
       shell: pwsh
       run: |
-        Set-Location .\build\tools\${{ matrix.configuration }}\
-        Get-ChildItem ..\..\test\asm\ | ForEach-Object {
-          .\asmline.exe $_.Name
-        }
-        Set-Location ..\..\test\
+        Set-Location .\build\test\
         ctest -N
         Set-Location ..\
 
@@ -86,9 +82,9 @@ jobs:
       if: matrix.os == 'ubuntu-latest'
       shell: bash
       run: |
-        for i in test/*.asm
+        for i in test/test_*
         do
-          build/tools/asmline -p $i || echo
+          test -f $i && $i
         done
         cd build/test
         ctest -N
