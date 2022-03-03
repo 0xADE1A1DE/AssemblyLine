@@ -24,19 +24,22 @@
  * takes an operanding format string representation @param opd_en and returns
  * the corresponding enum operand_format
  */
-operand_format get_opd_format(char *opd_en);
+operand_format
+get_opd_format(char* opd_en);
 
 /**
  * takes a string representation of an instruction name @param instruction and
  * an operand_format enum representation @param opd_index and returns the index
  * key to the matching INSTR_TABLE[] entry.
  */
-int str_to_instr_key(char *instruction, operand_format opd_layout);
+int
+str_to_instr_key(char* instruction, operand_format opd_layout);
 
 /**
  * takes a INSTR_TABLE[] index key @param key and returns the new INSTR_TABLE[]
  * index key
  */
-int to_special_instr_key(int key);
+int
+to_special_instr_key(int key);
 
 #endif

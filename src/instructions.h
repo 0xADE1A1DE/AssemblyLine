@@ -22,65 +22,67 @@
 #include "enums.h"
 
 // table for storing register string to enum mapping
-struct opd_format_table {
-  // enum representation of register
-  operand_format val;
-  // string representation of register
-  const char str[OPERAND_FORMAT_LEN];
+struct opd_format_table
+{
+    // enum representation of register
+    operand_format val;
+    // string representation of register
+    const char str[OPERAND_FORMAT_LEN];
 };
 
 // defines opcode layout of each supported instruction
-struct instr_table {
+struct instr_table
+{
 
-  /* null-terminated string representation of an instruction ex: "mov"
-   * subsequent instructions of the same name with a different operand
-   * encoding will be placed contiguously with the first instance of the
-   * instuction and will have the '\0' string
-   */
-  char instr_name[MAX_INSTR_LEN];
+    /* null-terminated string representation of an instruction ex: "mov"
+     * subsequent instructions of the same name with a different operand
+     * encoding will be placed contiguously with the first instance of the
+     * instuction and will have the '\0' string
+     */
+    char instr_name[MAX_INSTR_LEN];
 
-  // asm_instr enumerator for uniquely identifying a instruction
-  int name;
+    // asm_instr enumerator for uniquely identifying a instruction
+    int name;
 
-  /* contains the valid operand formats for an instruction that maps
-   * to the same operand enccoding (at most 2 for a single operand encoding)
-   * ex: rr (instr reg,reg) && rm (instr reg, [mem]) -> RM
-   */
-  int opd_format[VALID_OPERAND_FORMATS];
+    /* contains the valid operand formats for an instruction that maps
+     * to the same operand enccoding (at most 2 for a single operand encoding)
+     * ex: rr (instr reg,reg) && rm (instr reg, [mem]) -> RM
+     */
+    int opd_format[VALID_OPERAND_FORMATS];
 
-  /* operand encoding format as an enumerator (determines how instruction
-   * operands will be encoded) in assemblyline the 'I' character op/en will be
-   * ignored unless it is standalone ex: MI -> M , RMI -> RM , I -> I
-   */
-  operand_encoding encode_operand;
+    /* operand encoding format as an enumerator (determines how instruction
+     * operands will be encoded) in assemblyline the 'I' character op/en will be
+     * ignored unless it is standalone ex: MI -> M , RMI -> RM , I -> I
+     */
+    operand_encoding encode_operand;
 
-  /* enumerator for defining the semantic type of an instruction
-   * where special encoding is required ( currently, only applicable for
-   * SHIFT, DATA_TRANSFER, and CONTROLFLOW type instructions)
-   * else set this to 'OTHER'
-   */
-  instr_type type;
+    /* enumerator for defining the semantic type of an instruction
+     * where special encoding is required ( currently, only applicable for
+     * SHIFT, DATA_TRANSFER, and CONTROLFLOW type instructions)
+     * else set this to 'OTHER'
+     */
+    instr_type type;
 
-  /* 'i' index of opcode[i] when a byte changes in the opcode depending
-   * on the register size for the instruction
-   * (set this value to NA if not applicable to the instruction)
-   */
-  int op_offset_i;
+    /* 'i' index of opcode[i] when a byte changes in the opcode depending
+     * on the register size for the instruction
+     * (set this value to NA if not applicable to the instruction)
+     */
+    int op_offset_i;
 
-  /* used for instructions with a single register operand denoted as '/digit'
-   * in the intel manual section 3.1.1.1
-   * (set this value to NA if not applicable to the instruction)
-   */
-  int single_reg_r;
+    /* used for instructions with a single register operand denoted as '/digit'
+     * in the intel manual section 3.1.1.1
+     * (set this value to NA if not applicable to the instruction)
+     */
+    int single_reg_r;
 
-  // number of bytes in the opcode[MAX_OPCODE_LEN] field
-  int instr_size;
+    // number of bytes in the opcode[MAX_OPCODE_LEN] field
+    int instr_size;
 
-  /* opcode layout for an instruction ex: {REX,0x0f,0xa9,REG}
-   * REX and REG are placeholders for the prefix and register values
-   * more can be found in enums.h opcode_encoding
-   */
-  unsigned int opcode[MAX_OPCODE_LEN];
+    /* opcode layout for an instruction ex: {REX,0x0f,0xa9,REG}
+     * REX and REG are placeholders for the prefix and register values
+     * more can be found in enums.h opcode_encoding
+     */
+    unsigned int opcode[MAX_OPCODE_LEN];
 };
 
 extern const struct opd_format_table OPD_FORMAT_TABLE[];

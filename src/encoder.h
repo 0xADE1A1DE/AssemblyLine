@@ -25,16 +25,19 @@
 /**
  * determines opcode offset of @param instruc for  different register size
  */
-void encode_offset(struct instr *instruc);
+void
+encode_offset(struct instr* instruc);
 
 /**
  * determines register and prefix opcode of @param instruc
  */
-int encode_operands(struct instr *instruc);
+int
+encode_operands(struct instr* instruc);
 
 /**
  * preprocess the immediate for @param instruc
  */
-void encode_imm(struct instr *instruc);
+void
+encode_imm(struct instr* instruc);
 
 #endif

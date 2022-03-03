@@ -29,6 +29,7 @@
  * machine code into the buffer field of @param al. Also counts the number of
  * chunks break in the buffer and stores in @param dest (if applicable)
  */
-int assemble_all(assemblyline_t al, const char *str, int *dest);
+int
+assemble_all(assemblyline_t al, const char* str, int* dest);
 
 #endif

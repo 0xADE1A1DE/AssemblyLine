@@ -18,51 +18,59 @@
 #ifndef REG_PARSER_H
 #define REG_PARSER_H
 
+#include <inttypes.h>
+#include <stdbool.h>
+
 #include "enums.h"
 #include "instruction_data.h"
 #include "registers.h"
-#include <inttypes.h>
-#include <stdbool.h>
 
 /**
  * returns an opcode offset based on the value of @param reg_value
  */
-int get_opcode_offset(asm_reg reg_value);
+int
+get_opcode_offset(asm_reg reg_value);
 
 /**
  * finds the register in @param str and copies the characters to @param reg
  * ex: "[rax+0x8]" or "rax ," -> "rax"
  */
-void get_reg_str(char *opd_str, char *reg);
+void
+get_reg_str(char* opd_str, char* reg);
 
 /**
  * converts @param neg_num to is negative 2's complement representation and
  * return the value
  */
-uint32_t process_neg_disp(uint32_t neg_num);
+uint32_t
+process_neg_disp(uint32_t neg_num);
 
 /**
  * finds the index register in @param mem and copies characters to @param reg
  * ex: "[rax+rbp]" -> "rbp"
  */
-unsigned int get_index_reg(struct instr *instruc, char *mem, char *reg);
+unsigned int
+get_index_reg(struct instr* instruc, char* mem, char* reg);
 
 /**
  * finds the addition sign in @param mem and returns the index of memory
  * displacement as well as determining its base its sign(+ or -)
  */
-int find_add_mem(char *mem, bool *neg, int *base);
+int
+find_add_mem(char* mem, bool* neg, int* base);
 
 /**
  * determines operand type of @param operand, returns 'r' for register, 'm' for
  * memory reference, and 'i' immediate.
  */
-char get_operand_type(char *operand);
+char
+get_operand_type(char* operand);
 
 /**
  * takes a string representation of a register @param reg and return the
  * corresponding enum representation
  */
-asm_reg str_to_reg(char *reg);
+asm_reg
+str_to_reg(char* reg);
 
 #endif

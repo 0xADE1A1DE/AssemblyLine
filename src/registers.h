@@ -23,12 +23,13 @@
 
 /*stores all string representation of registers along
   with their corresponding generic type*/
-struct reg_table {
-  // generic register type
-  asm_reg gen_reg;
-  // list of registers in string format that map to a single generic register
-  // type
-  char reg_conversion[NUM_OF_REGISTERS][REGISTER_LEN];
+struct reg_table
+{
+    // generic register type
+    asm_reg gen_reg;
+    // list of registers in string format that map to a single generic register
+    // type
+    char reg_conversion[NUM_OF_REGISTERS][REGISTER_LEN];
 };
 
 extern const struct reg_table REG_TABLE[];

@@ -19,103 +19,110 @@
 #ifndef INSTRUCTION_DATA_H
 #define INSTRUCTION_DATA_H
 
-#include "common.h"
-#include "enums.h"
-#include "instructions.h"
 #include <inttypes.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
 
+#include "common.h"
+#include "enums.h"
+#include "instructions.h"
+
 // contains the memory context for assembling an asm program
-struct assemblyline {
-  // points to a memory buffer location containing the first instruction
-  uint8_t *buffer;
-  int buffer_len;
-  // size of assembly program in bytes (could be manually adjusted)
-  int offset;
-  size_t chunk_size;
-  bool external : 1;
-  ASM_MODE assembly_mode;
-  uint8_t assembly_opt;
-  bool debug : 1;
-  bool finalized : 1;
-  bool table_built : 1;
+struct assemblyline
+{
+    // points to a memory buffer location containing the first instruction
+    uint8_t* buffer;
+    int buffer_len;
+    // size of assembly program in bytes (could be manually adjusted)
+    int offset;
+    size_t chunk_size;
+    bool external : 1;
+    ASM_MODE assembly_mode;
+    uint8_t assembly_opt;
+    bool debug       : 1;
+    bool finalized   : 1;
+    bool table_built : 1;
 };
 
 // prefix and and register byte values
-struct prefix {
-  unsigned int reg;
-  unsigned int rex;
-  // [W|R][vvvv][L][pp]
-  unsigned int vvvv : 4;
-  bool is_w0 : 1;
-  bool is_67H : 1;
-  bool is_66H : 1;
-  // fix later if possible
-  unsigned int sib;
+struct prefix
+{
+    unsigned int reg;
+    unsigned int rex;
+    // [W|R][vvvv][L][pp]
+    unsigned int vvvv : 4;
+    bool is_w0        : 1;
+    bool is_67H       : 1;
+    bool is_66H       : 1;
+    // fix later if possible
+    unsigned int sib;
 };
 
-struct operand {
-  // pointer to operand in instruction string
-  char *ptr;
-  // stores the string representation of register
-  char str[MAX_REG_LEN];
-  // enum representation of register
-  asm_reg reg;
-  // stores the 2nd register in a memory reference
-  char sib[MAX_REG_LEN];
-  // enum representation of 2nd register in
-  // a memory reference
-  asm_reg index;
-  // operand typecould be: r,m, or i
-  char type;
+struct operand
+{
+    // pointer to operand in instruction string
+    char* ptr;
+    // stores the string representation of register
+    char str[MAX_REG_LEN];
+    // enum representation of register
+    asm_reg reg;
+    // stores the 2nd register in a memory reference
+    char sib[MAX_REG_LEN];
+    // enum representation of 2nd register in
+    // a memory reference
+    asm_reg index;
+    // operand typecould be: r,m, or i
+    char type;
 };
 
 // stores keywords used in assemblyline
-union keywords {
-  struct {
-    uint8_t is_short : 1;
-    uint8_t is_long : 1;
-    uint8_t is_byte : 1;
-    uint8_t is_word : 1;
-    uint8_t is_dword : 1;
-  };
-  uint8_t is_keyword;
+union keywords
+{
+    struct
+    {
+        uint8_t is_short : 1;
+        uint8_t is_long  : 1;
+        uint8_t is_byte  : 1;
+        uint8_t is_word  : 1;
+        uint8_t is_dword : 1;
+    };
+    uint8_t is_keyword;
 };
 
 // internal representation of an assembly instruction
-struct instr {
-  // connects instr to INSTR_TABLE[]
-  int key;
-  // stores components of assembly instruction into buffer
-  char instruction[INSTRUCTION_CHAR_LEN];
-  // stores operands represented as strings
-  struct operand opd[NUM_OF_OPD];
-  // bitmap for keywords
-  union keywords keyword;
-  // enable or disable nasm register optimization
-  uint8_t assembly_opt;
-  // constants and memory displacement
-  bool imm : 1;
-  bool reduced_imm : 1;
-  unsigned long cons;
-  bool zero_byte : 1;
-  bool mem_disp : 1;
-  bool is_sib_const : 1;
-  bool is_sib : 1;
-  bool no_base : 1;
-  uint32_t mem_offset;
-  // displacement for modRM64_m variable based on
-  // value of op_en and size of mem_disp
-  int mod_disp;
-  int sib_disp;
-  // uses operand_encoding to get value
-  // operand and prefix values
-  struct prefix hex;
-  // offset for opcode determined by register size
-  int op_offset;
-  int rd_offset;
+struct instr
+{
+    // connects instr to INSTR_TABLE[]
+    int key;
+    // stores components of assembly instruction into buffer
+    char instruction[INSTRUCTION_CHAR_LEN];
+    // stores operands represented as strings
+    struct operand opd[NUM_OF_OPD];
+    // bitmap for keywords
+    union keywords keyword;
+    // enable or disable nasm register optimization
+    uint8_t assembly_opt;
+    // constants and memory displacement
+    bool imm         : 1;
+    bool reduced_imm : 1;
+    unsigned long cons;
+    bool zero_byte    : 1;
+    bool mem_disp     : 1;
+    bool is_sib_const : 1;
+    bool is_sib       : 1;
+    bool no_base      : 1;
+    uint32_t mem_offset;
+    // displacement for modRM64_m variable based on
+    // value of op_en and size of mem_disp
+    int mod_disp;
+    int sib_disp;
+    // uses operand_encoding to get value
+    // operand and prefix values
+    struct prefix hex;
+    // offset for opcode determined by register size
+    int op_offset;
+    int rd_offset;
 };
 
 #endif

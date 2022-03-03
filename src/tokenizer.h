@@ -26,6 +26,7 @@
  * Given an instance of @param instr_buffer, tokenize @param comp_instr string
  * and maps instruction componenets to buffer fields within @param instr_buffer
  */
-int instr_tok(struct instr *instr_buffer, char *comp_instr);
+int
+instr_tok(struct instr* instr_buffer, char* comp_instr);
 
 #endif

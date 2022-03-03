@@ -18,20 +18,23 @@
 #ifndef ASSEMBLER_H
 #define ASSEMBLER_H
 
+#include <inttypes.h>
+
 #include "common.h"
 #include "instruction_data.h"
-#include <inttypes.h>
 
 /**
  * writes nop instruction with length @param nop_pad_len at pointer location
  * @param buff
  */
-int nop_padding(uint8_t *buf, int nop_pad_len);
+int
+nop_padding(uint8_t* buf, int nop_pad_len);
 
 /**
  * assembles the prefix, opcode, memory displacement, and immediate of a @param
  * single_instr at pointer location @param ptr
  */
-int assemble_asm(struct instr *single_instr, uint8_t *dest);
+int
+assemble_asm(struct instr* single_instr, uint8_t* dest);
 
 #endif
