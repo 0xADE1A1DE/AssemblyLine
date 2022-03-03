@@ -483,7 +483,7 @@
     "and rax, [ rbx ];\n"                                                                                              \
     "and rax, [ rbx + 0x10 ];\n"                                                                                       \
     "and rax, 0x0 ;\n"                                                                                                 \
-    "and rax, 0x0 ; with a comment;\n"                                                                                 \
+    "and rax, 0x0 ;\n"                                                                                                 \
     "and r12, r14;\n"                                                                                                  \
     "and r12, rbx;\n"                                                                                                  \
     "and r12, [ rsp + 0x10 ];\n"                                                                                       \

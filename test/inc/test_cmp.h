@@ -483,7 +483,7 @@
     "cmp rax, [ rbx ];\n"                                                                                              \
     "cmp rax, [ rbx + 0x10 ];\n"                                                                                       \
     "cmp rax, 0x0;\n"                                                                                                  \
-    "cmp rax, 0x0 ; with a comment;\n"                                                                                 \
+    "cmp rax, 0x0;\n"                                                                                                  \
     "cmp r12, r14;\n"                                                                                                  \
     "cmp r12, rbx;\n"                                                                                                  \
     "cmp r12, [ rsp + 0x10 ];\n"                                                                                       \
