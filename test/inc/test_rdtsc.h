@@ -1,0 +1,3 @@
+#define CODE                                                                                                           \
+    "rdtsc;\n"                                                                                                         \
+    ""

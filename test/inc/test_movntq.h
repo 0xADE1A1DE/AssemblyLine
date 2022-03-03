@@ -1,0 +1,33 @@
+#define CODE                                                                                                           \
+    "movntq [rax+0x5b], mm5;\n"                                                                                        \
+    "movntq [rcx+0x5b], mm5;\n"                                                                                        \
+    "movntq [rdx+0x5b], mm5;\n"                                                                                        \
+    "movntq [rcx+0x5b], mm5;\n"                                                                                        \
+    "movntq [rsp+0x5b], mm5;\n"                                                                                        \
+    "movntq [rbp+0x5b], mm5;\n"                                                                                        \
+    "movntq [rsi+0x5b], mm5;\n"                                                                                        \
+    "movntq [rdi+0x5b], mm5;\n"                                                                                        \
+    "movntq [r8+0x5b], mm5;\n"                                                                                         \
+    "movntq [r9+0x5b], mm5;\n"                                                                                         \
+    "movntq [r10+0x5b], mm5;\n"                                                                                        \
+    "movntq [r11+0x5b], mm5;\n"                                                                                        \
+    "movntq [r12+0x5b], mm5;\n"                                                                                        \
+    "movntq [r13+0x5b], mm5;\n"                                                                                        \
+    "movntq [r14+0x5b], mm5;\n"                                                                                        \
+    "movntq [r15+0x5b], mm5;\n"                                                                                        \
+    "movntq [eax+0x5b], mm5;\n"                                                                                        \
+    "movntq [ecx+0x5b], mm5;\n"                                                                                        \
+    "movntq [edx+0x5b], mm5;\n"                                                                                        \
+    "movntq [ecx+0x5b], mm5;\n"                                                                                        \
+    "movntq [esp+0x5b], mm5;\n"                                                                                        \
+    "movntq [ebp+0x5b], mm5;\n"                                                                                        \
+    "movntq [esi+0x5b], mm5;\n"                                                                                        \
+    "movntq [edi+0x5b], mm5;\n"                                                                                        \
+    "movntq [r8d+0x5b], mm5;\n"                                                                                        \
+    "movntq [r9d+0x5b], mm5;\n"                                                                                        \
+    "movntq [r10d+0x5b], mm5;\n"                                                                                       \
+    "movntq [r11d+0x5b], mm5;\n"                                                                                       \
+    "movntq [r12d+0x5b], mm5;\n"                                                                                       \
+    "movntq [r13d+0x5b], mm5;\n"                                                                                       \
+    "movntq [r14d+0x5b], mm5;\n"                                                                                       \
+    "movntq [r15d+0x5b], mm5;\n" 

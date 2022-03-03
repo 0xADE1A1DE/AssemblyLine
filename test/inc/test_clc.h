@@ -1,0 +1,3 @@
+#define CODE                                                                                                           \
+    "clc;\n"                                                                                                           \
+    ""
