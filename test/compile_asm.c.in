@@ -16,7 +16,7 @@
 ///
 
 // clang-format off
-#include <test_adc.h>
+#include <@ASM_TEST_CASE@.h>
 
 #ifndef CODE
 #error "no code defined"

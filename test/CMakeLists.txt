@@ -26,7 +26,7 @@ foreach(TESTFILE_SRC ${TEST_SOURCE_FILES})
     # get just the filename
     get_filename_component(TEST_TARGET_FILENAME ${TESTFILE_BIN} NAME)
 
-    if(TEST_TARGET_FILENAME STREQUAL "compile_asm" AND MSVC)
+    if(TEST_TARGET_FILENAME STREQUAL "compile_asm")
         continue()
     endif()
 
@@ -34,10 +34,6 @@ foreach(TESTFILE_SRC ${TEST_SOURCE_FILES})
     add_executable(${TEST_TARGET_FILENAME} ${TESTFILE_SRC})
 
     add_dependencies(${TEST_TARGET_FILENAME} assemblyline)
-
-    if(TEST_TARGET_FILENAME STREQUAL "compile_asm")
-        target_compile_options(${TEST_TARGET_FILENAME} PRIVATE -masm=intel)
-    endif()
 
     # include the source headers
     target_include_directories(
@@ -71,3 +67,31 @@ file(
     FILES_MATCHING PATTERN "*.asm"
     PERMISSIONS OWNER_WRITE OWNER_READ
 )
+
+
+
+set(ASSEMBLYLINE_TEST_ASM_DIR ${ASSEMBLYLINE_TEST_DIR}/inc)
+set(
+    ASM_TEST_CASES
+
+    test_adc
+)
+
+foreach(ASM_TEST_CASE ${ASM_TEST_CASES})
+
+    # create the template file
+    configure_file(${ASSEMBLYLINE_TEST_DIR}/compile_asm.c.in ${ASSEMBLYLINE_TEST_DIR}/compile_asm.c)
+
+    # create a target for the test binary
+    add_executable(${ASM_TEST_CASE} ${ASSEMBLYLINE_TEST_DIR}/compile_asm.c)
+
+    add_dependencies(${ASM_TEST_CASE} assemblyline)
+
+    target_compile_options(${ASM_TEST_CASE} PRIVATE -masm=intel)
+    target_include_directories(${ASM_TEST_CASE} PUBLIC ${ASSEMBLYLINE_TEST_ASM_DIR} $<TARGET_PROPERTY:assemblyline,INCLUDE_DIRECTORIES>)
+
+    # link the test binary with assemblyline
+    target_link_libraries(${ASM_TEST_CASE} PRIVATE $<TARGET_LINKER_FILE:assemblyline>)
+
+    unset(ASM_TEST_CASE)
+endforeach()

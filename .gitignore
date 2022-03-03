@@ -4,12 +4,15 @@ tools/*
 !tools/CMakeLists.txt
 
 test/*
+test/compile_asm.c
 !test/*.c
+!test/inc/*.h
 !test/*.sh
 !test/*.asm
 !test/tools/*.sh
 !test/tap
 !test/CMakeLists.txt
+!test/compile_asm.c.in
 
 man/*
 !man/libassemblyline.3
