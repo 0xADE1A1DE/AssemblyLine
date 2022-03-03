@@ -74,7 +74,7 @@ jobs:
       if: matrix.os == 'windows-latest'
       shell: pwsh
       run: |
-        Set-Location .\build\test\
+        Set-Location .\build
         ctest --parallel=${{ env.NB_CPU }} --extra-verbose --cfg=${{ matrix.configuration }}
         Set-Location ..\
 
