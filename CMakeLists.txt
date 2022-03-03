@@ -8,6 +8,8 @@ project(AssemblyLine
     HOMEPAGE_URL https://github.com/0xADE1A1DE/AssemblyLine
 )
 
+include(CTest)
+
 set(PROJECT_AUTHOR 0xADE1A1DE)
 set(PROJECT_LICENSE "Apache License 2.0")
 
@@ -15,7 +17,7 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 option(DEBUG             "Compile with debug symbols"                       ON)
 option(BUILD_TOOLKIT     "Compile the tools"                                ON)
-option(BUILD_TEST        "Compile the test suite"                           OFF)
+option(BUILD_TESTING     "Compile the test suite"                           OFF)
 
 
 set(ASSEMBLYLINE_ROOT_DIR ${CMAKE_CURRENT_LIST_DIR})
@@ -35,7 +37,7 @@ if(BUILD_TOOLKIT)
 endif()
 
 
-if(BUILD_TEST)
+if(BUILD_TESTING)
     #
     # Build toolkit
     #

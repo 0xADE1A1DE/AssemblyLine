@@ -14,7 +14,6 @@ set(
     ${ASSEMBLYLINE_TEST_DIR}/optimization_disabled.c
     ${ASSEMBLYLINE_TEST_DIR}/run.c
     ${ASSEMBLYLINE_TEST_DIR}/vector_operations.c
-    ${ASSEMBLYLINE_TEST_DIR}/compile_asm.c
 )
 
 
@@ -25,10 +24,6 @@ foreach(TESTFILE_SRC ${TEST_SOURCE_FILES})
 
     # get just the filename
     get_filename_component(TEST_TARGET_FILENAME ${TESTFILE_BIN} NAME)
-
-    if(TEST_TARGET_FILENAME STREQUAL "compile_asm")
-        continue()
-    endif()
 
     # create a target for the test binary
     add_executable(${TEST_TARGET_FILENAME} ${TESTFILE_SRC})
@@ -49,10 +44,8 @@ foreach(TESTFILE_SRC ${TEST_SOURCE_FILES})
 
     # create the test case that will be run by `ctest`
     add_test(
-        NAME
-        ${TEST_TARGET_FILENAME}
-        COMMAND
-        $<TARGET_FILE:${TEST_TARGET_FILENAME}>
+        NAME ${TEST_TARGET_FILENAME}
+        COMMAND $<TARGET_FILE:${TEST_TARGET_FILENAME}>
     )
 
     # set the installation rule

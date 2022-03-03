@@ -3,7 +3,7 @@ name: CI Build
 env:
   REPO: hugsy/AssemblyLine
   VERBOSE: "1"
-  CMAKE_FLAGS: "-DDEBUG=ON -DBUILD_TOOLKIT=ON -DBUILD_TEST=ON"
+  CMAKE_FLAGS: "-DDEBUG=ON -DBUILD_TOOLKIT=ON -DBUILD_TESTING=ON"
 
 on: push
 
@@ -75,19 +75,15 @@ jobs:
       shell: pwsh
       run: |
         Set-Location .\build\test\
-        ctest --parallel=${{ env.NB_CPU }} --extra-verbose
+        ctest --parallel=${{ env.NB_CPU }} --extra-verbose --cfg=${{ matrix.configuration }}
         Set-Location ..\
 
     - name: Run Linux tests
       if: matrix.os == 'ubuntu-latest'
       shell: bash
       run: |
-        for i in test/test_*
-        do
-          test -f $i && $i
-        done
         cd build/test
-        ctest --parallel=${{ env.NB_CPU }} --extra-verbose
+        ctest --parallel=${{ env.NB_CPU }} --extra-verbose --cfg=${{ matrix.configuration }}
         cd ../..
 
     - name: Perform CodeQL Analysis
