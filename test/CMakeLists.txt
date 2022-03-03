@@ -74,6 +74,7 @@ set(
 
     test_adc
     test_adcx
+    test_add
     test_adox
     test_and
     test_bextr
@@ -84,18 +85,21 @@ set(
     test_imul
     test_lea
     test_lea_no_base
-    test_movd
     test_mov
+    test_MOV_REG_IMM
+    test_mov_reg_imm32
+    test_movd
     test_movntdqa
     test_movntq
     test_movq
-    test_mov_reg_imm32
-    test_MOV_REG_IMM
+    test_movzx
     test_mulx
     test_negative_mem_disp
     test_new_instruction
     test_no_ptr
+    test_nop
     test_not
+    test_or
     test_paddb
     test_paddd
     test_paddq
@@ -105,6 +109,7 @@ set(
     test_pmulhuw
     test_pmulhw
     test_pmulld
+    test_pmullq
     test_pmullw
     test_pmuludq
     test_por
@@ -121,14 +126,14 @@ set(
     test_rorx
     test_sarx
     test_sbb
-    test_setcc
     test_setc
+    test_setcc
     test_seto
-    test_shld
     test_shl
+    test_shld
     test_shlx
-    test_shrd
     test_shr
+    test_shrd
     test_shrx
     test_skip_add
     test_sub
@@ -147,13 +152,6 @@ set(
     test_xorMI
     test_xorRM
     test_zero_byte_rbp
-
-    # the following test cases are not working
-    # test_add
-    # test_movzx
-    # test_nop
-    # test_or
-    # test_pmullq
 )
 
 foreach(ASM_TEST_CASE ${ASM_TEST_CASES})
@@ -170,7 +168,7 @@ foreach(ASM_TEST_CASE ${ASM_TEST_CASES})
     target_include_directories(${ASM_TEST_CASE} PUBLIC ${ASSEMBLYLINE_TEST_ASM_DIR} $<TARGET_PROPERTY:assemblyline,INCLUDE_DIRECTORIES>)
 
     # if you want a very verbose output, uncomment the following line
-    add_compile_definitions(TEST_DEBUG=1)
+    # add_compile_definitions(TEST_DEBUG=1)
 
     # link the test binary with assemblyline
     target_link_libraries(${ASM_TEST_CASE} PRIVATE $<TARGET_LINKER_FILE:assemblyline>)

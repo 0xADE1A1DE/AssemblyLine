@@ -75,7 +75,7 @@ jobs:
       shell: pwsh
       run: |
         Set-Location .\build\test\
-        ctest -N
+        ctest --parallel=${{ env.NB_CPU }} --extra-verbose
         Set-Location ..\
 
     - name: Run Linux tests
@@ -87,7 +87,7 @@ jobs:
           test -f $i && $i
         done
         cd build/test
-        ctest -N
+        ctest --parallel=${{ env.NB_CPU }} --extra-verbose
         cd ../..
 
     - name: Perform CodeQL Analysis

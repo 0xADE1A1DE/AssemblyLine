@@ -483,7 +483,6 @@
     "or rax, [ rbx ];\n"                                                                                               \
     "or rax, [ rbx + 0x10 ];\n"                                                                                        \
     "or rax, 0x0 ;\n"                                                                                                  \
-    "or rax, 0x0 ; with a comment;\n"                                                                                  \
     "or r12, r14;\n"                                                                                                   \
     "or r12, rbx;\n"                                                                                                   \
     "or r12, [ rsp + 0x10 ];\n"                                                                                        \

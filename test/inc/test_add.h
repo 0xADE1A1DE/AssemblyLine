@@ -78,7 +78,6 @@
     "add rax, [ rbx ];\n"                                                                                              \
     "add rax, [ rbx + 0x10 ];\n"                                                                                       \
     "add rax, 0x0 ;\n"                                                                                                 \
-    "add rax, 0x0 ; with a comment;\n"                                                                                 \
     "add r12, r14;\n"                                                                                                  \
     "add r12, rbx;\n"                                                                                                  \
     "add r12, [ rsp + 0x10 ];\n"                                                                                       \
@@ -96,22 +95,22 @@
     "add rsp, 0x48 ;\n"                                                                                                \
     "add rsp, 0x50 ;\n"                                                                                                \
     "add rsp, 0x80 ;\n"                                                                                                \
-    "add dword [ebp], -0xf;\n"                                                                                         \
-    "add dword [ebp], -0xe;\n"                                                                                         \
-    "add dword [ebp], -0xd;\n"                                                                                         \
-    "add dword [ebp], -0x7;\n"                                                                                         \
-    "add dword [ebp], -0x4;\n"                                                                                         \
-    "add dword [ebp], -0x3;\n"                                                                                         \
-    "add dword [ebp], -0x2;\n"                                                                                         \
-    "add dword [ebp], -0xff;\n"                                                                                        \
-    "add dword [ebp], 0xf;\n"                                                                                          \
-    "add dword [ebp], 0xe;\n"                                                                                          \
-    "add dword [ebp], 0xd;\n"                                                                                          \
-    "add dword [ebp], 0x7;\n"                                                                                          \
-    "add dword [ebp], 0x4;\n"                                                                                          \
-    "add dword [ebp], 0x3;\n"                                                                                          \
-    "add dword [ebp], 0x2;\n"                                                                                          \
-    "add dword [ebp], 0xff;\n"                                                                                         \
+    "add dword ptr [ebp], 0xf;\n"                                                                                      \
+    "add dword ptr [ebp], 0xe;\n"                                                                                      \
+    "add dword ptr [ebp], 0xd;\n"                                                                                      \
+    "add dword ptr [ebp], 0x7;\n"                                                                                      \
+    "add dword ptr [ebp], 0x4;\n"                                                                                      \
+    "add dword ptr [ebp], 0x3;\n"                                                                                      \
+    "add dword ptr [ebp], 0x2;\n"                                                                                      \
+    "add dword ptr [ebp], 0xff;\n"                                                                                     \
+    "add dword ptr [ebp], -0xff;\n"                                                                                    \
+    "add dword ptr [ebp], -0xf;\n"                                                                                     \
+    "add dword ptr [ebp], -0xe;\n"                                                                                     \
+    "add dword ptr [ebp], -0xd;\n"                                                                                     \
+    "add dword ptr [ebp], -0x7;\n"                                                                                     \
+    "add dword ptr [ebp], -0x4;\n"                                                                                     \
+    "add dword ptr [ebp], -0x3;\n"                                                                                     \
+    "add dword ptr [ebp], -0x2;\n"                                                                                     \
     "add eax, dword [rsp];\n"                                                                                          \
     "add eax, dword [rsp + 0x40];\n"                                                                                   \
     "add eax, [rsp + 0x40];\n"                                                                                         \
