@@ -548,3 +548,5 @@ xor r8, r8
 xor rax, rax
 xor rdx, rdx
 xor rdx, rdx
+xor rax, 0xffffffff
+xor rax, 0xefffffff

@@ -33,10 +33,4 @@ operand_format get_opd_format(char *opd_en);
  */
 int str_to_instr_key(char *instruction, operand_format opd_layout);
 
-/**
- * takes a INSTR_TABLE[] index key @param key and returns the new INSTR_TABLE[]
- * index key
- */
-int to_special_instr_key(int key);
-
 #endif

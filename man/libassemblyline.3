@@ -21,25 +21,30 @@ Allocates an instance of assemblyline_t and attaches a pointer to a memory \fIbu
 
 .TP
 .BI "int asm_destroy_instance(assemblyline_t " instance );
-Frees all memory associated with \fIinstance\fR.
+Frees all memory associated with \fIinstance\fR. Returns EXIT_SUCCESS or EXIT_FAILURE.
 
 .TP
 .BI "int asm_assemble_str(assemblyline_t " al ", const char *" assembly_str );
-Assembles the given string \fIassembly_str\fR containing valid x64 assembly code with instance \fIal\fR. It writes the corresponding machine code to the memory location specified by al->buffer.
+Assembles the given string \fIassembly_str\fR containing valid x64 assembly code with instance \fIal\fR. It writes the corresponding machine code to the memory location specified by the buffer associated with \fIal\fR. Returns EXIT_SUCCESS or EXIT_FAILURE.
 
 .TP
 .BI "int asm_assemble_file(assemblyline_t " al ", char *" asm_file );
-Assembles the given file path \fIasm_file\fR containing valid x64 assembly code with instance \fIal\fR. It writes the corresponding machine code to the memory location specified by al->buffer.
+Assembles the given file path \fIasm_file\fR containing valid x64 assembly code with instance \fIal\fR. It writes the corresponding machine code to the memory location specified by the buffer associated with \fIal\fR. Returns EXIT_SUCCESS or EXIT_FAILURE.
 
 .TP
 .BI "int asm_assemble_string_counting_chunks(assemblyline_t " al ", char *" str ", int " chunk_size ", int *" dest );
-Assembles the given null-terminated @param string with instance \fIal\fR. It counts the number of instructions that break the chunk boundary of size \fIchunk_size\fR and saves it to \fIdest\fR. It does not nop-pad by default, depends on instance \fIal\fR (you can nop-pad and count different chunk breaks).
+Assembles the given null-terminated string \fIstr\fR with instance \fIal\fR. It counts the number of instructions that break the chunk boundary of size \fIchunk_size\fR and saves it to \fIdest\fR. It does not nop-pad by default, depends on instance \fIal\fR (you can nop-pad and count different chunk breaks). Returns EXIT_SUCCESS or EXIT_FAILURE.
+
 .br
 \fBNOTE:\fR you cannot pass const char* as \fIstr\fR, it will segfault, because string will be altered.
 
 .TP
+.BI "int asm_assemble_file_counting_chunks(assemblyline_t " al ", char *" asm_file ", int " chunk_size ", int *" dest );
+Assembles the given file \fIasm_file\fR with instance \fIal\fR. It counts the number of instructions that break the chunk boundary of size \fIchunk_size\fR and saves it to \fIdest\fR. It does not nop-pad by default, depends on instance \fIal\fR (you can nop-pad and count different chunk breaks).
+
+.TP
 .BI "void asm_set_chunk_size(assemblyline_t " al ", size_t " chunk_size );
-Sets a given chunk size boundary \fIchunk_size\fR in bytes with instance \fIal\fR. When called before assemble_str() or assemble_file() assemblyline will ensure no instruction opcode will cross the specified  \fIchunk_size\fR boundary via nop padding.
+Sets a given chunk size boundary \fIchunk_size\fR in bytes with instance \fIal\fR. When called before assemble_str() or assemble_file() assemblyline will ensure no instruction opcode will cross the specified \fIchunk_size\fR boundary via nop padding.
 .br
 \fBNOTE:\fR \fIchunk_size\fR must be greater than 2 in order to be classified as a valid memory chunk boundary size.
 
@@ -67,7 +72,7 @@ Returns the buffer associated with \fIal\fR (DEPRECATED: use \fBasm_get_code(3)\
 
 .TP
 .BI "int asm_create_bin_file(assemblyline_t " al ", char *" file_name );
-Generates a binary file \fIfile_name\fR from assembled machine code up to the memory offset of the current instance \fIal\fR.
+Generates a binary file \fIfile_name\fR from assembled machine code up to the memory offset of the current instance \fIal\fR. Returns EXIT_SUCCESS or EXIT_FAILURE.
 
 .TP
 .BI "void asm_mov_imm(assemblyline_t " al ", enum asm_opt "option );

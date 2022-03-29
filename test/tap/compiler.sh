@@ -47,7 +47,7 @@ while IFS= read -r line; do
   # must be in a file
   echo "${line}" >"${tmpfile_line}"
   # regex copied from ../al_nasm_compare.sh
-  nasm -f elf64 -l /dev/stdout "${tmpfile_line}" 2>/dev/null |
+  nasm -w-number-overflow -f elf64 -l /dev/stdout "${tmpfile_line}" 2>/dev/null |
     sed -e 's/^[[:space:]]*[[:digit:]]\+ [[:xdigit:]]\+ \([[:xdigit:]]\+\)-\?[[:space:]]\+[^$]\+/\L\1/g' |
     tr -d '\n' |
     read -r nasm_output

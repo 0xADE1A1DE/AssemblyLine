@@ -59,8 +59,9 @@ static int line_to_instr(struct instr *instr_data, char *filtered_asm_str) {
     opd_type[i] = instr_data->opd[i].type;
   operand_format opd_format = get_opd_format(opd_type);
   FAIL_IF_VAR(opd_format == opd_error, "illegal operand format: %s\n", opd_type)
-  // jcc [MEM] no register
-  if (opd_format == m && instr_data->opd[0].str[0] == '\0') {
+  // jmp [MEM] no register
+  if (opd_format == m && instr_data->opd[0].str[0] == '\0' &&
+      instr_data->opd[0].sib[0] == '\0') {
     instr_data->mod_disp &= MOD16;
     instr_data->keyword.is_short = true;
   }
@@ -98,7 +99,8 @@ static int line_to_instr(struct instr *instr_data, char *filtered_asm_str) {
       IN_RANGE(instr_data->cons, NEG32BIT + 1, NEG64BIT))
     instr_data->cons &= 0xffffffff;
   // encode for the reg_hex value and op_offset for instruction
-  if (instr_data->opd[0].reg != reg_none) {
+  if (instr_data->opd[0].reg != reg_none ||
+      instr_data->opd[0].index != reg_none) {
     // gets all offsets
     encode_offset(instr_data);
     // cleans up immediate
@@ -207,14 +209,13 @@ static void debug_with_chunksize(uint8_t *buf, int opcode_pos,
 static int check_len_or_resize(assemblyline_t al, int buf_pos) {
 
   if (buf_pos + BUFFER_TOLERANCE > al->buffer_len) {
-    FAIL_IF_VAR(al->external,
-                "exceeded memory buffer length: al->buffer_len = %d\n",
+    FAIL_IF_VAR(al->external, "exceeded memory buffer: al->buffer_len = %d\n",
                 al->buffer_len)
 #ifdef __linux__
     // resize internal memory buffer
     void *resize = mremap(al->buffer, al->buffer_len,
                           al->buffer_len + MEM_BUFFER, MREMAP_MAYMOVE);
-    FAIL_SYS(resize == (void *)-1, "failed to resize buffer\n")
+    FAIL_SYS(resize == (void *)-1, "failed to resize buffer\n", EXIT_FAILURE)
     al->buffer_len += MEM_BUFFER;
     al->buffer = (uint8_t *)resize;
 #else
@@ -240,6 +241,8 @@ static int assemble_counting_chunks(assemblyline_t al, struct instr *new_instr,
   // check if the current instruction machine code crosses the chunk boundary
   if (written_length > free_space)
     (*chunk_brks)++;
+  if (al->debug)
+    debug_without_chunksize(written_length, al->buffer + *buf_pos);
   *buf_pos += written_length;
   return EXIT_SUCCESS;
 }
@@ -318,7 +321,7 @@ int assemble_all(assemblyline_t al, const char *str, int *dest) {
     }
   }
   // print machine code with chunk boundary fitting
-  if (al->chunk_size > 1 && al->debug)
+  if (al->assembly_mode == CHUNK_FITTING && al->debug)
     debug_with_chunksize(al->buffer, buf_pos, al->chunk_size);
   return buf_pos;
 }

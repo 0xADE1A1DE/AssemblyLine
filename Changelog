@@ -1,6 +1,25 @@
+version 1.2.2-release
+
+	- added support for neg: Two's Complement Negation
+
+	- fixed a bug where shift and rotate instruction produce the wrong opcode 
+	  when immediate is zero 
+
+	- fixed a bug when using sib addressing with no base and a single operand
+
+	- asmline can now count the number of instructions that breaks a chunk boundary
+
+	- the number of instructions that break a chunk boundary can be counted when 
+	  assembling a file. 
+
+	- adding `cpuid`-instruction
+	  
+
+
 version 1.2.1-release (2022-02-23)
 	
 	- Fixed bugs regarding -imm/8
+
 
 version 1.2.0-release (2022-02-19)
 	

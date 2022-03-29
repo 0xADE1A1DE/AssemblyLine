@@ -40,14 +40,16 @@ typedef struct assemblyline *assemblyline_t;
 assemblyline_t asm_create_instance(uint8_t *buffer, int len);
 
 /**
- * frees all memory associated with @param instance
+ * frees all memory associated with @param instance. Returns EXIT_SUCCESS or
+ * EXIT_FAILURE.
  */
 int asm_destroy_instance(assemblyline_t instance);
 
 /**
  * assembles the given string @param assembly_str containing valid x64 assembly
  * code with instance @param al It writes the corresponding machine code to the
- * memory location specified by al->buffer.
+ * memory location specified by the buffer attached to @param al. Returns
+ * EXIT_SUCCESS or EXIT_FAILURE.
  * (DEPRECATED: use asm_assemble_str() instead)
  */
 int __attribute__((deprecated("use asm_assemble_str instead")))
@@ -56,14 +58,16 @@ assemble_str(assemblyline_t al, const char *assembly_str);
 /**
  * assembles the given string @param assembly_str containing valid x64 assembly
  * code with instance @param al It writes the corresponding machine code to the
- * memory location specified by al->buffer.
+ * memory location specified by buffer attached to @param al. Returns
+ * EXIT_SUCCESS or EXIT_FAILURE.
  */
 int asm_assemble_str(assemblyline_t al, const char *assembly_str);
 
 /**
  * assembles the given file path @param asm_file containing valid x64 assembly
  * code with instance @param al It writes the corresponding machine code to the
- * memory location specified by al->buffer.
+ * memory location specified by buffer attached to @param al. Returns
+ * EXIT_SUCCESS or EXIT_FAILURE.
  * (DEPRECATED: use asm_assemble_file() instead)
  */
 int __attribute__((deprecated("use asm_assemble_file instead")))
@@ -72,7 +76,8 @@ assemble_file(assemblyline_t al, char *asm_file);
 /**
  * assembles the given file path @param asm_file containing valid x64 assembly
  * code with instance @param al It writes the corresponding machine code to the
- * memory location specified by al->buffer.
+ * memory location specified by buffer attached to @param al. Returns
+ * EXIT_SUCCESS or EXIT_FAILURE.
  */
 int asm_assemble_file(assemblyline_t al, char *asm_file);
 
@@ -81,7 +86,7 @@ int asm_assemble_file(assemblyline_t al, char *asm_file);
  * It counts the number of instructions that break the chunk boundary of size
  * @param chunk_size and saves it to @param dest It does not nop-pad
  * necessarily, depends on the @param al instance (you can nop-pad and count
- * different chunk breaks).
+ * different chunk breaks). Returns EXIT_SUCCESS or EXIT_FAILURE.
  * NOTE: you cannot pass const char* as @param string, it will segfault, because
  * string will be altered.
  * (DEPRECATED: use asm_assemble_string_counting_chunks() instead)
@@ -96,7 +101,7 @@ assemble_string_counting_chunks(assemblyline_t al, char *string, int chunk_size,
  * It counts the number of instructions that break the chunk boundary of size
  * @param chunk_size and saves it to @param dest It does not nop-pad
  * necessarily, depends on the @param al instance (you can nop-pad and count
- * different chunk breaks).
+ * different chunk breaks). Returns EXIT_SUCCESS or EXIT_FAILURE.
  * NOTE: you cannot pass const char* as @param string, it will segfault, because
  * string will be altered.
  */
@@ -104,9 +109,19 @@ int asm_assemble_string_counting_chunks(assemblyline_t al, char *string,
                                         int chunk_size, int *dest);
 
 /**
+ * assembles the given @param asm_file with instance @param al.
+ * It counts the number of instructions that break the chunk boundary of size
+ * @param chunk_size and saves it to @param dest It does not nop-pad
+ * necessarily, depends on the @param al instance (you can nop-pad and count
+ * different chunk breaks). Returns EXIT_SUCCESS or EXIT_FAILURE.
+ */
+int asm_assemble_file_counting_chunks(assemblyline_t al, char *asm_file,
+                                      int chunk_size, int *dest);
+
+/**
  * sets a given chunk size boundary @param chunk_size in bytes with instance
  * @param al. When called before assemble_str() or assemble_file() assemblyline
- * will ensure no instruction opcode will cross the specified  @param chunk_size
+ * will ensure no instruction opcode will cross the specified @param chunk_size
  * boundary via nop padding.
  * NOTE: @param chunk_size must be greater than 2 in order to
  * be classified as a valid memory chunk boundary
@@ -147,7 +162,8 @@ void *asm_get_code(assemblyline_t al);
 
 /**
  * Generates a binary file @param file_name from assembled machine code up to
- * the memory offset of the current instance @param al
+ * the memory offset of the current instance @param al. Returns EXIT_SUCCESS or
+ * EXIT_FAILURE.
  */
 int asm_create_bin_file(assemblyline_t al, const char *file_name);
 

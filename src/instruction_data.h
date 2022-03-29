@@ -40,7 +40,6 @@ struct assemblyline {
   uint8_t assembly_opt;
   bool debug : 1;
   bool finalized : 1;
-  bool table_built : 1;
 };
 
 // prefix and and register byte values

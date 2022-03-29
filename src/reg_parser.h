@@ -27,7 +27,7 @@
 /**
  * returns an opcode offset based on the value of @param reg_value
  */
-int get_opcode_offset(asm_reg reg_value);
+int get_opcode_offset(struct instr *instrc);
 
 /**
  * finds the register in @param str and copies the characters to @param reg

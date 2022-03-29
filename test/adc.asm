@@ -3,6 +3,7 @@ GLOBAL test
 test:
 adc al, 0x0
 adc ax, 0xe1
+adc ah, 0xe1
 adc eax, 0xe11
 adc sil, 0x0
 adc si, 0xe1

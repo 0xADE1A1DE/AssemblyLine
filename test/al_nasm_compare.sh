@@ -37,6 +37,6 @@ diff --ignore-trailing-space --side-by-side --left-column \
 
     # the last tr will join all to one line
 
-    nasm -f elf64 "${1}" -l /dev/stdout |
+    nasm -w-number-overflow -f elf64 "${1}" -l /dev/stdout |
       sed -e "${e1}" -e "${e2}" -e "${e3}" -e "${e4}" -e "${e5}" | tr -d -- '\n'
   )

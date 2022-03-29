@@ -37,6 +37,11 @@ The corresponding machine code will be printed to \fIFILENAME\fR in binary form.
 Sets a given \fICHUNK_SIZE\fR boundary in bytes. Nop padding will be used to ensure no instruction opcode will cross the specified \fICHUNK_SIZE\fR boundary.
 
 .TP
+.BR \-b ", " \-\-breaks " " \fICHUNK_BOUNDARY>1
+
+Given a \fICHUNK_BOUNDARY\fR asmline will count the number of instructions where their opcode crosses the specified \fICHUNK_BOUNDARY\fR size in bytes.
+
+.TP
 .BR \-o ", " \-\-object " " \fIFILENAME
 Generates a binary file from path/to/file.asm called \fIFILENAME\fR.bin in the current directory.
 

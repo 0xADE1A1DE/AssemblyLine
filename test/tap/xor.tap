@@ -1,0 +1,14 @@
+xor rdx, rdx
+xor edx, edx
+xor edx, eax
+xor edx, -1
+xor edx, 0xff
+xor edx, 0xffffffff
+xor edx, 0x7fffffff
+xor edx, 0xfffffffe
+xor edx, 0x7ffffffe
+
+xor rdx, 0xff
+xor rdx, 0xffffffff
+xor rdx, 0xeeeeeeee
+xor rdx, 0x7fffffff

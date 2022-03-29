@@ -33,7 +33,7 @@
  * INSTR_TABLE[] where the first occurrence of each letter of the alphabet to
  * instr_index_table for more efficient instruction lookup
  */
-static void asm_build_index_tables(assemblyline_t al) {
+static void asm_build_index_tables() {
   // INSTR_TABLE index starts at the SKIP entry
   size_t i = 2;
   char previous_char = 'a' - 1;
@@ -53,7 +53,6 @@ static void asm_build_index_tables(assemblyline_t al) {
       previous_char = OPD_FORMAT_TABLE[i].str[0];
     }
   }
-  al->table_built = true;
 }
 
 assemblyline_t asm_create_instance(uint8_t *buffer, int len) {
@@ -84,7 +83,7 @@ assemblyline_t asm_create_instance(uint8_t *buffer, int len) {
   al->chunk_size++;
   al->debug = false;
   al->finalized = false;
-  asm_build_index_tables(al);
+  asm_build_index_tables();
   return al;
 }
 
@@ -141,27 +140,44 @@ int asm_assemble_string_counting_chunks(assemblyline_t al, char *str,
   return EXIT_SUCCESS;
 }
 
+static void *asm_mmap_file(char *asm_file, size_t *str_len) {
+  // open file for reading
+  int fd = open(asm_file, O_RDONLY, S_IRUSR | S_IRUSR);
+  FAIL_SYS(fd == -1, "failed to open file\n", MAP_FAILED);
+  struct stat file_stat;
+  FAIL_SYS(fstat(fd, &file_stat), "failed to get file stats\n", MAP_FAILED);
+  // map file contents to a string
+  *str_len = file_stat.st_size;
+  void *str = mmap(NULL, *str_len, PROT_READ, MAP_PRIVATE, fd, 0);
+  close(fd);
+  return str;
+}
+
+int asm_assemble_file_counting_chunks(assemblyline_t al, char *asm_file,
+                                      int chunk_size, int *dest) {
+
+  size_t str_len = 0;
+  char *str = asm_mmap_file(asm_file, &str_len);
+  FAIL_SYS(str == MAP_FAILED, "mmap failed to read file\n", EXIT_FAILURE);
+  int exit = asm_assemble_string_counting_chunks(al, str, chunk_size, dest);
+  // free mmap memory used for reading file
+  FAIL_SYS(munmap((void *)str, str_len) == -1, "munmap failed\n", EXIT_FAILURE);
+  return exit;
+}
+
 int assemble_file(assemblyline_t al, char *asm_file) {
   return asm_assemble_file(al, asm_file);
 }
 
 int asm_assemble_file(assemblyline_t al, char *asm_file) {
-  // open file for reading
-  int fd = open(asm_file, O_RDONLY, S_IRUSR | S_IRUSR);
-  FAIL_SYS(fd == -1, "failed to open file\n");
-  struct stat file_stat;
-  FAIL_SYS(fstat(fd, &file_stat), "failed to get file stats\n");
-  // map file contents to a string
-  size_t str_len = file_stat.st_size;
-  const char *assembly_str =
-      mmap(NULL, file_stat.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
-  close(fd);
-  FAIL_SYS(assembly_str == MAP_FAILED, "failed to allocate memory via mmap\n");
-  int exit_status = asm_assemble_str(al, assembly_str);
+
+  size_t str_len = 0;
+  const char *str = asm_mmap_file(asm_file, &str_len);
+  FAIL_SYS(str == MAP_FAILED, "mmap failed to read file\n", EXIT_FAILURE);
+  int exit = asm_assemble_str(al, str);
   // free mmap memory used for reading file
-  FAIL_SYS(munmap((void *)assembly_str, str_len) == -1,
-           "Error: failed to free memory\n");
-  return exit_status;
+  FAIL_SYS(munmap((void *)str, str_len) == -1, "munmap failed\n", EXIT_FAILURE);
+  return exit;
 }
 
 void asm_set_chunk_size(assemblyline_t al, size_t chunk_size) {
@@ -188,6 +204,7 @@ uint8_t __attribute__((deprecated("use asm_get_code instead"))) *
 void *asm_get_code(assemblyline_t al) { return (void *)al->buffer; }
 
 int asm_create_bin_file(assemblyline_t al, const char *file_name) {
+
   void *buffer = asm_get_code(al);
   int len = asm_get_offset(al);
   FILE *write_ptr = fopen(file_name, "wb");

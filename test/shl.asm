@@ -1,6 +1,9 @@
 SECTION .text
 GLOBAL test
 test:
+shl r10, 0x0
+shl r10, 0x00; fully padded
+shl r10, 0
 shl r10, 0x1
 shl r10, 0x12
 shl r10, 0x14

@@ -1,3 +1,5 @@
+add rax, 0x7fffffff
+add rax, 0x8fffffff
 adcx r12, r9
 adcx r13, r15
 add rsp, 0x40

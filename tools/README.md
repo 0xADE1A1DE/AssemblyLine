@@ -72,7 +72,7 @@ DESCRIPTION:
     ```
     -P, --printfile FILENAME
             The corresponding machine code will be printed to FILENAME in binary form.
-            Can be set to '/dev/stdout' to write to stdout.
+            Can be set to '/dev/stdout' to write to stdout (similar to -p, --print).
     ```
 1. The above call will output machine code in binary format to FILENAME given `path/to/file.asm`.
 
@@ -144,33 +144,56 @@ That means that they can be dereferenced in the assembly file.
 
 ## Different Modes of Assembly
 When moving immediate values to a 64-bit register, if immediate value is less than or equal to 0x7fffffff (max signed 32-bit)
-nasm will interpret 'mov rax, IMM' as 'mov eax, IMM'.  
+nasm will interpret 'mov rax, IMM' as 'mov eax, IMM' (mov-imm options).  
 Since the stack pointer register is not scalable in SIB when the index register is set to rsp or esp, NASM will swap the index 
-and base register to produce a valid instruction.   
+and base register to produce a valid instruction (sib-index-base-swap options). Also in SIB, when no base register is present 
+and the scale is equal to 2; NASM will set the base to the index register and reduce the scale by 1 (sib-no-base options).
+ex: `[2*rax] -> [rax+1*rax]` 
 #### The settings below allow the user to control the aforementioned behavior.
 
-### Set SIB to NASM
+### Set SIB register swap to NASM
 
-1. `$ asmline --nasm-sib path/to/file.asm` to ensure the generated machine code from `path/to/file.asm` matches nasm 
+1. `$ asmline --nasm-sib-index-base-swap path/to/file.asm` to ensure the generated machine code from `path/to/file.asm` matches nasm 
     ```
-    --nasm-sib
+    --nasm-sib-index-base-swap
             In SIB addressing if the index register is esp or rsp then the base and index registers
             will be swapped (this is enabled by default).
             That is: "lea r15, [rax+rsp]" interpreted as "lea r15, [rsp+rax]" -> 4c 8d 3c 04
                      "lea r15, [rsp+rsp]" will produce an error  (base and index cannot be swapped)
     ```
 
-### Set SIB to STRICT
+### Set SIB register swap to STRICT
 
-1. `$ asmline --strict-sib path/to/file.asm` to ensure the generated machine code from `path/to/file.asm` is in an 'as is' state 
+1. `$ asmline --strict-sib-index-base-swap path/to/file.asm` to ensure the generated machine code from `path/to/file.asm` is in an 'as is' state 
     ```
-    --strict-sib
+    --strict-sib-index-base-swap
             In SIB addressing the base and index registers will not be swapped even if the
             index register is esp or rsp.
             That is: "lea r15, [rax+rsp]" will be interpreted as "lea r15, [rax+riz]" -> 4c 8d 3c 20
                      riz is a pseudo-register evaluated by GCC to constant 0 and therefore cannot be
                      used in assemblyline as a string ie. assembling "lea r15, [rax+riz]" is invalid
                      "lea r15, [rsp+rsp]" will also produce an error (invalid instruction)
+    ```
+
+### Set SIB no base to NASM
+
+1. `$ asmline --nasm-sib-no-base path/to/file.asm` to ensure the generated machine code from `path/to/file.asm` matches nasm 
+    ```
+    --nasm-sib-no-base
+            In SIB addressing if there is no base register present and scale is equal to 2; 
+	    the base register will be set to the index register and the scale will be reduced to 1.
+            (this is enabled by default).
+            That is: "lea r15, [2*rax]" will be interpreted as "lea r15, [rax+1*rax]" -> 4c 8d 3c 00
+    ```
+
+### Set SIB no base to STRICT
+
+1. `$ asmline --strict-sib-no-base path/to/file.asm` to ensure the generated machine code from `path/to/file.asm` is in an 'as is' state 
+    ```
+    --strict-sib-no-base
+            In SIB addressing when there is no base register present the index and scale 
+	    would not change regardless of scale value.
+            That is: "lea r15, [2*rax]" will be interpreted as "lea r15, [2*rax]" -> 4c 8d 3c 45 00 00 00 00
     ```
 
 ### Set mov immediate to NASM
@@ -213,7 +236,23 @@ disable nasm mode (this is enabled by default).
                 "mov rax, 0x7fffffff" -> b8 ff ff ff 7f
     ```
 
-### Set all to NASM
+### Set all SIB options to NASM
+
+1. `$ asmline --nasm-sib path/to/file.asm` to ensure the generated machine code with SIB from `path/to/file.asm` matches nasm 
+    ```
+    --nasm-sib
+           equivalent to --nasm-sib-no-base --nasm-sib-index-base-swap
+    ```
+
+### Set all SIB options to STRICT
+
+1. `$ asmline --strict-sib path/to/file.asm` to ensure the generated machine code with SIB from `path/to/file.asm` is in an 'as is' state 
+    ```
+    --strict-sib
+              equivalent to --strict-sib-no-base --strict-sib-index-base-swap
+    ```
+
+### Set all options to NASM
 
 1. `$ asmline --nasm path/to/file.asm` to ensure the generated machine code from `path/to/file.asm` matches nasm 
     ```
@@ -221,7 +260,7 @@ disable nasm mode (this is enabled by default).
            equivalent to --nasm-mov-imm --nasm-sib
     ```
 
-### Set all to STRICT
+### Set all options to STRICT
 
 1. `$ asmline --strict path/to/file.asm` to ensure the generated machine code from `path/to/file.asm` is in an 'as is' state 
     ```

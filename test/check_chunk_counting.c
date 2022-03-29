@@ -91,7 +91,7 @@ int main() {
     int nop_chunksize = 0;
     uint8_t *buffer = NULL;
     assemblyline_t al = asm_create_instance(buffer, nop_chunksize);
-
+    asm_set_debug(al,true);
     // HEY YOU, YEAH YOU! DONT YOU DARE REMOVE THE COPY HERE!
     char *string_modifylable = calloc(strlen(t.asm_string) + 1, sizeof(char));
     strcpy(string_modifylable, t.asm_string);

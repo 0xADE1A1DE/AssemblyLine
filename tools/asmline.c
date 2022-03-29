@@ -56,6 +56,7 @@ void err_print_usage(char *error_msg) {
       stderr,
       "%s\nUsage: asmline "
       "[OPTIONS]... path/to/file.asm\n\n"
+
       "  -r[=LEN], --return[=LEN]\n"
       "\tAssembles given code. Then executes it with six parameters to "
       "heap-allocated memory.\n\tEach pointer points to an array of LEN 64-bit "
@@ -63,25 +64,34 @@ void err_print_usage(char *error_msg) {
       "defaults "
       "to 10.\n\tAfter execution, it prints out the contents of the return "
       "(rax) register and frees  \n\tthe heap-memory.\n\n"
+
       "  --rand \n"
       "\tImplies -r and will additionally initialize the memory from with "
       "random data. \n\t-r=11 can be used to alter LEN.\n\n"
+
       "  -p, --print\n"
       "\tThe corresponding machine code will be printed to stdout in hex "
       "form.\n"
       "\tOutput is similar to `objdump`: Byte-wise delimited by space and "
       "linebreaks after 7 bytes.\n\tIf -c is given, the chunks are "
       "delimited by '|' and each chunk is on one line.\n\n"
+
       "  -P, --printfile FILENAME\n"
       "\tThe corresponding machine code will be printed to FILENAME in binary "
       "form.\n\tCan be set to '/dev/stdout' to write to stdout.\n\n"
+
       "  -o, --object FILENAME\n"
       "\tThe corresponding machine code will be printed to FILENAME.bin in "
       "binary.\n\n"
+
       "  -c, --chunk CHUNK_SIZE>1\n"
       "\tSets a given CHUNK_SIZE boundary in bytes. Nop padding will be used "
       "to ensure no instruction\n"
       "\topcode will cross the specified CHUNK_SIZE boundary.\n\n"
+
+      "  -b, --breaks CHUNK_BOUNDARY>1\n"
+      "\tGiven a CHUNK_BOUNDARY, counts the number of instructions where\n"
+      "\ttheir opcode crosses the specified CHUNK_BOUNDARY size in bytes.\n\n"
 
       "  --nasm-mov-imm\n"
       "\tEnables nasm-style mov-immediate register-size handling.\n"
@@ -93,6 +103,7 @@ void err_print_usage(char *error_msg) {
       "\tnote: rax got optimized to eax for faster immediate to register "
       "transfer\n"
       "\t      and produces a shorter instruction\n\n"
+
       "  --strict-mov-imm\n"
       "\tDisables nasm-style mov-immediate register-size handling.\n"
       "\tex: even if immediate size for mov is less than or equal to max "
@@ -100,6 +111,7 @@ void err_print_usage(char *error_msg) {
       "\t    will pad the immediate to fit 64-bit\n"
       "\tThat is: \"mov rax,0x7fffffff\" as \"mov rax,0x000000007fffffff\"\n"
       "\t          -> 48 b8 ff ff ff 7f 00 00 00 00\n\n"
+
       "  --smart-mov-imm\n"
       "\tThe immediate value will be checked for leading 0's.\n"
       "\tImmediate must be zero padded to 64-bits exactly to ensure\n"
@@ -132,10 +144,13 @@ void err_print_usage(char *error_msg) {
 
       "  -n, --nasm\n"
       "\tequivalent to --nasm-mov-imm --nasm-sib\n\n"
+
       "  -t, --strict\n"
       "\tequivalent to --strict-mov-imm --strict-sib\n\n"
+
       "  -h, --help\n"
       "\tPrints usage information to stdout and exits.\n\n"
+
       "  -v, --version\n"
       "\tPrints version information to stdout and exits.\n\n",
       error_msg);
@@ -166,6 +181,14 @@ int check_digit(char *optarg) {
     if (optarg[i] < '0' || optarg[i] > '9')
       return EXIT_FAILURE;
   return EXIT_SUCCESS;
+}
+
+void print_chunk_brks(int total_chunk_brks, bool debug, int chunk_boundary) {
+
+  printf("%d", total_chunk_brks);
+  if (debug)
+    printf(" instructions break a chunk boundary of %d bytes", chunk_boundary);
+  printf("\n");
 }
 
 void execute_get_ret_value(void *function, int arglen, enum run mode) {
@@ -208,6 +231,9 @@ int main(int argc, char *argv[]) {
   char *param_file = NULL;
   char *bin_file = NULL;
   char *write_file = NULL;
+  int chunk_boundary = 0;
+  int total_chunk_brks = 0;
+  bool debug = false;
 
   // for running (with arguments)
   enum run get_ret = DONT_RUN;
@@ -236,6 +262,7 @@ int main(int argc, char *argv[]) {
       {"strict", no_argument, 0, 't'},
       {"smart", no_argument, 0, 's'},
       {"chunk", required_argument, 0, 'c'},
+      {"breaks", required_argument, 0, 'b'},
       {"object", required_argument, 0, 'o'},
       {0, 0, 0, 0}};
 
@@ -246,7 +273,7 @@ int main(int argc, char *argv[]) {
     err_print_usage("Error: invalid number of arguments\n");
 
   assemblyline_t al = asm_create_instance(NULL, 0);
-  while ((opt = getopt_long(argc, argv, "hvr::ntspP:c:o:", long_options,
+  while ((opt = getopt_long(argc, argv, "hvr::ntspP:c:b:o:", long_options,
                             &option_index)) != -1) {
     switch (opt) {
     case 0:
@@ -266,6 +293,7 @@ int main(int argc, char *argv[]) {
       get_ret |= RUN;
       break;
     case 'p':
+      debug = true;
       asm_set_debug(al, true);
       break;
     case 'n':
@@ -283,6 +311,13 @@ int main(int argc, char *argv[]) {
       int chunk_size = atoi(optarg);
       asm_set_chunk_size(al, chunk_size);
       break;
+
+    case 'b':
+      if (check_digit(optarg))
+        err_print_usage("Error: [-b CHUNK_BOUNDARY>1] expects an integer\n");
+      chunk_boundary = atoi(optarg);
+      break;
+
     case 'P':
       create_bin = GENERIC_FILE;
       param_file = optarg;
@@ -363,24 +398,46 @@ int main(int argc, char *argv[]) {
     if (!isatty(fileno(stdin))) {
       char *line = NULL;
       size_t size = BUFFER_SIZE;
-      while (getline(&line, &size, stdin) != -1) {
-        if (asm_assemble_str(al, line) == EXIT_FAILURE) {
-          fprintf(stderr, "failed to assemble instruction: %s\n", line);
-          exit(EXIT_FAILURE);
+      if (!chunk_boundary) {
+        while (getline(&line, &size, stdin) != -1) {
+          if (asm_assemble_str(al, line)) {
+            fprintf(stderr, "failed to assemble instruction: %s\n", line);
+            exit(EXIT_FAILURE);
+          }
         }
+      } else {
+        while (getline(&line, &size, stdin) != -1) {
+          int chunk_brks = 0;
+          if (asm_assemble_string_counting_chunks(al, line, chunk_boundary,
+                                                  &chunk_brks)) {
+            fprintf(stderr, "failed to assemble instruction: %s\n", line);
+            exit(EXIT_FAILURE);
+          }
+          total_chunk_brks += chunk_brks;
+        }
+        print_chunk_brks(total_chunk_brks, debug, chunk_boundary);
       }
       free(line);
     } else
       err_print_usage("Error: Expected path/to/file.asm after options\n");
   } else {
-    if (asm_assemble_file(al, argv[optind]) == EXIT_FAILURE) {
-      fprintf(stderr, "failed to assemble file: %s\n", argv[optind]);
-      exit(EXIT_FAILURE);
+    if (!chunk_boundary) {
+      if (asm_assemble_file(al, argv[optind])) {
+        fprintf(stderr, "failed to assemble file: %s\n", argv[optind]);
+        exit(EXIT_FAILURE);
+      }
+    } else {
+      if (asm_assemble_file_counting_chunks(al, argv[optind], chunk_boundary,
+                                            &total_chunk_brks)) {
+        fprintf(stderr, "failed to assemble file: %s\n", argv[optind]);
+        exit(EXIT_FAILURE);
+      }
+      print_chunk_brks(total_chunk_brks, debug, chunk_boundary);
     }
   }
 
   if (get_ret != DONT_RUN) {
-    // initialize the randomizer if needed
+    // initialize the randomiser if needed
     if (get_ret & RUN_RAND)
       srand(time(NULL));
     void *func = asm_get_code(al);
@@ -401,7 +458,7 @@ int main(int argc, char *argv[]) {
     write_file = param_file;
     break;
   }
-  if (asm_create_bin_file(al, write_file) == EXIT_FAILURE) {
+  if (asm_create_bin_file(al, write_file)) {
     fprintf(stderr, "failed to create %s\n", param_file);
     exit(EXIT_FAILURE);
   }

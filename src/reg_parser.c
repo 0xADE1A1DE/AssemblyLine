@@ -52,10 +52,13 @@ uint32_t process_neg_disp(uint32_t neg_num) {
   return new_disp;
 }
 
-int get_opcode_offset(asm_reg reg_value) {
+int get_opcode_offset(struct instr *instrc) {
 
-  unsigned int index = reg_value & MODE_MASK;
-  if (IN_RANGE(index, reg16, ext64))
+  unsigned int base = instrc->opd[0].reg & MODE_MASK;
+  unsigned int index = instrc->opd[0].index & MODE_MASK;
+  if (IN_RANGE(base, reg16, ext64))
+    return 1;
+  else if (IN_RANGE(index, reg16, ext64))
     return 1;
   else
     return NONE;

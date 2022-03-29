@@ -67,10 +67,3 @@ int str_to_instr_key(char *instruction, operand_format opd_layout) {
   // INSTR_TABLE entry is not found for instruction string
   return INSTR_ERROR;
 }
-
-int to_special_instr_key(int key) {
-  // converts special instructions to their corresponding key
-  if (INSTR_TABLE[key].type == OPERATION)
-    return key + 1;
-  return EOI;
-}

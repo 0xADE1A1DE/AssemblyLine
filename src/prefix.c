@@ -101,6 +101,7 @@ uint8_t get_reg(struct instr *instrc, struct operand *m, int r) {
     if (instrc->assembly_opt & NASM_SIB_NO_BASE) {
       switch (instrc->sib_disp) {
       case SIB:
+        // disable Scaled Index Addressing
         m->reg = m->index;
         m->index = reg_none;
         break;
@@ -109,6 +110,7 @@ uint8_t get_reg(struct instr *instrc, struct operand *m, int r) {
         instrc->sib_disp = SIB;
         break;
       default:
+
         m->reg = NO_BASE;
         instrc->no_base = true;
         break;
@@ -117,7 +119,10 @@ uint8_t get_reg(struct instr *instrc, struct operand *m, int r) {
       m->reg = NO_BASE;
       instrc->no_base = true;
     }
+    if (m->reg == NO_BASE)
+      instrc->mod_disp = 0;
   }
+
   // check for index register
   if (m->index == reg_none) {
     instrc->hex.reg =
@@ -131,6 +136,7 @@ uint8_t get_reg(struct instr *instrc, struct operand *m, int r) {
   instrc->is_sib = true;
   instrc->hex.sib =
       instrc->sib_disp | ((m->index & VALUE_MASK) << 3) | (m->reg & VALUE_MASK);
+
   instrc->hex.reg = instrc->mod_disp | ((r & VALUE_MASK) << 3) | rex_r;
   return EXIT_SUCCESS;
 }

@@ -1,0 +1,3 @@
+cmp rsp, 0x80 
+cmp rax, 0xeeeeeeee
+
