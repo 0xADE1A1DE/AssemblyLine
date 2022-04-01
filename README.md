@@ -20,7 +20,7 @@ please refer to [tools/README.md](/tools/README.md) **Different Modes of Assembl
 To get a stable release clone the repo from a tag or download the tarball. <br> 
 ***note: refer to [/src/instructions.c](/src/instructions.c) for a complete list of supported instructions***
 
-1. `$ bash autogen.sh.
+1. `$ bash autogen.sh` to generate configure 
 1. `$ ./configure` to generate Makefiles.
 1. `$ make` to compile
 1. `$ sudo make install` to install it
