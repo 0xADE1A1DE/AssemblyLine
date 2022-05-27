@@ -26,11 +26,6 @@ To get a stable release clone the repo from a tag or download the tarball. <br>
 1. `$ sudo make install` to install it
 1. `$ gcc -o executable your_program.c -lassemblyline` to compile a c program using assemblyline<br><br>   
 
-### ldconfig Issue
-If you see below message at your first time using assemblyline:  
-` error while loading shared libraries: libassemblyline.so.1: cannot open shared object file: No such file or directory`  
-please run `$ sudo ldconfig` to update the shared library cache.
-
 ## Example
   
 ***note: refer to [/src/assemblyline.h](/src/assemblyline.h) or run `$ man libassemblyline` for more information***
