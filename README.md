@@ -20,6 +20,7 @@ please refer to [tools/README.md](/tools/README.md) **Different Modes of Assembl
 To get a stable release clone the repo from a tag or download the tarball. <br> 
 ***note: refer to [/src/instructions.c](/src/instructions.c) for a complete list of supported instructions***
 
+1. `$ bash autogen.sh` to generate the configure file (If cloned from repository. Can be skipped, when using the tarball)
 1. `$ ./configure` to generate Makefiles.
 1. `$ make` to compile
 1. `$ sudo make install` to install it
@@ -80,28 +81,31 @@ To get a stable release clone the repo from a tag or download the tarball. <br>
     ```
 1. Full example:
     ```c
+    #include <stdio.h>
     #include <stdint.h>
     #include <sys/mman.h>
     #include <assemblyline.h>
     #define BUFFER_SIZE 300
     
-    uint8_t *mybuffer = mmap(NULL, sizeof(uint8_t) * BUFFER_SIZE,
-        PROT_READ | PROT_WRITE | PROT_EXEC, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
+    int main() {
+      uint8_t *mybuffer = mmap(NULL, sizeof(uint8_t) * BUFFER_SIZE,
+	  PROT_READ | PROT_WRITE | PROT_EXEC, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
     
-    assemblyline_t al = asm_create_instance(mybuffer, BUFFER_SIZE); 
+      assemblyline_t al = asm_create_instance(mybuffer, BUFFER_SIZE); 
     
-    asm_set_chunk_size(al, 16); 
+      asm_set_chunk_size(al, 16); 
     
-    asm_assemble_str(al, "mov rax, 0x0\nadd rax, 0x2; adds two");
-    asm_assemble_str(al, "sub rax, 0x1; subs one\nret");
+      asm_assemble_str(al, "mov rax, 0x0\nadd rax, 0x2; adds two");
+      asm_assemble_str(al, "sub rax, 0x1; subs one\nret");
  
-    void (*func)() = asm_get_code(al);
+      int (*func)() = asm_get_code(al);
     
-    int result = func();
-    printf("The result is: %d\n", result); 
-    // prints "The result is: 1\n"
+      int result = func();
+      printf("The result is: %d\n", result); 
+      // prints "The result is: 1\n"
 
-    asm_destroy_instance(al);
+      asm_destroy_instance(al);
+    }
     ```
     <br>
 ## Test files
