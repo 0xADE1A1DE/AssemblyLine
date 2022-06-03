@@ -2,7 +2,6 @@
 ![Unit Tests](https://github.com/0xADE1A1DE/AssemblyLine/actions/workflows/c-check.yml/badge.svg)
 ![Code Style](https://github.com/0xADE1A1DE/AssemblyLine/actions/workflows/clang-format-check.yml/badge.svg)
 ![Checks](https://img.shields.io/github/checks-status/0xADE1A1DE/AssemblyLine/main?style=for-the-badge)
-![Checks dev](https://img.shields.io/github/checks-status/daviduwu9/AssemblyLineDev/main?style=for-the-badge)
 ![Version](https://img.shields.io/github/v/release/0xADE1A1DE/AssemblyLine?logo=github?style=for-the-badge)
 ![AUR Version](https://img.shields.io/aur/version/assemblyline-bin?logo=github?style=for-the-badge)
 
