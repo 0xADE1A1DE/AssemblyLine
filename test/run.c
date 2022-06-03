@@ -17,6 +17,7 @@
 /*executes 2 assembly programs represented as a string*/
 #include <assemblyline.h>
 #include <errno.h>
+#include <signal.h> //  sigaction
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -49,6 +50,10 @@ static int check_ise_bit(int bit_no) {
   return r;
 };
 
+// the cpuid trick does not work (reliably) on the GH-CI. So we will need to use
+// the SIGILL handler. Which needs a pointer to a function.
+void exit_skip() { exit(SKIP); }
+
 // expected results
 const uint64_t expected_out[] = {0x165651D83282, 0x18883C3EA80B, 0x1EDBDFE96957,
                                  0x238587B25BAC3, 0x182355AC294};
@@ -70,7 +75,11 @@ int execute_test(void (*exe)(uint64_t *, uint64_t *, ...)) {
 
 int main() {
   if (!check_ise_bit(BMI2) || !check_ise_bit(ADX))
-    exit(SKIP);
+    exit_skip();
+  // Catch sigill and exit with 77
+  struct sigaction sa;
+  sa.sa_sigaction = &exit_skip;
+  sigaction(SIGILL, &sa, NULL);
 
   const char *cur_B =
       "sub rsp, 0x80 \n"
