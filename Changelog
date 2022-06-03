@@ -1,3 +1,13 @@
+version 1.2.3-release (2022-05-xx)
+
+	- fixed a bug which can lead to SIGSEGV's on certain systems using
+	  `strtok_r`. (Thanks to @hugsy for pointing that out)
+
+	- fixed bug where the wrong return code is returned if the internal buffer
+	  it too small and assemblyline is compiled for non-linux systems.
+
+
+
 version 1.2.2-release (2022-03-29)
 
 	- added support for neg: Two's Complement Negation

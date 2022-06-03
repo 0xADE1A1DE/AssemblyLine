@@ -23,16 +23,45 @@
 #include <string.h>
 #include <sys/mman.h>
 
+// if a test return 77, autotools considers it as a skipped test.
+#define SKIP 77
+
+// Bit position of flag from cpuid, according to intel manual
+#define ADX 19
+#define BMI2 8
+
+/**
+ * @returns 1 if the bit is set
+ */
+static int check_ise_bit(int bit_no) {
+  // EAX value for getting the ISE's from cpu id is 07h
+  int r = 0;
+  int checkBit = 1 << bit_no;
+
+  asm volatile("mov $7, %%eax \n\t"
+               "mov $0, %%ecx \n\t"
+               "cpuid\n\t"
+               "and %%ebx, %[bit]\n\t"
+               "mov %%ebx, %[ret]\n\t"
+               : [ret] "=&m"(r)
+               : [bit] "m"(checkBit)
+               : "rax", "rbx", "rcx", "rdx");
+  return r;
+};
+
 // expected results
-uint64_t expected_out[] = {0x165651D83282, 0x18883C3EA80B, 0x1EDBDFE96957,
-                           0x238587B25BAC3, 0x182355AC294};
+const uint64_t expected_out[] = {0x165651D83282, 0x18883C3EA80B, 0x1EDBDFE96957,
+                                 0x238587B25BAC3, 0x182355AC294};
+const size_t arg_len = sizeof(expected_out) / sizeof(expected_out[0]);
 
 int execute_test(void (*exe)(uint64_t *, uint64_t *, ...)) {
 
+  // NOLINTNEXTLINE
   uint64_t in[] = {0xDE, 0xAD, 0xBE, 0xEF, 0xDEADBEEF};
   uint64_t out[] = {0, 0, 0, 0, 0};
   exe(out, in);
-  for (int it = 0; it < 5; it++) {
+
+  for (size_t it = 0; it < arg_len; it++) {
     if (out[it] != expected_out[it])
       return EXIT_FAILURE;
   }
@@ -40,6 +69,8 @@ int execute_test(void (*exe)(uint64_t *, uint64_t *, ...)) {
 }
 
 int main() {
+  if (!check_ise_bit(BMI2) || !check_ise_bit(ADX))
+    exit(SKIP);
 
   const char *cur_B =
       "sub rsp, 0x80 \n"
@@ -366,7 +397,8 @@ int main() {
     return 1;
   }
   asm_set_offset(al, 0);
-  asm_set_chunk_size(al, 9);
+  const int chunk_size = 9;
+  asm_set_chunk_size(al, chunk_size);
 
   if (asm_assemble_str(al, cur_B) == EXIT_FAILURE)
     return EXIT_FAILURE;
@@ -380,17 +412,18 @@ int main() {
   }
   asm_set_offset(al, 0);
 
+  const int bufsize = 6000;
   uint8_t *buffer =
-      mmap(NULL, sizeof(uint8_t) * 60000, PROT_READ | PROT_WRITE | PROT_EXEC,
+      mmap(NULL, sizeof(uint8_t) * bufsize, PROT_READ | PROT_WRITE | PROT_EXEC,
            MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
-  if (buffer == MAP_FAILED) {
+  if (buffer == MAP_FAILED) { // NOLINT
     fprintf(stderr, "failed to allocate internal memory buffer: %s\n",
             strerror(errno));
     return EXIT_FAILURE;
   }
 
   // use asemblyline with external buffer
-  assemblyline_t al_buffer = asm_create_instance(buffer, 60000);
+  assemblyline_t al_buffer = asm_create_instance(buffer, bufsize);
   if (asm_assemble_str(al_buffer, cur_B) == EXIT_FAILURE)
     return EXIT_FAILURE;
 

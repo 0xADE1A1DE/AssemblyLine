@@ -15,8 +15,8 @@
  */
 
 /**
- * Test the functionality of assemblyline for counting the number 
- * of instructions that break a specified chunk size set for the 
+ * Test the functionality of assemblyline for counting the number
+ * of instructions that break a specified chunk size set for the
  * memory block
  */
 #include <assemblyline.h>
@@ -32,10 +32,14 @@ struct test_struct {
 };
 
 int main() {
+  // as those values are the expected number of chunk breaks we can
+  // NOLINTNEXTLINE(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+  int expected_breaks[] = {8, 8, 16, 16};
+
   struct test_struct tests[] = {
       {
           .expected_breaks = 0,
-          .break_size = 8,
+          .break_size = expected_breaks[0],
           .asm_string = "mov rax, [rsi]\n" // 3 bytes
                         "inc rax\n"        // 3 bytes
                         "clc\n"            // 1 byte
@@ -46,7 +50,7 @@ int main() {
       },
       {
           .expected_breaks = 1,
-          .break_size = 8,
+          .break_size = expected_breaks[1],
           .asm_string = "mov rax, [rsi]\n" // 3 bytes
                         "inc rax\n"        // 3 bytes
                         "mov [rdi], rax\n" // 3 bytes, chunk break here (@8)
@@ -54,7 +58,7 @@ int main() {
       },
       {
           .expected_breaks = 0,
-          .break_size = 16,
+          .break_size = expected_breaks[2],
           .asm_string = "mov rax, [rsi]\n" // 3 bytes
                         "inc rax\n"        // 3 bytes (6)
                         "mov [rdi], rax\n" // 3 bytes,(10)
@@ -62,7 +66,7 @@ int main() {
       },
       {
           .expected_breaks = 3,
-          .break_size = 16,
+          .break_size = expected_breaks[3],
           .asm_string = "mov rax, [rsi]\n"     // 3 bytes
                         "inc rax\n"            // 3 bytes (6)
                         "clc\n"                // 1 byte (7)
@@ -84,23 +88,27 @@ int main() {
   int result = 0;
   int num_testcases = sizeof(tests) / sizeof(struct test_struct);
   printf("testing %u cases.\n", num_testcases);
+
   for (int i = 0; i < num_testcases; i++) {
     struct test_struct t = tests[i];
 
     int counted = -1;
     int nop_chunksize = 0;
     uint8_t *buffer = NULL;
+
     assemblyline_t al = asm_create_instance(buffer, nop_chunksize);
-    asm_set_debug(al,true);
+    asm_set_debug(al, true);
+
     // HEY YOU, YEAH YOU! DONT YOU DARE REMOVE THE COPY HERE!
-    char *string_modifylable = calloc(strlen(t.asm_string) + 1, sizeof(char));
-    strcpy(string_modifylable, t.asm_string);
+    size_t len = strlen(t.asm_string) + 1;
+    char *string_modifylable = malloc(len);
+    strncpy(string_modifylable, t.asm_string, len);
     // LOOK. in the test array above, the asm_string is const.
     // the asm_assemble_string_counting_chunks requires a changeable string.
     // It'll segfault, if the passed pointer points to the datasegment.
 
-    if (asm_assemble_string_counting_chunks(al, string_modifylable, t.break_size,
-                                        &counted)) {
+    if (asm_assemble_string_counting_chunks(al, string_modifylable,
+                                            t.break_size, &counted)) {
       printf("failed to assemble.\n");
       result |= 1;
     }

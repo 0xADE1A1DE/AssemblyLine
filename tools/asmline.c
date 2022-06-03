@@ -29,6 +29,10 @@
 
 #define DEFAULT_ARG_LEN 10
 #define BUFFER_SIZE 100
+
+// max number of arguments the assembled function will be called with
+#define MAX_ARGUMENTS 6
+
 enum OUTPUT { NONE, BIN_FILE, GENERIC_FILE };
 enum run { DONT_RUN = 0, RUN = 1, RUN_RAND = 2 };
 
@@ -45,11 +49,27 @@ typedef enum {
   SMART_MOV_IMM
 } asm_options;
 
-const char *asm_version = PACKAGE_STRING;
-static int mov_imm = 0;
-static int sib_all = 0;
-static int sib_swap = 0;
-static int sib_no_base = 0;
+struct parsed_ops {
+  int mov_imm;
+  int sib_all;
+  int sib_swap;
+  int sib_no_base;
+  int arglen; // for running (with arguments)
+  bool debug;
+  enum run get_ret;
+  enum OUTPUT create_bin;
+  char *param_file;
+  int chunk_boundary;
+};
+
+#ifndef PACKAGE_STRING
+const char *const asm_version = "1.42.1";
+#else
+const char *const asm_version = PACKAGE_STRING;
+#endif
+
+static void parse_opt(assemblyline_t al, int argc, char **argv,
+                      struct parsed_ops *r);
 
 void err_print_usage(char *error_msg) {
   fprintf(
@@ -176,8 +196,8 @@ void print_version() {
 }
 
 int check_digit(char *optarg) {
-  int len = strlen(optarg);
-  for (int i = 0; i < len; i++)
+  size_t len = strlen(optarg);
+  for (size_t i = 0; i < len; i++)
     if (optarg[i] < '0' || optarg[i] > '9')
       return EXIT_FAILURE;
   return EXIT_SUCCESS;
@@ -192,7 +212,8 @@ void print_chunk_brks(int total_chunk_brks, bool debug, int chunk_boundary) {
 }
 
 void execute_get_ret_value(void *function, int arglen, enum run mode) {
-  uint64_t *arguments[6];
+
+  uint64_t *arguments[MAX_ARGUMENTS];
 
   uint64_t result = 0;
   if (arglen == 0) {
@@ -200,13 +221,14 @@ void execute_get_ret_value(void *function, int arglen, enum run mode) {
     result = f();
   } else {
     // allocate 6 args with arglen uint64_t's
-    for (int arg_idx = 0; arg_idx < 6; arg_idx++) {
+    for (int arg_idx = 0; arg_idx < MAX_ARGUMENTS; arg_idx++) {
       arguments[arg_idx] = calloc(arglen, sizeof(uint64_t));
       if (mode & RUN_RAND)
         for (int qword_idx = 0; qword_idx < arglen; qword_idx++) {
 
-          uint64_t rand_val = rand();           // lo_limb
-          rand_val |= ((uint64_t)rand()) << 32; // hi_limb
+          uint64_t rand_val = rand(); // lo_limb
+          // NOLINTNEXTLINE, 8 bits in a byte
+          rand_val |= ((uint64_t)rand()) << sizeof(int) * 8; // hi_limb
           arguments[arg_idx][qword_idx] = rand_val;
         }
     }
@@ -215,127 +237,15 @@ void execute_get_ret_value(void *function, int arglen, enum run mode) {
                   uint64_t *) = function;
     // call
     result = f(arguments[0], arguments[1], arguments[2], arguments[3],
-               arguments[4], arguments[5]);
+               arguments[4], arguments[5]); // NOLINT call with all arguments
     // free args
-    for (int i = 0; i < 6; i++)
+    for (int i = 0; i < MAX_ARGUMENTS; i++)
       free(arguments[i]);
   }
   printf("\nthe value is 0x%lx\n", result);
 }
 
-int main(int argc, char *argv[]) {
-
-  int opt;
-  enum OUTPUT create_bin = NONE;
-  char bin_ext[] = ".bin";
-  char *param_file = NULL;
-  char *bin_file = NULL;
-  char *write_file = NULL;
-  int chunk_boundary = 0;
-  int total_chunk_brks = 0;
-  bool debug = false;
-
-  // for running (with arguments)
-  enum run get_ret = DONT_RUN;
-  int arglen = DEFAULT_ARG_LEN;
-
-  struct option long_options[] = {
-      /* These options set a flag. */
-      {"nasm-mov-imm", no_argument, &mov_imm, NASM_MOV_IMM},
-      {"strict-mov-imm", no_argument, &mov_imm, STRICT_MOV_IMM},
-      {"smart-mov-imm", no_argument, &mov_imm, SMART_MOV_IMM},
-      {"nasm-sib", no_argument, &sib_all, NASM_SIB},
-      {"strict-sib", no_argument, &sib_all, STRICT_SIB},
-      {"nasm-sib-index-base-swap", no_argument, &sib_swap,
-       NASM_SIB_INDEX_BASE_SWAP},
-      {"strict-sib-index-base-swap", no_argument, &sib_swap,
-       STRICT_SIB_INDEX_BASE_SWAP},
-      {"nasm-sib-no-base", no_argument, &sib_no_base, NASM_SIB_NO_BASE},
-      {"strict-sib-no-base", no_argument, &sib_no_base, STRICT_SIB_NO_BASE},
-      {"version", no_argument, 0, 'v'},
-      {"help", no_argument, 0, 'h'},
-      {"rand", no_argument, (int *)&get_ret, RUN_RAND},
-      {"return", optional_argument, 0, 'r'},
-      {"print", no_argument, 0, 'p'},
-      {"printfile", required_argument, 0, 'P'},
-      {"nasm", no_argument, 0, 'n'},
-      {"strict", no_argument, 0, 't'},
-      {"smart", no_argument, 0, 's'},
-      {"chunk", required_argument, 0, 'c'},
-      {"breaks", required_argument, 0, 'b'},
-      {"object", required_argument, 0, 'o'},
-      {0, 0, 0, 0}};
-
-  /* getopt_long stores the option index here. */
-  int option_index = 0;
-
-  if (argc < 2 && isatty(fileno(stdin)))
-    err_print_usage("Error: invalid number of arguments\n");
-
-  assemblyline_t al = asm_create_instance(NULL, 0);
-  while ((opt = getopt_long(argc, argv, "hvr::ntspP:c:b:o:", long_options,
-                            &option_index)) != -1) {
-    switch (opt) {
-    case 0:
-      // intentionally blank for the options with implicit flag setting by
-      // getopt_long, like --rand
-      break;
-    case 'v':
-      print_version();
-      break;
-    case 'h':
-      err_print_usage("");
-      break;
-    case 'r':
-      // if there is a optional argument, try to parse it and set the arg len
-      if (optarg && !check_digit(optarg))
-        arglen = atoi(optarg);
-      get_ret |= RUN;
-      break;
-    case 'p':
-      debug = true;
-      asm_set_debug(al, true);
-      break;
-    case 'n':
-      asm_set_all(al, NASM);
-      break;
-    case 't':
-      asm_set_all(al, STRICT);
-      break;
-    case 's':
-      asm_set_all(al, SMART);
-      break;
-    case 'c':
-      if (check_digit(optarg))
-        err_print_usage("Error: [-c CHUNK_SIZE>1] expects an integer\n");
-      int chunk_size = atoi(optarg);
-      asm_set_chunk_size(al, chunk_size);
-      break;
-
-    case 'b':
-      if (check_digit(optarg))
-        err_print_usage("Error: [-b CHUNK_BOUNDARY>1] expects an integer\n");
-      chunk_boundary = atoi(optarg);
-      break;
-
-    case 'P':
-      create_bin = GENERIC_FILE;
-      param_file = optarg;
-      break;
-    case 'o':
-      if (strchr(optarg, '.'))
-        err_print_usage("elf filename cannot have an extension\n");
-      create_bin = BIN_FILE;
-      param_file = optarg;
-      break;
-
-    default: /* '?' */
-      if (mov_imm || sib_swap || sib_no_base || sib_all)
-        break;
-      err_print_usage("");
-    }
-  }
-
+static void set_mov_imm(assemblyline_t al, int mov_imm) {
   switch (mov_imm) {
   case 0:
     break;
@@ -351,7 +261,9 @@ int main(int argc, char *argv[]) {
   default:
     break;
   }
-
+}
+static void set_sib(assemblyline_t al, int sib_swap, int sib_all,
+                    int sib_no_base) {
   switch (sib_swap) {
   case 0:
     break;
@@ -392,65 +304,20 @@ int main(int argc, char *argv[]) {
   default:
     break;
   }
+}
 
-  if (optind >= argc) {
-    // check is stdin is provided via pipe
-    if (!isatty(fileno(stdin))) {
-      char *line = NULL;
-      size_t size = BUFFER_SIZE;
-      if (!chunk_boundary) {
-        while (getline(&line, &size, stdin) != -1) {
-          if (asm_assemble_str(al, line)) {
-            fprintf(stderr, "failed to assemble instruction: %s\n", line);
-            exit(EXIT_FAILURE);
-          }
-        }
-      } else {
-        while (getline(&line, &size, stdin) != -1) {
-          int chunk_brks = 0;
-          if (asm_assemble_string_counting_chunks(al, line, chunk_boundary,
-                                                  &chunk_brks)) {
-            fprintf(stderr, "failed to assemble instruction: %s\n", line);
-            exit(EXIT_FAILURE);
-          }
-          total_chunk_brks += chunk_brks;
-        }
-        print_chunk_brks(total_chunk_brks, debug, chunk_boundary);
-      }
-      free(line);
-    } else
-      err_print_usage("Error: Expected path/to/file.asm after options\n");
-  } else {
-    if (!chunk_boundary) {
-      if (asm_assemble_file(al, argv[optind])) {
-        fprintf(stderr, "failed to assemble file: %s\n", argv[optind]);
-        exit(EXIT_FAILURE);
-      }
-    } else {
-      if (asm_assemble_file_counting_chunks(al, argv[optind], chunk_boundary,
-                                            &total_chunk_brks)) {
-        fprintf(stderr, "failed to assemble file: %s\n", argv[optind]);
-        exit(EXIT_FAILURE);
-      }
-      print_chunk_brks(total_chunk_brks, debug, chunk_boundary);
-    }
-  }
+int create_binary_file(assemblyline_t al, enum OUTPUT create_bin,
+                       char *const param_file) {
 
-  if (get_ret != DONT_RUN) {
-    // initialize the randomiser if needed
-    if (get_ret & RUN_RAND)
-      srand(time(NULL));
-    void *func = asm_get_code(al);
-    execute_get_ret_value(func, arglen, get_ret);
-  }
+  char *write_file = NULL;
 
   switch (create_bin) {
   case NONE:
-    exit(EXIT_SUCCESS);
-    break;
+    return EXIT_SUCCESS;
   case BIN_FILE: {
+    char bin_ext[] = ".bin";
     size_t bin_file_len = strlen(param_file) + strlen(bin_ext) + 1;
-    bin_file = calloc(bin_file_len, sizeof(char));
+    char *bin_file = calloc(bin_file_len, sizeof(char));
     sprintf(bin_file, "%s%s", param_file, bin_ext);
     write_file = bin_file;
   } break;
@@ -460,7 +327,201 @@ int main(int argc, char *argv[]) {
   }
   if (asm_create_bin_file(al, write_file)) {
     fprintf(stderr, "failed to create %s\n", param_file);
-    exit(EXIT_FAILURE);
+    return EXIT_FAILURE;
   }
-  exit(EXIT_SUCCESS);
+  return EXIT_SUCCESS;
+}
+
+/** enum mode { M_STDIN, M_STDIN_COUNT, M_FILE, M_FILE_COUNT }; */
+
+struct mode {
+  enum src { STD, FLE } src : 1;
+  bool count : 1;
+};
+
+struct mode findMode(struct parsed_ops *ops, int argc) {
+  struct mode ret;
+  ret.count = ops->chunk_boundary > 0 ? true : false;
+
+  if (optind < argc) {
+    ret.src = FLE;
+  } else {
+
+    // check if stdin is provided via pipe
+    if (isatty(fileno(stdin))) {
+      err_print_usage("Error: Expected path/to/file.asm after options\n");
+    } else {
+      ret.src = STD;
+    }
+  }
+  return ret;
+}
+int main(int argc, char *argv[]) {
+
+  int total_chunk_brks = -1;
+
+  if (argc < 2 && isatty(fileno(stdin)))
+    err_print_usage("Error: invalid number of arguments\n");
+
+  assemblyline_t al = asm_create_instance(NULL, 0);
+
+  struct parsed_ops ops = {.mov_imm = 0,
+                           .sib_all = 0,
+                           .sib_swap = 0,
+                           .sib_no_base = 0,
+                           .get_ret = DONT_RUN,
+                           .arglen = DEFAULT_ARG_LEN,
+                           .debug = false,
+                           .create_bin = NONE,
+                           .param_file = NULL,
+                           .chunk_boundary = 0};
+
+  parse_opt(al, argc, argv, &ops);
+  set_mov_imm(al, ops.mov_imm);
+  set_sib(al, ops.sib_swap, ops.sib_all, ops.sib_no_base);
+
+  struct mode m = findMode(&ops, argc);
+
+  if (m.src == FLE) {
+    int ret = m.count ? asm_assemble_file_counting_chunks(al, argv[optind],
+                                                          ops.chunk_boundary,
+                                                          &total_chunk_brks)
+                      : asm_assemble_file(al, argv[optind]);
+    if (ret) {
+      fprintf(stderr, "failed to assemble file: %s\n", argv[optind]);
+      exit(EXIT_FAILURE);
+    }
+  }
+
+  // else
+  if (m.src == STD) {
+
+    char *line = NULL;
+    int chunk_brks = 0;
+    size_t size = BUFFER_SIZE;
+    while (getline(&line, &size, stdin) != -1) {
+
+      int ret = m.count ? asm_assemble_string_counting_chunks(
+                              al, line, ops.chunk_boundary, &chunk_brks)
+                        : asm_assemble_str(al, line);
+      if (ret) {
+        fprintf(stderr, "failed to assemble instruction: %s\n", line);
+        exit(EXIT_FAILURE);
+      }
+      total_chunk_brks += chunk_brks;
+    }
+
+    free(line);
+  }
+
+  if (total_chunk_brks != -1)
+    print_chunk_brks(total_chunk_brks, ops.debug, ops.chunk_boundary);
+
+  if (ops.get_ret != DONT_RUN) {
+
+    // initialize the randomiser if needed
+    if (ops.get_ret & RUN_RAND)
+      srand(time(NULL));
+
+    // execute function
+    void *func = asm_get_code(al);
+    execute_get_ret_value(func, ops.arglen, ops.get_ret);
+  }
+
+  return create_binary_file(al, ops.create_bin, ops.param_file);
+}
+
+static void parse_opt(assemblyline_t al, int argc, char **argv,
+                      struct parsed_ops *r) {
+  /* getopt_long stores the option index here. */
+  int option_index = 0;
+  int opt = -1;
+  struct option long_options[] = {
+      /* These options set a flag. */
+      // clang-format off
+      {"nasm-mov-imm",                no_argument,       &r->mov_imm,     NASM_MOV_IMM},
+      {"strict-mov-imm",              no_argument,       &r->mov_imm,     STRICT_MOV_IMM},
+      {"smart-mov-imm",               no_argument,       &r->mov_imm,     SMART_MOV_IMM},
+      {"nasm-sib",                    no_argument,       &r->sib_all,     NASM_SIB},
+      {"strict-sib",                  no_argument,       &r->sib_all,     STRICT_SIB},
+      {"nasm-sib-index-base-swap",    no_argument,       &r->sib_swap,    NASM_SIB_INDEX_BASE_SWAP},
+      {"strict-sib-index-base-swap",  no_argument,       &r->sib_swap,    STRICT_SIB_INDEX_BASE_SWAP},
+      {"nasm-sib-no-base",            no_argument,       &r->sib_no_base, NASM_SIB_NO_BASE},
+      {"strict-sib-no-base",          no_argument,       &r->sib_no_base, STRICT_SIB_NO_BASE},
+      {"version",                     no_argument,       0,              'v'},
+      {"help",                        no_argument,       0,              'h'},
+      {"rand",                        no_argument,       (int*)&r->get_ret,     RUN_RAND},
+      {"return",                      optional_argument, 0,              'r'},
+      {"print",                       no_argument,       0,              'p'},
+      {"printfile",                   required_argument, 0,              'P'},
+      {"nasm",                        no_argument,       0,              'n'},
+      {"strict",                      no_argument,       0,              't'},
+      {"smart",                       no_argument,       0,              's'},
+      {"chunk",                       required_argument, 0,              'c'},
+      {"breaks",                      required_argument, 0,              'b'},
+      {"object",                      required_argument, 0,              'o'},
+      {0, 0, 0, 0}};
+  // clang-format on
+  while ((opt = getopt_long(argc, argv, "hvr::ntspP:c:b:o:", long_options,
+                            &option_index)) != -1) {
+    switch (opt) {
+    case 0:
+      // intentionally blank for the options with implicit flag setting by
+      // getopt_long, like --rand
+      break;
+    case 'v':
+      print_version();
+      break;
+    case 'h':
+      err_print_usage("");
+      break;
+    case 'r':
+      // if there is a optional argument, try to parse it and set the arg len
+      if (optarg && !check_digit(optarg))
+        r->arglen = atoi(optarg);
+      r->get_ret |= RUN;
+      break;
+    case 'p':
+      r->debug = true;
+      asm_set_debug(al, true);
+      break;
+    case 'n':
+      asm_set_all(al, NASM);
+      break;
+    case 't':
+      asm_set_all(al, STRICT);
+      break;
+    case 's':
+      asm_set_all(al, SMART);
+      break;
+    case 'c':
+      if (check_digit(optarg))
+        err_print_usage("Error: [-c CHUNK_SIZE>1] expects an integer\n");
+      int chunk_size = atoi(optarg);
+      asm_set_chunk_size(al, chunk_size);
+      break;
+
+    case 'b':
+      if (check_digit(optarg))
+        err_print_usage("Error: [-b CHUNK_BOUNDARY>1] expects an integer\n");
+      r->chunk_boundary = atoi(optarg);
+      break;
+
+    case 'P':
+      r->create_bin = GENERIC_FILE;
+      r->param_file = optarg;
+      break;
+    case 'o':
+      if (strchr(optarg, '.'))
+        err_print_usage("elf filename cannot have an extension\n");
+      r->create_bin = BIN_FILE;
+      r->param_file = optarg;
+      break;
+
+    default: /* '?' */
+      if (r->mov_imm || r->sib_swap || r->sib_no_base || r->sib_all)
+        break;
+      err_print_usage("");
+    }
+  }
 }

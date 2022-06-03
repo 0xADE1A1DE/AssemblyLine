@@ -1,4 +1,12 @@
 # Assemblyline
+![Unit Tests](https://github.com/0xADE1A1DE/AssemblyLine/actions/workflows/c-check.yml/badge.svg)
+![Code Style](https://github.com/0xADE1A1DE/AssemblyLine/actions/workflows/clang-format-check.yml/badge.svg)
+![Checks](https://img.shields.io/github/checks-status/0xADE1A1DE/AssemblyLine/main?style=for-the-badge)
+![Checks dev](https://img.shields.io/github/checks-status/daviduwu9/AssemblyLineDev/main?style=for-the-badge)
+![Version](https://img.shields.io/github/v/release/0xADE1A1DE/AssemblyLine?logo=github?style=for-the-badge)
+![AUR Version](https://img.shields.io/aur/version/assemblyline-bin?logo=github?style=for-the-badge)
+
+
 
 An ultra-lightweight C library and binary for generating machine code of x86\_64 assembly language and executing on the fly without invoking another compiler, assembler or linker. <br> 
 * Support for MMX, SSE2, AVX, and AVX2 instruction sets.
@@ -43,7 +51,7 @@ To get a stable release clone the repo from a tag or download the tarball. <br>
     uint8_t *mybuffer = mmap(NULL, sizeof(uint8_t) * BUFFER_SIZE,
         PROT_READ | PROT_WRITE | PROT_EXEC, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
     ```
-1. Create an instance of assemblyline_t and attach `mybuffer` or set it to NULL for internal memory allocation   
+1. Create an instance of assemblyline\_t and attach `mybuffer` or set it to NULL for internal memory allocation   
    (will `realloc` if the internal buffer size is insufficient)
     ```c
     // external memory allocation
