@@ -16,8 +16,6 @@ version 1.3.0-release (2022-xx-xx)
 	  fails because of missing CPU capabilities on GHActions)
 
 
-
-
 version 1.2.2-release (2022-03-29)
 
 	- added support for neg: Two's Complement Negation

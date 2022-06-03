@@ -18,6 +18,8 @@
 #include <assemblyline.h>
 #if HAVE_CONFIG_H
 #include <config.h> // from autotools
+#else
+#define PACKAGE_STRING "assemblyline -- NO VERSION"
 #endif
 #include <getopt.h>
 #include <stdbool.h>
@@ -37,7 +39,7 @@ enum OUTPUT { NONE, BIN_FILE, GENERIC_FILE };
 enum run { DONT_RUN = 0, RUN = 1, RUN_RAND = 2 };
 
 typedef enum {
-
+  ASM_NONE = 0,
   NASM_MOV_IMM = 128,
   STRICT_MOV_IMM,
   NASM_SIB,
@@ -50,10 +52,10 @@ typedef enum {
 } asm_options;
 
 struct parsed_ops {
-  int mov_imm;
-  int sib_all;
-  int sib_swap;
-  int sib_no_base;
+  asm_options mov_imm;
+  asm_options sib_all;
+  asm_options sib_swap;
+  asm_options sib_no_base;
   int arglen; // for running (with arguments)
   bool debug;
   enum run get_ret;
@@ -62,16 +64,10 @@ struct parsed_ops {
   int chunk_boundary;
 };
 
-#ifndef PACKAGE_STRING
-const char *const asm_version = "1.42.1";
-#else
-const char *const asm_version = PACKAGE_STRING;
-#endif
-
 static void parse_opt(assemblyline_t al, int argc, char **argv,
                       struct parsed_ops *r);
 
-void err_print_usage(char *error_msg) {
+static void err_print_usage(char *error_msg) {
   fprintf(
       stderr,
       "%s\nUsage: asmline "
@@ -177,33 +173,28 @@ void err_print_usage(char *error_msg) {
   exit(EXIT_FAILURE);
 }
 
-void print_version() {
+static void print_version() {
 
-  printf("%s\n"
-         "Copyright 2022 University of Adelaide\n\n"
-         "Licensed under the Apache License, Version 2.0 (the \"License\");\n"
-         "You may obtain a copy of the License at\n\n"
-         "\thttp://www.apache.org/licenses/LICENSE-2.0\n\n"
-         "Unless required by applicable law or agreed to in writing, software\n"
-         "distributed under the License is distributed on an \"AS IS\" BASIS,\n"
-         "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or "
-         "implied.\n"
-         "See the License for the specific language governing permissions and\n"
-         "limitations under the License.\n\n"
-         "Written by David Wu and Joel Kuepper\n",
-         asm_version);
+  const char *const copyright =
+      "Copyright 2022 University of Adelaide\n\n"
+      "Licensed under the Apache License, Version 2.0 (the \"License\");\n"
+      "You may obtain a copy of the License at\n\n"
+      "\thttp://www.apache.org/licenses/LICENSE-2.0\n\n"
+      "Unless required by applicable law or agreed to in writing, software\n"
+      "distributed under the License is distributed on an \"AS IS\" BASIS,\n"
+      "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or "
+      "implied.\n"
+      "See the License for the specific language governing permissions and\n"
+      "limitations under the License.\n\n"
+      "Written by David Wu and Joel Kuepper\n";
+
+  printf("%s\n%s\n", copyright, PACKAGE_STRING);
+
   exit(EXIT_SUCCESS);
 }
 
-int check_digit(char *optarg) {
-  size_t len = strlen(optarg);
-  for (size_t i = 0; i < len; i++)
-    if (optarg[i] < '0' || optarg[i] > '9')
-      return EXIT_FAILURE;
-  return EXIT_SUCCESS;
-}
-
-void print_chunk_brks(int total_chunk_brks, bool debug, int chunk_boundary) {
+static void print_chunk_brks(int total_chunk_brks, bool debug,
+                             int chunk_boundary) {
 
   printf("%d", total_chunk_brks);
   if (debug)
@@ -211,9 +202,10 @@ void print_chunk_brks(int total_chunk_brks, bool debug, int chunk_boundary) {
   printf("\n");
 }
 
-void execute_get_ret_value(void *function, int arglen, enum run mode) {
+static void execute_get_ret_value(void *function, struct parsed_ops *ops) {
 
   uint64_t *arguments[MAX_ARGUMENTS];
+  int arglen = ops->arglen;
 
   uint64_t result = 0;
   if (arglen == 0) {
@@ -223,7 +215,7 @@ void execute_get_ret_value(void *function, int arglen, enum run mode) {
     // allocate 6 args with arglen uint64_t's
     for (int arg_idx = 0; arg_idx < MAX_ARGUMENTS; arg_idx++) {
       arguments[arg_idx] = calloc(arglen, sizeof(uint64_t));
-      if (mode & RUN_RAND)
+      if (ops->get_ret & RUN_RAND)
         for (int qword_idx = 0; qword_idx < arglen; qword_idx++) {
 
           uint64_t rand_val = rand(); // lo_limb
@@ -245,75 +237,82 @@ void execute_get_ret_value(void *function, int arglen, enum run mode) {
   printf("\nthe value is 0x%lx\n", result);
 }
 
-static void set_mov_imm(assemblyline_t al, int mov_imm) {
+static void set_mov_imm(assemblyline_t al, asm_options mov_imm) {
   switch (mov_imm) {
-  case 0:
-    break;
+
   case NASM_MOV_IMM:
     asm_mov_imm(al, NASM);
+
     break;
   case STRICT_MOV_IMM:
     asm_mov_imm(al, STRICT);
     break;
+
   case SMART_MOV_IMM:
     asm_mov_imm(al, SMART);
-    break;
+
   default:
     break;
   }
 }
-static void set_sib(assemblyline_t al, int sib_swap, int sib_all,
-                    int sib_no_base) {
+static void set_sib_swap(assemblyline_t al, asm_options sib_swap) {
   switch (sib_swap) {
-  case 0:
-    break;
+
   case NASM_SIB_INDEX_BASE_SWAP:
     asm_sib_index_base_swap(al, NASM);
     break;
+
   case STRICT_SIB_INDEX_BASE_SWAP:
     asm_sib_index_base_swap(al, STRICT);
-    break;
+
   default:
     break;
   }
+}
 
+static void set_sib_no_base(assemblyline_t al, asm_options sib_no_base) {
   switch (sib_no_base) {
-  case 0:
-    break;
+
   case NASM_SIB_NO_BASE:
     asm_sib_no_base(al, NASM);
     break;
+
   case STRICT_SIB_NO_BASE:
     asm_sib_no_base(al, STRICT);
-    break;
+
   default:
     break;
   }
+}
 
+static void set_sib_all(assemblyline_t al, asm_options sib_all) {
   switch (sib_all) {
-  case 0:
-    break;
+
   case NASM_SIB:
     asm_sib_no_base(al, NASM);
     asm_sib_index_base_swap(al, NASM);
     break;
+
   case STRICT_SIB:
     asm_sib_no_base(al, STRICT);
     asm_sib_index_base_swap(al, STRICT);
-    break;
+
   default:
     break;
   }
 }
 
-int create_binary_file(assemblyline_t al, enum OUTPUT create_bin,
-                       char *const param_file) {
+static int create_binary_file(assemblyline_t al, enum OUTPUT create_bin,
+                              char *const param_file) {
 
   char *write_file = NULL;
+  if (param_file == NULL) {
+    fprintf(stderr, "no filename was supplied \n");
+    return EXIT_FAILURE;
+  }
 
   switch (create_bin) {
-  case NONE:
-    return EXIT_SUCCESS;
+
   case BIN_FILE: {
     char bin_ext[] = ".bin";
     size_t bin_file_len = strlen(param_file) + strlen(bin_ext) + 1;
@@ -321,15 +320,24 @@ int create_binary_file(assemblyline_t al, enum OUTPUT create_bin,
     sprintf(bin_file, "%s%s", param_file, bin_ext);
     write_file = bin_file;
   } break;
+
   case GENERIC_FILE:
     write_file = param_file;
     break;
-  }
-  if (asm_create_bin_file(al, write_file)) {
-    fprintf(stderr, "failed to create %s\n", param_file);
+  default:
+    // Shouldn't happen. NONE-case should be caught beforehand
     return EXIT_FAILURE;
   }
-  return EXIT_SUCCESS;
+
+  int ret = EXIT_SUCCESS;
+  if (asm_create_bin_file(al, write_file)) {
+    fprintf(stderr, "failed to create %s\n", param_file);
+    ret = EXIT_FAILURE;
+  }
+
+  if (write_file != NULL)
+    free(write_file);
+  return ret;
 }
 
 /** enum mode { M_STDIN, M_STDIN_COUNT, M_FILE, M_FILE_COUNT }; */
@@ -360,15 +368,12 @@ int main(int argc, char *argv[]) {
 
   int total_chunk_brks = -1;
 
-  if (argc < 2 && isatty(fileno(stdin)))
-    err_print_usage("Error: invalid number of arguments\n");
-
   assemblyline_t al = asm_create_instance(NULL, 0);
 
-  struct parsed_ops ops = {.mov_imm = 0,
-                           .sib_all = 0,
-                           .sib_swap = 0,
-                           .sib_no_base = 0,
+  struct parsed_ops ops = {.mov_imm = ASM_NONE,
+                           .sib_all = ASM_NONE,
+                           .sib_swap = ASM_NONE,
+                           .sib_no_base = ASM_NONE,
                            .get_ret = DONT_RUN,
                            .arglen = DEFAULT_ARG_LEN,
                            .debug = false,
@@ -378,7 +383,10 @@ int main(int argc, char *argv[]) {
 
   parse_opt(al, argc, argv, &ops);
   set_mov_imm(al, ops.mov_imm);
-  set_sib(al, ops.sib_swap, ops.sib_all, ops.sib_no_base);
+
+  set_sib_all(al, ops.sib_all);
+  set_sib_swap(al, ops.sib_swap);
+  set_sib_no_base(al, ops.sib_no_base);
 
   struct mode m = findMode(&ops, argc);
 
@@ -425,32 +433,32 @@ int main(int argc, char *argv[]) {
 
     // execute function
     void *func = asm_get_code(al);
-    execute_get_ret_value(func, ops.arglen, ops.get_ret);
+    execute_get_ret_value(func, &ops);
   }
 
-  return create_binary_file(al, ops.create_bin, ops.param_file);
+  if (ops.create_bin != NONE) {
+    return create_binary_file(al, ops.create_bin, ops.param_file);
+  }
+  return EXIT_SUCCESS;
 }
 
 static void parse_opt(assemblyline_t al, int argc, char **argv,
                       struct parsed_ops *r) {
-  /* getopt_long stores the option index here. */
-  int option_index = 0;
-  int opt = -1;
+  /* These options set a flag. */
   struct option long_options[] = {
-      /* These options set a flag. */
       // clang-format off
-      {"nasm-mov-imm",                no_argument,       &r->mov_imm,     NASM_MOV_IMM},
-      {"strict-mov-imm",              no_argument,       &r->mov_imm,     STRICT_MOV_IMM},
-      {"smart-mov-imm",               no_argument,       &r->mov_imm,     SMART_MOV_IMM},
-      {"nasm-sib",                    no_argument,       &r->sib_all,     NASM_SIB},
-      {"strict-sib",                  no_argument,       &r->sib_all,     STRICT_SIB},
-      {"nasm-sib-index-base-swap",    no_argument,       &r->sib_swap,    NASM_SIB_INDEX_BASE_SWAP},
-      {"strict-sib-index-base-swap",  no_argument,       &r->sib_swap,    STRICT_SIB_INDEX_BASE_SWAP},
-      {"nasm-sib-no-base",            no_argument,       &r->sib_no_base, NASM_SIB_NO_BASE},
-      {"strict-sib-no-base",          no_argument,       &r->sib_no_base, STRICT_SIB_NO_BASE},
+      {"nasm-mov-imm",                no_argument,       (int *)&r->mov_imm,     NASM_MOV_IMM},
+      {"strict-mov-imm",              no_argument,       (int *)&r->mov_imm,     STRICT_MOV_IMM},
+      {"smart-mov-imm",               no_argument,       (int *)&r->mov_imm,     SMART_MOV_IMM},
+      {"nasm-sib",                    no_argument,       (int *)&r->sib_all,     NASM_SIB},
+      {"strict-sib",                  no_argument,       (int *)&r->sib_all,     STRICT_SIB},
+      {"nasm-sib-index-base-swap",    no_argument,       (int *)&r->sib_swap,    NASM_SIB_INDEX_BASE_SWAP},
+      {"strict-sib-index-base-swap",  no_argument,       (int *)&r->sib_swap,    STRICT_SIB_INDEX_BASE_SWAP},
+      {"nasm-sib-no-base",            no_argument,       (int *)&r->sib_no_base, NASM_SIB_NO_BASE},
+      {"strict-sib-no-base",          no_argument,       (int *)&r->sib_no_base, STRICT_SIB_NO_BASE},
       {"version",                     no_argument,       0,              'v'},
       {"help",                        no_argument,       0,              'h'},
-      {"rand",                        no_argument,       (int*)&r->get_ret,     RUN_RAND},
+      {"rand",                        no_argument,       (int *)&r->get_ret,     RUN_RAND},
       {"return",                      optional_argument, 0,              'r'},
       {"print",                       no_argument,       0,              'p'},
       {"printfile",                   required_argument, 0,              'P'},
@@ -460,10 +468,22 @@ static void parse_opt(assemblyline_t al, int argc, char **argv,
       {"chunk",                       required_argument, 0,              'c'},
       {"breaks",                      required_argument, 0,              'b'},
       {"object",                      required_argument, 0,              'o'},
-      {0, 0, 0, 0}};
+      {0,                             0,                 0,               0 }
+  };
   // clang-format on
-  while ((opt = getopt_long(argc, argv, "hvr::ntspP:c:b:o:", long_options,
-                            &option_index)) != -1) {
+
+  /* getopt_long stores the option index here. */
+  int option_index = 0;
+  int opt = -1;
+  while (1) {
+    opt = getopt_long(argc, argv, "hvr::ntspP:c:b:o:", long_options,
+                      &option_index);
+    if (opt == -1) {
+      break; // all options parsed.
+    }
+
+    int temp = 0; // this temp var is used when parsing integers
+
     switch (opt) {
     case 0:
       // intentionally blank for the options with implicit flag setting by
@@ -476,10 +496,10 @@ static void parse_opt(assemblyline_t al, int argc, char **argv,
       err_print_usage("");
       break;
     case 'r':
-      // if there is a optional argument, try to parse it and set the arg len
-      if (optarg && !check_digit(optarg))
-        r->arglen = atoi(optarg);
       r->get_ret |= RUN;
+      // if there is a optional numerical argument > 0, set the arg len
+      if (optarg != NULL && (temp = atoi(optarg) > 0))
+        r->arglen = temp;
       break;
     case 'p':
       r->debug = true;
@@ -495,16 +515,15 @@ static void parse_opt(assemblyline_t al, int argc, char **argv,
       asm_set_all(al, SMART);
       break;
     case 'c':
-      if (check_digit(optarg))
+      if (optarg == NULL || (temp = atoi(optarg) <= 1))
         err_print_usage("Error: [-c CHUNK_SIZE>1] expects an integer\n");
-      int chunk_size = atoi(optarg);
-      asm_set_chunk_size(al, chunk_size);
+      asm_set_chunk_size(al, temp);
       break;
 
     case 'b':
-      if (check_digit(optarg))
+      if (optarg == NULL || (temp = atoi(optarg) <= 1))
         err_print_usage("Error: [-b CHUNK_BOUNDARY>1] expects an integer\n");
-      r->chunk_boundary = atoi(optarg);
+      r->chunk_boundary = temp;
       break;
 
     case 'P':
@@ -512,13 +531,14 @@ static void parse_opt(assemblyline_t al, int argc, char **argv,
       r->param_file = optarg;
       break;
     case 'o':
-      if (strchr(optarg, '.'))
+      if (optarg == NULL || strchr(optarg, '.'))
         err_print_usage("elf filename cannot have an extension\n");
       r->create_bin = BIN_FILE;
       r->param_file = optarg;
       break;
 
-    default: /* '?' */
+    case '?':
+    default:
       if (r->mov_imm || r->sib_swap || r->sib_no_base || r->sib_all)
         break;
       err_print_usage("");

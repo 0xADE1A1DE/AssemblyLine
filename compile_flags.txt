@@ -3,4 +3,3 @@
 -Wall
 -Wextra
 -std=gnu99
--DPACKAGE_STRING='0.0.42'
