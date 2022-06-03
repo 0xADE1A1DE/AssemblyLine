@@ -1,10 +1,20 @@
-version 1.2.3-release (2022-05-xx)
+version 1.3.0-release (2022-xx-xx)
 
 	- fixed a bug which can lead to SIGSEGV's on certain systems using
 	  `strtok_r`. (Thanks to @hugsy for pointing that out)
 
 	- fixed bug where the wrong return code is returned if the internal buffer
 	  it too small and assemblyline is compiled for non-linux systems.
+
+	- CI: Using GitHub Actions to validate Code Formatting
+
+	- CI: Using GitHub Actions to build and run checks
+
+	- Repo: Introducing badges to show current stats for the repository
+
+	- Tests: run.c now checks for cpu-flags to run the code. (Sometimes it
+	  fails because of missing CPU capabilities on GHActions)
+
 
 
 
