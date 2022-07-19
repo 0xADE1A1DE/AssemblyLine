@@ -1,0 +1,30 @@
+name: Will install dependencies to build AssemblyLine, build and install AssemblyLine.
+
+on:
+  workflow_call:
+
+env:
+  asmlineversion: 1.2.2
+
+jobs:
+  assemblyline:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: v1.2.2
+
+      - name: Install dependencies
+        run: sudo apt install -y autoconf curl gcc libtool make nasm pkg-config tar
+
+      - name: Run autogen
+        run: ./autogen.sh
+
+      - name: Run Configure
+        run: ./configure CFLAGS=-O3
+
+      - name: Build
+        run: make all
+
+      - name: install
+        run: sudo make install && ldconfig
