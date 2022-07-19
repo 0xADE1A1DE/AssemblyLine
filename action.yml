@@ -27,4 +27,4 @@ runs:
 
     - name: install
       shell: bash
-      run: sudo make install && ldconfig
+      run: sudo make install && sudo ldconfig
