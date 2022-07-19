@@ -6,25 +6,24 @@ on:
 env:
   asmlineversion: 1.2.2
 
-jobs:
-  assemblyline:
-    runs-on: ubuntu-latest
+runs:
+  using: "composite"
     steps:
-      - uses: actions/checkout@v3
-        with:
-          ref: v1.2.2
+    - uses: actions/checkout@v3
+      with:
+        ref: v1.2.2
 
-      - name: Install dependencies
-        run: sudo apt install -y autoconf curl gcc libtool make nasm pkg-config tar
+    - name: Install dependencies
+      run: sudo apt install -y autoconf curl gcc libtool make nasm pkg-config tar
 
-      - name: Run autogen
-        run: ./autogen.sh
+    - name: Run autogen
+      run: ./autogen.sh
 
-      - name: Run Configure
-        run: ./configure CFLAGS=-O3
+    - name: Run Configure
+      run: ./configure CFLAGS=-O3
 
-      - name: Build
-        run: make all
+    - name: Build
+      run: make all
 
-      - name: install
-        run: sudo make install && ldconfig
+    - name: install
+      run: sudo make install && ldconfig
