@@ -166,8 +166,8 @@ static void check_for_keyword(struct instr *instr_buffer, char *all_opd,
  * operand is not an immediate.
  */
 static int check_operand_type(struct instr *instr_buffer, char *all_opd,
-                              int opd_pos) {
-  char *saved_opd;
+                              int opd_pos, char *saved_opd) {
+
   switch (instr_buffer->opd[opd_pos].type) {
   // convert immediate to unsigned long
   case 'i':
@@ -198,7 +198,7 @@ static int check_operand_type(struct instr *instr_buffer, char *all_opd,
  */
 static int operand_tok(struct instr *instr_buffer, char *opds, int opd_pos) {
 
-  char *saved_opd;
+  char *saved_opd = NULL;
   FAIL_IF(opds[0] == ',');
   char *all_opd = instr_buffer->opd[opd_pos].ptr;
   // get the 1st operand
@@ -206,7 +206,7 @@ static int operand_tok(struct instr *instr_buffer, char *opds, int opd_pos) {
   check_for_keyword(instr_buffer, all_opd, opd_pos);
   // get the operand type can be 'i', 'r', or 'm'
   instr_buffer->opd[opd_pos].type = get_operand_type(all_opd);
-  FAIL_IF(check_operand_type(instr_buffer, all_opd, opd_pos));
+  FAIL_IF(check_operand_type(instr_buffer, all_opd, opd_pos, saved_opd));
   // get next operand
   char *next_operands = strtok_r(NULL, "", &saved_opd);
   if (next_operands == NULL)

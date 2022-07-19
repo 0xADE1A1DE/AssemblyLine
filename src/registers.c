@@ -15,9 +15,10 @@
  */
 
 /*contains register string to asm_reg enum mapping*/
-#include "enums.h"
 #include "registers.h"
+#include "enums.h"
 
+// clang-format off
 const struct reg_table REG_TABLE[] = {
                  {al,    {"al",   "\0", "ax",   "eax",  "rax", "\0"     "\0"}},             
                  {cl,    {"cl",   "\0", "cx",   "ecx",  "rcx", "\0"     "\0"}},    

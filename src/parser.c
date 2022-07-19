@@ -222,6 +222,7 @@ static int check_len_or_resize(assemblyline_t al, int buf_pos) {
     fprintf(stderr, "internal buffer too small. Not running on Linux, "
                     "Thus there is no mremap. Use your own buffer, or "
                     "implement another strategy. ");
+    return EXIT_FAILURE;
 #endif
   }
   return EXIT_SUCCESS;
