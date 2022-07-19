@@ -9,16 +9,21 @@ runs:
         ref: v1.2.2
 
     - name: Install dependencies
+      shell: bash
       run: sudo apt install -y autoconf curl gcc libtool make nasm pkg-config tar
 
     - name: Run autogen
+      shell: bash
       run: ./autogen.sh
 
     - name: Run Configure
+      shell: bash
       run: ./configure CFLAGS=-O3
 
     - name: Build
+      shell: bash
       run: make all
 
     - name: install
+      shell: bash
       run: sudo make install && ldconfig
