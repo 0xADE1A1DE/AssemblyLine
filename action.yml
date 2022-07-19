@@ -1,14 +1,9 @@
-name: Will install dependencies to build AssemblyLine, build and install AssemblyLine.
-
-on:
-  workflow_call:
-
-env:
-  asmlineversion: 1.2.2
+name: 'AssemblyLine'
+description: 'Will install dependencies to build AssemblyLine, build and install AssemblyLine.'
 
 runs:
   using: "composite"
-    steps:
+  steps:
     - uses: actions/checkout@v3
       with:
         ref: v1.2.2
