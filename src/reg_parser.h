@@ -45,7 +45,7 @@ uint32_t process_neg_disp(uint32_t neg_num);
  * finds the index register in @param mem and copies characters to @param reg
  * ex: "[rax+rbp]" -> "rbp"
  */
-unsigned int get_index_reg(struct instr *instruc, char *mem, char *reg);
+unsigned int get_index_reg(struct instr *instruc, const char *mem, char reg[]);
 
 /**
  * finds the addition sign in @param mem and returns the index of memory
@@ -53,11 +53,13 @@ unsigned int get_index_reg(struct instr *instruc, char *mem, char *reg);
  */
 int find_add_mem(char *mem, bool *neg, int *base);
 
+int find_mem_const(char *mem, bool *neg, int *base);
+
 /**
  * determines operand type of @param operand, returns 'r' for register, 'm' for
  * memory reference, and 'i' immediate.
  */
-char get_operand_type(char *operand);
+char get_operand_type(const char *operand);
 
 /**
  * takes a string representation of a register @param reg and return the

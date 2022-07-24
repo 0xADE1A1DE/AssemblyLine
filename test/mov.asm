@@ -1,6 +1,10 @@
 SECTION .text
 GLOBAL test
 test:
+mov al, byte [0x7ffff]
+mov byte [ 0x03f0 ], al
+mov word [ 0x03f0 ], ax
+mov dword [ 0x03f0 ], eax
 mov [rsp + 0x03f0 ], rax
 mov [rsp + 0x03f0 ], rax
 mov byte [ rsp + 0xa0 ], r14b
@@ -4142,3 +4146,4 @@ mov ax, r15w
 mov al, r15b
 mov rax, -4624529908474429120
 mov rax, 18446744073709551615
+mov qword [rax+rsi+0x1011], 18446744073709551615

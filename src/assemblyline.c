@@ -35,7 +35,7 @@
  */
 static void asm_build_index_tables() {
   // INSTR_TABLE index starts at the SKIP entry
-  size_t i = 2;
+  int i = 2;
   char previous_char = 'a' - 1;
   while (INSTR_TABLE[++i].name != NA) {
     if (INSTR_TABLE[i].instr_name[0] != '\0') {
@@ -64,15 +64,16 @@ assemblyline_t asm_create_instance(uint8_t *buffer, int len) {
   if (buffer == NULL) {
     al->external = false;
     al->buffer_len = MEM_BUFFER + BUFFER_TOLERANCE;
-    al->buffer = mmap(NULL, sizeof(uint8_t) * al->buffer_len,
-                      PROT_READ | PROT_WRITE | PROT_EXEC,
-                      MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
-    if (al->buffer == MAP_FAILED) {
+    void *ret = mmap(NULL, sizeof(uint8_t) * al->buffer_len,
+                     PROT_READ | PROT_WRITE | PROT_EXEC,
+                     MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
+    if (ret == MAP_FAILED) { // NOLINT
       fprintf(stderr, "failed to allocate internal memory buffer\n");
       perror("Error: ");
       free(al);
       return NULL;
     }
+    al->buffer = ret;
   } else {
     al->external = true;
     al->buffer_len = len;
@@ -143,8 +144,9 @@ int asm_assemble_string_counting_chunks(assemblyline_t al, char *str,
 static void *asm_mmap_file(char *asm_file, size_t *str_len) {
   // open file for reading
   int fd = open(asm_file, O_RDONLY, S_IRUSR | S_IRUSR);
-  FAIL_SYS(fd == -1, "failed to open file\n", MAP_FAILED);
+  FAIL_SYS(fd == -1, "failed to open file\n", MAP_FAILED); // NOLINT
   struct stat file_stat;
+  // NOLINTNEXTLINE
   FAIL_SYS(fstat(fd, &file_stat), "failed to get file stats\n", MAP_FAILED);
   // map file contents to a string
   *str_len = file_stat.st_size;
@@ -158,6 +160,7 @@ int asm_assemble_file_counting_chunks(assemblyline_t al, char *asm_file,
 
   size_t str_len = 0;
   char *str = asm_mmap_file(asm_file, &str_len);
+  // NOLINTNEXTLINE
   FAIL_SYS(str == MAP_FAILED, "mmap failed to read file\n", EXIT_FAILURE);
   int exit = asm_assemble_string_counting_chunks(al, str, chunk_size, dest);
   // free mmap memory used for reading file
@@ -173,6 +176,7 @@ int asm_assemble_file(assemblyline_t al, char *asm_file) {
 
   size_t str_len = 0;
   const char *str = asm_mmap_file(asm_file, &str_len);
+  // NOLINTNEXTLINE
   FAIL_SYS(str == MAP_FAILED, "mmap failed to read file\n", EXIT_FAILURE);
   int exit = asm_assemble_str(al, str);
   // free mmap memory used for reading file

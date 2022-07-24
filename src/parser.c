@@ -17,7 +17,10 @@
 /*implements functions for filtering a string containing assembly instructions
 and converting that filtered string into its respective struct instr
 representation*/
-#define _GNU_SOURCE 1
+#define _GNU_SOURCE 1 // NOLINT
+#define MAX_OPD 5
+#define MAX_LINE_LEN 100
+#define OBJDUMP_MAX_LINE_LEN 7
 #include "parser.h"
 #include "assembler.h"
 #include "encoder.h"
@@ -43,6 +46,17 @@ static int check_registers(struct instr *check_instr) {
 }
 
 /**
+ * convert each operand string register in @param instr_data to enum
+ */
+static void all_opd_str_to_reg(struct instr *instr_data) {
+
+  for (int i = 0; i < FOURTH_OPERAND; i++)
+    instr_data->opd[i].reg = str_to_reg(instr_data->opd[i].str);
+  for (int i = 0; i < FOURTH_OPERAND; i++)
+    instr_data->opd[i].index = str_to_reg(instr_data->opd[i].sib);
+}
+
+/**
  * tokenize and parse @param filtered_asm_str to fill in @param instr_data
  */
 static int line_to_instr(struct instr *instr_data, char *filtered_asm_str) {
@@ -54,16 +68,20 @@ static int line_to_instr(struct instr *instr_data, char *filtered_asm_str) {
   // tokenize filtered instruction for mapping to instr internal structure
   FAIL_IF_MSG(instr_tok(instr_data, filtered_asm_str), "syntax error\n");
   // convert operand format from string to enum representation
-  char opd_type[5] = {'\0'};
+  char opd_type[MAX_OPD] = {'\0'};
   for (int i = 0; i < NUM_OF_OPD; i++)
     opd_type[i] = instr_data->opd[i].type;
   operand_format opd_format = get_opd_format(opd_type);
   FAIL_IF_VAR(opd_format == opd_error, "illegal operand format: %s\n", opd_type)
-  // jmp [MEM] no register
-  if (opd_format == m && instr_data->opd[0].str[0] == '\0' &&
-      instr_data->opd[0].sib[0] == '\0') {
+  // convert register string to enum representation
+  all_opd_str_to_reg(instr_data);
+  int m_index = instr_data->mem_index;
+  // [MEM] no register
+  if (instr_data->opd[m_index].type == 'm' &&
+      instr_data->opd[m_index].str[0] == '\0' &&
+      instr_data->opd[m_index].sib[0] == '\0') {
     instr_data->mod_disp &= MOD16;
-    instr_data->keyword.is_short = true;
+    instr_data->opd[m_index].reg = spl;
   }
   // convert instruction string to enum representation
   instr_data->key = str_to_instr_key(instr_data->instruction, opd_format);
@@ -71,21 +89,17 @@ static int line_to_instr(struct instr *instr_data, char *filtered_asm_str) {
               "unsupported or illegal instruction: %s\n",
               instr_data->instruction);
   if (instr_data->imm && INSTR_TABLE[instr_data->key].type == CONTROL_FLOW) {
-    if (IN_RANGE(instr_data->cons, 0xffffff80, 0xffffffff))
+    if (IN_RANGE(instr_data->cons, NEG80_32BIT, MAX_UNSIGNED_32BIT) ||
+        (instr_data->cons <= MAX_SIGNED_8BIT && !instr_data->keyword.is_long))
       instr_data->keyword.is_short = true;
-    else if (instr_data->cons <= 0x7f && !instr_data->keyword.is_long)
-      instr_data->keyword.is_short = true;
-    else
-      FAIL_IF_MSG(instr_data->cons > 0x7f && instr_data->keyword.is_short,
-                  "cannot set a long jump to short\n");
+    else if (instr_data->cons > MAX_SIGNED_8BIT &&
+             instr_data->keyword.is_short) {
+      fprintf(stderr, "cannot set a long jump to short\n");
+      return EXIT_FAILURE;
+    }
   }
   // find the encoding for a short jump instruction if applicable
   instr_data->key += instr_data->keyword.is_short;
-  // convert register string to enum representation
-  for (int i = 0; i < FOURTH_OPERAND; i++)
-    instr_data->opd[i].reg = str_to_reg(instr_data->opd[i].str);
-  for (int i = 0; i < FOURTH_OPERAND; i++)
-    instr_data->opd[i].index = str_to_reg(instr_data->opd[i].sib);
   // values will be determined during encoding
   instr_data->hex.reg = NONE;
   instr_data->hex.rex = NONE;
@@ -97,7 +111,7 @@ static int line_to_instr(struct instr *instr_data, char *filtered_asm_str) {
   // force jump immediate to 32 bits
   if (INSTR_TABLE[instr_data->key].type == CONTROL_FLOW &&
       IN_RANGE(instr_data->cons, NEG32BIT + 1, NEG64BIT))
-    instr_data->cons &= 0xffffffff;
+    instr_data->cons &= MAX_UNSIGNED_32BIT;
   // encode for the reg_hex value and op_offset for instruction
   if (instr_data->opd[0].reg != reg_none ||
       instr_data->opd[0].index != reg_none) {
@@ -108,6 +122,11 @@ static int line_to_instr(struct instr *instr_data, char *filtered_asm_str) {
     // finds the operand and prefix hex values
     FAIL_IF(encode_operands(instr_data));
   }
+  // special case for push instruction with immediate
+  // (used push imm16 or imm32 when immediate is greater than 0x7f)
+  if (INSTR_TABLE[instr_data->key].name == push &&
+      instr_data->cons > MAX_SIGNED_8BIT)
+    instr_data->key++;
   return EXIT_SUCCESS;
 }
 
@@ -123,25 +142,25 @@ static int filter_assembly_str_fsa(const char unfiltered_str[],
   int i = 0;
   while (unfiltered_str[i] != ';' && unfiltered_str[i] != '%' &&
          unfiltered_str[i] != '\r' && unfiltered_str[i] != '\n' &&
-         unfiltered_str[i] != '\0' && j < 100) {
+         unfiltered_str[i] != '\0' && j < MAX_LINE_LEN) {
     switch (filter_state) {
     case BEGIN:
       if (unfiltered_str[i] >= 'A' && unfiltered_str[i] <= 'z') {
-        filter_str[j++] = tolower(unfiltered_str[i]);
+        filter_str[j++] = tolower(unfiltered_str[i]); // NOLINT
         filter_state = FIRST_CH;
       }
       break;
     case FIRST_CH:
       if (unfiltered_str[i] > '!')
-        filter_str[j++] = tolower(unfiltered_str[i]);
+        filter_str[j++] = tolower(unfiltered_str[i]); // NOLINT
       else if (unfiltered_str[i] == ' ') {
-        filter_str[j++] = tolower(unfiltered_str[i]);
+        filter_str[j++] = tolower(unfiltered_str[i]); // NOLINT
         filter_state = SPACE_FOUND;
       }
       break;
     case SPACE_FOUND:
       if (unfiltered_str[i] > '!')
-        filter_str[j++] = tolower(unfiltered_str[i]);
+        filter_str[j++] = tolower(unfiltered_str[i]); // NOLINT
       break;
     }
     // last printable ascii character
@@ -179,10 +198,10 @@ static int str_to_instr(struct instr *instr_data, const char unfiltered_str[],
 /**
  * prints out the machine code stored in @param buf up to 7 bytes
  */
-static void debug_without_chunksize(int opcode_len, uint8_t *ptr) {
+static void debug_without_chunksize(unsigned int opcode_len, uint8_t *ptr) {
 
-  for (int i = 0; i < opcode_len; i++) {
-    if (i == 7)
+  for (unsigned int i = 0; i < opcode_len; i++) {
+    if (i == OBJDUMP_MAX_LINE_LEN)
       printf("\n");
     printf("%02x ", *ptr++);
   }
@@ -193,9 +212,9 @@ static void debug_without_chunksize(int opcode_len, uint8_t *ptr) {
  * prints out the machine code stored in @param buf up to @param chunk_size
  * bytes
  */
-static void debug_with_chunksize(uint8_t *buf, int opcode_pos,
-                                 size_t chunk_size) {
-  for (int i = 0; i < opcode_pos; i++) {
+static void debug_with_chunksize(uint8_t *buf, unsigned int opcode_pos,
+                                 const size_t chunk_size) {
+  for (unsigned int i = 0; i < opcode_pos; i++) {
     if (i % chunk_size == 0 && chunk_size > 1 && i != 0)
       printf("|\n");
     printf("%02x ", buf[i]);
@@ -215,7 +234,8 @@ static int check_len_or_resize(assemblyline_t al, int buf_pos) {
     // resize internal memory buffer
     void *resize = mremap(al->buffer, al->buffer_len,
                           al->buffer_len + MEM_BUFFER, MREMAP_MAYMOVE);
-    FAIL_SYS(resize == (void *)-1, "failed to resize buffer\n", EXIT_FAILURE)
+    // NOLINTNEXTLINE(performance-no-int-to-ptr)
+    FAIL_SYS(resize == MAP_FAILED, "failed to resize buffer\n", EXIT_FAILURE)
     al->buffer_len += MEM_BUFFER;
     al->buffer = (uint8_t *)resize;
 #else
@@ -234,11 +254,12 @@ static int check_len_or_resize(assemblyline_t al, int buf_pos) {
  * chunk boundary, storing the number of breaks into @param chunk_brks
  */
 static int assemble_counting_chunks(assemblyline_t al, struct instr *new_instr,
-                                    int *buf_pos, int *chunk_brks) {
+                                    unsigned int *buf_pos, int *chunk_brks) {
 
+  FAIL_IF_MSG(chunk_brks == NULL, "chunk_brks ptr cannot be NULL\n");
   FAIL_IF(check_len_or_resize(al, *buf_pos));
-  int free_space = al->chunk_size - (*buf_pos % al->chunk_size);
-  int written_length = assemble_asm(new_instr, al->buffer + *buf_pos);
+  unsigned int free_space = al->chunk_size - (*buf_pos % al->chunk_size);
+  unsigned int written_length = assemble_asm(new_instr, al->buffer + *buf_pos);
   // check if the current instruction machine code crosses the chunk boundary
   if (written_length > free_space)
     (*chunk_brks)++;
@@ -252,10 +273,11 @@ static int assemble_counting_chunks(assemblyline_t al, struct instr *new_instr,
  * given and instance of @param al write the machine code of @param new_instr
  * into @param buf_pos
  */
-static int assemble(assemblyline_t al, struct instr *new_instr, int *buf_pos) {
+static int assemble(assemblyline_t al, struct instr *new_instr,
+                    unsigned int *buf_pos) {
 
   FAIL_IF(check_len_or_resize(al, *buf_pos));
-  int written_length = assemble_asm(new_instr, al->buffer + *buf_pos);
+  unsigned int written_length = assemble_asm(new_instr, al->buffer + *buf_pos);
   if (al->debug)
     debug_without_chunksize(written_length, al->buffer + *buf_pos);
   *buf_pos += written_length;
@@ -267,7 +289,8 @@ static int assemble(assemblyline_t al, struct instr *new_instr, int *buf_pos) {
  * into @param buf_pos while enforcing chunk boundaries with nop padding
  */
 static int assemble_with_chunk_fitting(assemblyline_t al,
-                                       struct instr *new_instr, int *buf_pos) {
+                                       struct instr *new_instr,
+                                       unsigned int *buf_pos) {
 
   bool assemble_again = false;
   do {
@@ -291,15 +314,16 @@ static int assemble_with_chunk_fitting(assemblyline_t al,
 }
 
 /**
- * given and instance of @param al assembles @param str writing the machine code
- * into @param dest. Assembly behaviour will differ depending on assembly_mode
+ * given and instance of @param al assembles @param str writing the machine
+ * code into @param dest. Assembly behaviour will differ depending on
+ * assembly_mode
  */
 int assemble_all(assemblyline_t al, const char *str, int *dest) {
 
   if (dest != NULL)
     *dest = 0;
   const char *tokenizer = str;
-  int buf_pos = al->offset;
+  unsigned int buf_pos = al->offset;
   // read str and assemble instruction line by line
   while (*tokenizer != '\0') {
     struct instr new_instr = {0};
@@ -324,5 +348,5 @@ int assemble_all(assemblyline_t al, const char *str, int *dest) {
   // print machine code with chunk boundary fitting
   if (al->assembly_mode == CHUNK_FITTING && al->debug)
     debug_with_chunksize(al->buffer, buf_pos, al->chunk_size);
-  return buf_pos;
+  return buf_pos; // NOLINT
 }

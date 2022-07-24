@@ -1,5 +1,17 @@
 version 1.3.0-release (2022-xx-xx)
 
+	- added support for multiple keywords ex: "jmp far word [rax]"
+	
+	- added support for unconditional far jump 
+
+	- added support for memory operand without register ex: "[0x7fffffff]"
+
+	- added support for push instruction with M and I operand encoding
+
+	- implemented thread safe design for global variables
+	
+	- fixed missing SIB byte for jmp instruction 
+	
 	- fixed a bug which can lead to SIGSEGV's on certain systems using
 	  `strtok_r`. (Thanks to @hugsy for pointing that out)
 
@@ -14,6 +26,7 @@ version 1.3.0-release (2022-xx-xx)
 
 	- Tests: run.c now checks for cpu-flags to run the code. (Sometimes it
 	  fails because of missing CPU capabilities on GHActions)
+
 
 
 version 1.2.2-release (2022-03-29)

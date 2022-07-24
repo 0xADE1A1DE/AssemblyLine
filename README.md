@@ -11,8 +11,9 @@ An ultra-lightweight C library and binary for generating machine code of x86\_64
 * Support for MMX, SSE2, AVX, and AVX2 instruction sets.
 * Supports Scaled Index addressing mode (SIB) with the following syntax:  
 `[base + index*scale +\- offset]`, `[base + scale*index +\- offset]`  
-`[scale*index +\- offset]`
-* Supports pointer: byte, word, dword, qword
+`[scale*index +\- offset]`, `[constant]`
+* Supports pointer: byte, word, dword, and qword
+* Supports jump instructions without labels: short, long, and far
 * Memory chunk alignment by using nop-padding (similar to gcc).
 * Different modes for assembling instructions.  
 `NASM`: binary output will match that of nasm as closely as possible (default for SIB).  

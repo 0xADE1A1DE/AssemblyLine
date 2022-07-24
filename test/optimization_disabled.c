@@ -21,7 +21,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-const char *mov_ri = "mov rax, 0x2\n"
+// NOLINTNEXTLINE
+const char *MOV_RI = "mov rax, 0x2\n"
                      "mov rax, 0x7f\n"
                      "mov rax, 0x80\n"
                      "mov rax, 0x80\n"
@@ -192,7 +193,7 @@ const char *mov_ri = "mov rax, 0x2\n"
                      "mov rsi, 0x2efaeeeee";
 
 // obtained from https://defuse.ca/online-x86-assembler.html
-const uint8_t mov_ri_code[] = {
+const uint8_t MOV_RI_CODE[] = { // NOLINT
     0x48, 0xC7, 0xC0, 0x02, 0x00, 0x00, 0x00, 0x48, 0xC7, 0xC0, 0x7F, 0x00,
     0x00, 0x00, 0x48, 0xC7, 0xC0, 0x80, 0x00, 0x00, 0x00, 0x48, 0xC7, 0xC0,
     0x80, 0x00, 0x00, 0x00, 0x48, 0xC7, 0xC0, 0xFF, 0x00, 0x00, 0x00, 0x48,
@@ -294,7 +295,7 @@ const uint8_t mov_ri_code[] = {
     0xEE, 0xAE, 0xEF, 0x02, 0x00, 0x00, 0x00};
 
 // manually disable nasm style immediate handling via zero padding to 64-bits
-const char *mov_manual_ri = "mov rax, 0x0000000000000002\n"
+const char *MOV_MANUAL_RI = "mov rax, 0x0000000000000002\n" // NOLINT
                             "mov rax, 0x000000000000007f\n"
                             "mov rax, 0x0000000000000080\n"
                             "mov rax, 0x0000000000000080\n"
@@ -305,9 +306,9 @@ const char *mov_manual_ri = "mov rax, 0x0000000000000002\n"
                             "mov r13, 0x0000000080000000\n"
                             "mov rax, 0x00000000ffffffff\n";
 
-// assembled  mov_manual_ri obtained from
+// assembled  MOV_MANUAL_RI obtained from
 // https://defuse.ca/online-x86-assembler.html
-const uint8_t mov_manual_ri_code[] = {
+const uint8_t MOV_MANUAL_RI_CODE[] = { // NOLINT
     0x48, 0xC7, 0xC0, 0x02, 0x00, 0x00, 0x00, 0x48, 0xC7, 0xC0, 0x7F, 0x00,
     0x00, 0x00, 0x48, 0xC7, 0xC0, 0x80, 0x00, 0x00, 0x00, 0x48, 0xC7, 0xC0,
     0x80, 0x00, 0x00, 0x00, 0x48, 0xC7, 0xC0, 0xFF, 0x00, 0x00, 0x00, 0x48,
@@ -316,7 +317,7 @@ const uint8_t mov_manual_ri_code[] = {
     0xBD, 0x00, 0x00, 0x00, 0x80, 0x00, 0x00, 0x00, 0x00, 0x48, 0xB8, 0xFF,
     0xFF, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0x00};
 
-int check_machine_code(uint8_t ptr[], const uint8_t code[], size_t len) {
+int check_machine_code(const uint8_t ptr[], const uint8_t code[], size_t len) {
   for (size_t i = 0; i < len; ++i)
     // compare assemblyline output against pre-assembled machine code
     if (ptr[i] != code[i])
@@ -330,13 +331,13 @@ int main() {
   // ensure nasm style register size optimization is disabled
   asm_mov_imm(al, STRICT);
 
-  if (asm_assemble_str(al, mov_ri) == EXIT_FAILURE)
+  if (asm_assemble_str(al, MOV_RI) == EXIT_FAILURE)
     return EXIT_FAILURE;
 
   uint8_t *ptr = asm_get_code(al);
 
-  size_t len = sizeof(mov_ri_code) / sizeof(mov_ri_code[0]);
-  if (check_machine_code(ptr, mov_ri_code, len))
+  size_t len = sizeof(MOV_RI_CODE) / sizeof(MOV_RI_CODE[0]);
+  if (check_machine_code(ptr, MOV_RI_CODE, len))
     return EXIT_FAILURE;
 
   asm_set_offset(al, 0);
@@ -344,13 +345,13 @@ int main() {
   // allow manual enabling of nasm style register size optimization
   asm_mov_imm(al, SMART);
 
-  if (asm_assemble_str(al, mov_manual_ri) == EXIT_FAILURE)
+  if (asm_assemble_str(al, MOV_MANUAL_RI) == EXIT_FAILURE)
     return EXIT_FAILURE;
 
   ptr = asm_get_code(al);
 
-  len = sizeof(mov_manual_ri_code) / sizeof(mov_manual_ri_code[0]);
-  if (check_machine_code(ptr, mov_manual_ri_code, len))
+  len = sizeof(MOV_MANUAL_RI_CODE) / sizeof(MOV_MANUAL_RI_CODE[0]);
+  if (check_machine_code(ptr, MOV_MANUAL_RI_CODE, len))
     return EXIT_FAILURE;
 
   return EXIT_SUCCESS;

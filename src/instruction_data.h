@@ -32,7 +32,8 @@ struct assemblyline {
   // points to a memory buffer location containing the first instruction
   uint8_t *buffer;
   int buffer_len;
-  // size of assembly program in bytes (could be manually adjusted)
+  // size of assembly program in bytes (could be manually adjusted) and offset
+  // of -1 denotes assembly parsing error
   int offset;
   size_t chunk_size;
   bool external : 1;
@@ -47,7 +48,7 @@ struct prefix {
   unsigned int reg;
   unsigned int rex;
   // [W|R][vvvv][L][pp]
-  unsigned int vvvv : 4;
+  uint8_t vvvv : 4;
   bool is_w0 : 1;
   bool is_67H : 1;
   bool is_66H : 1;
@@ -76,6 +77,7 @@ union keywords {
   struct {
     uint8_t is_short : 1;
     uint8_t is_long : 1;
+    uint8_t is_far : 1;
     uint8_t is_byte : 1;
     uint8_t is_word : 1;
     uint8_t is_dword : 1;
@@ -101,10 +103,13 @@ struct instr {
   unsigned long cons;
   bool zero_byte : 1;
   bool mem_disp : 1;
+  bool mem_value : 1;
   bool is_sib_const : 1;
   bool is_sib : 1;
   bool no_base : 1;
+  uint8_t mem_index : 3;
   uint32_t mem_offset;
+  uint32_t mem_const;
   // displacement for modRM64_m variable based on
   // value of op_en and size of mem_disp
   int mod_disp;
@@ -114,7 +119,7 @@ struct instr {
   struct prefix hex;
   // offset for opcode determined by register size
   int op_offset;
-  int rd_offset;
+  unsigned int rd_offset;
 };
 
 #endif

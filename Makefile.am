@@ -179,6 +179,7 @@ TEST_ASM = \
 		  test/cpuid.asm \
 		  test/high_low_xmm.asm \
 		  test/imul.asm \
+		  test/jmp.asm \
 		  test/lea.asm \
 		  test/lea_no_base.asm \
 		  test/mov.asm \
@@ -216,6 +217,7 @@ TEST_ASM = \
 		  test/psubq.asm \
 		  test/psubw.asm \
 		  test/ptr.asm \
+		  test/push.asm \
 		  test/pxor.asm \
 		  test/rdtsc.asm \
 		  test/rdtscp.asm \

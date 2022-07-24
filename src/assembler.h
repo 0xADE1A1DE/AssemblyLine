@@ -26,12 +26,12 @@
  * writes nop instruction with length @param nop_pad_len at pointer location
  * @param buff
  */
-int nop_padding(uint8_t *buf, int nop_pad_len);
+unsigned int nop_padding(uint8_t *buf, unsigned int nop_pad_len);
 
 /**
- * assembles the prefix, opcode, memory displacement, and immediate of a @param
- * single_instr at pointer location @param ptr
+ * assembles the prefix, opcode, memory displacement, and immediate of a
+ * @param instruc at pointer location @param ptr
  */
-int assemble_asm(struct instr *single_instr, uint8_t *dest);
+unsigned int assemble_asm(struct instr *instruc, uint8_t *dest);
 
 #endif
