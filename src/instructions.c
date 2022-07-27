@@ -132,7 +132,6 @@ const struct instr_table INSTR_TABLE[] = {
     {"jmp",         jmp,         {n,  n},    D,   CONTROL_FLOW,   NA,  NA,  1,  {0xe9}},    
     {{'\0'},        jmp,         {NA, NA},   S,   CONTROL_FLOW,   NA,  NA,  2,  {0xeb, ib}},
     {{'\0'},        jmp,         {r,  m},    O,   CONTROL_FLOW,   NA,  4,   3,  {REX, 0xff, REG}},
-    {{'\0'},        jmp,         {NA, NA},   D,   CONTROL_FLOW,   NA,  NA,  3,  {0xff, 0x24, 0x25}},    
     {"jne",         jne,         {n,  n},    D,   CONTROL_FLOW,   NA,  NA,  2,  {0x0f, 0x85}},
     {{'\0'},        jne,         {NA, NA},   S,   CONTROL_FLOW,   NA,  NA,  2,  {0x75, ib}},
     {"jno",         jno,         {n,  n},    D,   CONTROL_FLOW,   NA,  NA,  2,  {0x0f, 0x81}},
@@ -167,17 +166,17 @@ const struct instr_table INSTR_TABLE[] = {
     {"mulpd",       mulpd,       {NA, vv},   RM,  VECTOR,         NA,  NA,  5,  {0x66, REX, 0x0f, 0x59, REG}},
     {"mulx",        mulx,        {rrr, rrm}, RVM, VECTOR_EXT,     NA,  NA,  3,  {VEX(NDD,LZ,XF2,X0F38,W0_W1), 0xf6, REG}},
     {"neg",         neg,         {r,  m},    M,   OTHER,          1,   3,   3,  {REX, 0xf6, REG}},
-    {"nop",         nop,         {n,  n},    NA,  OTHER,          NA,  NA,  1,  {0x90}},
-    {"nop2",        nop,         {n,  n},    NA,  OTHER,          NA,  NA,  2,  {0x66, 0x90}},
-    {"nop3",        nop,         {n,  n},    NA,  OTHER,          NA,  NA,  3,  {0x0f, 0x1f, 0x00}},
-    {"nop4",        nop,         {n,  n},    NA,  OTHER,          NA,  NA,  4,  {0x0f, 0x1f, 0x40, 0x00}},
-    {"nop5",        nop,         {n,  n},    NA,  OTHER,          NA,  NA,  5,  {0x0f, 0x1f, 0x44, 0x00, 0x00}},
-    {"nop6",        nop,         {n,  n},    NA,  OTHER,          NA,  NA,  6,  {0x66, 0x0f, 0x1f, 0x44, 0x00, 0x00}},
-    {"nop7",        nop,         {n,  n},    NA,  OTHER,          NA,  NA,  7,  {0x0f, 0x1f, 0x80, 0x00, 0x00, 0x00, 0x00}},
-    {"nop8",        nop,         {n,  n},    NA,  OTHER,          NA,  NA,  8,  {0x0f, 0x1f, 0x84, 0x00, 0x00, 0x00, 0x00, 0x00}},
-    {"nop9",        nop,         {n,  n},    NA,  OTHER,          NA,  NA,  9,  {0x66, 0x0f, 0x1f, 0x84, 0x00, 0x00, 0x00, 0x00, 0x00}},
-    {"nop10",       nop,         {n,  n},    NA,  OTHER,          NA,  NA,  10, {0x66, 0x66, 0x0f, 0x1f, 0x84, 0x00, 0x00, 0x00, 0x00, 0x00}},
-    {"nop11",       nop,         {n,  n},    NA,  OTHER,          NA,  NA,  11, {0x66, 0x66, 0x66, 0x0f, 0x1f, 0x84, 0x00, 0x00, 0x00, 0x00, 0x00}},
+    {"nop",         nop,         {n,  n},    NA,  OTHER,          NA,  NA,  1,  {NOP}},
+    {"nop2",        nop,         {n,  n},    NA,  OTHER,          NA,  NA,  2,  {NOP2}},
+    {"nop3",        nop,         {n,  n},    NA,  OTHER,          NA,  NA,  3,  {NOP3}},
+    {"nop4",        nop,         {n,  n},    NA,  OTHER,          NA,  NA,  4,  {NOP4}},
+    {"nop5",        nop,         {n,  n},    NA,  OTHER,          NA,  NA,  5,  {NOP5}},
+    {"nop6",        nop,         {n,  n},    NA,  OTHER,          NA,  NA,  6,  {NOP6}},
+    {"nop7",        nop,         {n,  n},    NA,  OTHER,          NA,  NA,  7,  {NOP7}},
+    {"nop8",        nop,         {n,  n},    NA,  OTHER,          NA,  NA,  8,  {NOP8}},
+    {"nop9",        nop,         {n,  n},    NA,  OTHER,          NA,  NA,  9,  {NOP9}},
+    {"nop10",       nop,         {n,  n},    NA,  OTHER,          NA,  NA,  10, {NOP10}},
+    {"nop11",       nop,         {n,  n},    NA,  OTHER,          NA,  NA,  11, {NOP11}},
     {"not",         not,         {r,  m},    M,   OTHER,          1,   2,   3,  {REX, 0xf6, REG}},
     {"or",          or,          {rr, mr},   MR,  OPERATION,      1,   NA,  3,  {REX, 0x08, REG}},
     {{'\0'},        or,          {NA, rm},   RM,  OPERATION,      1,   NA,  3,  {REX, 0x0a, REG}},
@@ -226,7 +225,10 @@ const struct instr_table INSTR_TABLE[] = {
     {"pxor",        pxor,        {vm, vv},   RM,  VECTOR,         NA,  NA,  5,  {0x66, REX, 0x0f, 0xef, REG}},
     {{'\0'},        pxor,        {rm, rr},   RM,  VECTOR,         NA,  NA,  4,  {REX, 0x0f, 0xef, REG}},
     {"punpcklqdq",  punpcklqdq,  {NA, vv},   RM,  VECTOR,         NA,  NA,  5,  {0x66, REX, 0x0f, 0x6c, REG}},      
-    {"push",        push,        {NA, r },   O,   DATA_TRANSFER,  NA,  NA,  2,  {REX, 0x50+rd}},
+    {"push",        push,        {NA, r},    O,   DATA_TRANSFER,  NA,  NA,  2,  {REX, 0x50+rd}},
+    {{'\0'},        push,        {NA, m},    O,   DATA_TRANSFER,  NA,  NA,  3,  {REX, 0xff, 0x30+rd}},
+    {{'\0'},        push,        {n,  n},    I,   DATA_TRANSFER,  NA,  NA,  2,  {0x6a, ib}},
+    {{'\0'},        push,        {NA, NA},   I,   PAD_ALWAYS,     NA,  NA,  1,  {0x68}},
     {"rcr",         rcr,         {mi, ri},   M,   SHIFT,          1,   3,   4,  {REX, 0xd0, REG, ib}},
     {{'\0'},        rcr,         {NA, NA},   M,   SHIFT,          1,   2,   4,  {REX, 0xc1, REG, ib}},
     {"rdtsc",       rdtsc,       {n,  n},    NA,  OTHER,          NA,  NA,  2,  {0x0f, 0x31}},
@@ -350,5 +352,7 @@ const struct instr_table INSTR_TABLE[] = {
     {"xend",        xend,        {n,  n},    NA,  CONTROL_FLOW,   NA,  NA,  3,  {0x0f, 0x01, 0xd5}},
     {{'\0'},        NA,          {NA, NA},   NA,  OTHER,          NA,  NA,  0,  {0}}};
 
-int instr_table_index[26] = {0};
-int opd_format_table_index[26] = {0};
+_Atomic(int) instr_table_index[LETTERS_IN_ALPHABET] = {0}; // NOLINT
+_Atomic(int) opd_format_table_index[LETTERS_IN_ALPHABET] = {0}; // NOLINT
+
+

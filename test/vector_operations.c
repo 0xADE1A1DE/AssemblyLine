@@ -23,6 +23,8 @@
 #include <string.h>
 #include <sys/mman.h>
 
+#define VECTOR_LEN 4
+#define DOUBLE_ARRAY 1.0, 2.0, 3.0, 4.0
 // describes how operands are encoded
 typedef enum {
   ADD,
@@ -35,28 +37,29 @@ typedef enum {
 int execute_double_test(void (*exe)(double *, double *, double *),
                         operation type) {
 
-  double A[] = {1.0, 2.0, 3.0, 4.0};
-  double B[] = {1.0, 2.0, 3.0, 4.0};
-  double C[] = {1.0, 1.0, 1.0, 1.0};
+  double A[] = {DOUBLE_ARRAY};
+  double B[] = {DOUBLE_ARRAY};
+  double C[] = {0, 0, 0, 0};
+
   exe(A, B, C);
   switch (type) {
   case ADD:
-    for (int it = 0; it < 4; it++)
+    for (int it = 0; it < VECTOR_LEN; it++)
       if (C[it] != A[it] + B[it])
         return EXIT_FAILURE;
     break;
   case SUB:
-    for (int it = 0; it < 4; it++)
+    for (int it = 0; it < VECTOR_LEN; it++)
       if (C[it] != A[it] - B[it])
         return EXIT_FAILURE;
     break;
   case MUL:
-    for (int it = 0; it < 4; it++)
+    for (int it = 0; it < VECTOR_LEN; it++)
       if (C[it] != A[it] * B[it])
         return EXIT_FAILURE;
     break;
   case DIV:
-    for (int it = 0; it < 4; it++)
+    for (int it = 0; it < VECTOR_LEN; it++)
       if (C[it] != A[it] / B[it])
         return EXIT_FAILURE;
     break;
@@ -74,22 +77,22 @@ int execute_long_test(void (*exe)(long *, long *, long *), operation type) {
   exe(A, B, C);
   switch (type) {
   case ADD:
-    for (int it = 0; it < 4; it++)
+    for (int it = 0; it < VECTOR_LEN; it++)
       if (C[it] != A[it] + B[it])
         return EXIT_FAILURE;
     break;
   case SUB:
-    for (int it = 0; it < 4; it++)
+    for (int it = 0; it < VECTOR_LEN; it++)
       if (C[it] != A[it] - B[it])
         return EXIT_FAILURE;
     break;
   case MUL:
-    for (int it = 0; it < 4; it++)
+    for (int it = 0; it < VECTOR_LEN; it++)
       if (C[it] != A[it] * B[it])
         return EXIT_FAILURE;
     break;
   case DIV:
-    for (int it = 0; it < 4; it++)
+    for (int it = 0; it < VECTOR_LEN; it++)
       if (C[it] != A[it] / B[it])
         return EXIT_FAILURE;
     break;
@@ -99,52 +102,52 @@ int execute_long_test(void (*exe)(long *, long *, long *), operation type) {
   return EXIT_SUCCESS;
 }
 
-const char *add_double_ymm = "vmovupd ymm0, [rdi]\n"
-                             "vmovupd ymm1, [rsi]\n"
-                             "vaddpd ymm3, ymm0, ymm1\n"
-                             "vmovupd [rdx], ymm3\n"
-                             "ret\n";
+const char ADD_DOUBLE_YMM[] = "vmovupd ymm0, [rdi]\n"
+                              "vmovupd ymm1, [rsi]\n"
+                              "vaddpd ymm3, ymm0, ymm1\n"
+                              "vmovupd [rdx], ymm3\n"
+                              "ret\n";
 
-const char *sub_double_ymm = "vmovupd ymm0, [rdi]\n"
-                             "vmovupd ymm1, [rsi]\n"
-                             "vsubpd ymm3, ymm0, ymm1\n"
-                             "vmovupd [rdx], ymm3\n"
-                             "ret\n";
+const char SUB_DOUBLE_YMM[] = "vmovupd ymm0, [rdi]\n"
+                              "vmovupd ymm1, [rsi]\n"
+                              "vsubpd ymm3, ymm0, ymm1\n"
+                              "vmovupd [rdx], ymm3\n"
+                              "ret\n";
 
-const char *mul_double_ymm = "vmovupd ymm0, [rdi]\n"
-                             "vmovupd ymm1, [rsi]\n"
-                             "vmulpd ymm3, ymm0, ymm1\n"
-                             "vmovupd [rdx], ymm3\n"
-                             "ret\n";
+const char MUL_DOUBLE_YMM[] = "vmovupd ymm0, [rdi]\n"
+                              "vmovupd ymm1, [rsi]\n"
+                              "vmulpd ymm3, ymm0, ymm1\n"
+                              "vmovupd [rdx], ymm3\n"
+                              "ret\n";
 
-const char *div_double_ymm = "vmovupd ymm0, [rdi]\n"
-                             "vmovupd ymm1, [rsi]\n"
-                             "vdivpd ymm3, ymm0, ymm1\n"
-                             "vmovupd [rdx], ymm3\n"
-                             "ret\n";
+const char DIV_DOUBLE_YMM[] = "vmovupd ymm0, [rdi]\n"
+                              "vmovupd ymm1, [rsi]\n"
+                              "vdivpd ymm3, ymm0, ymm1\n"
+                              "vmovupd [rdx], ymm3\n"
+                              "ret\n";
 
-const char *add_long_ymm = "vmovdqu ymm0, [rdi]\n"
-                           "vmovdqu ymm1, [rsi]\n"
-                           "vpaddq ymm3, ymm0, ymm1\n"
-                           "vmovdqu [rdx], ymm3\n"
-                           "ret\n";
+const char ADD_LONG_YMM[] = "vmovdqu ymm0, [rdi]\n"
+                            "vmovdqu ymm1, [rsi]\n"
+                            "vpaddq ymm3, ymm0, ymm1\n"
+                            "vmovdqu [rdx], ymm3\n"
+                            "ret\n";
 
-const char *sub_long_ymm = "vmovdqu ymm0, [rdi]\n"
-                           "vmovdqu ymm1, [rsi]\n"
-                           "vpsubq ymm3, ymm0, ymm1\n"
-                           "vmovdqu [rdx], ymm3\n"
-                           "ret\n";
+const char SUB_LONG_YMM[] = "vmovdqu ymm0, [rdi]\n"
+                            "vmovdqu ymm1, [rsi]\n"
+                            "vpsubq ymm3, ymm0, ymm1\n"
+                            "vmovdqu [rdx], ymm3\n"
+                            "ret\n";
 
-const char *mul_long_ymm = "vmovdqu ymm0, [rdi]\n"
-                           "vmovdqu ymm1, [rsi]\n"
-                           "vpmuldq ymm3, ymm0, ymm1\n"
-                           "vmovdqu [rdx], ymm3\n"
-                           "ret\n";
+const char MUL_LONG_YMM[] = "vmovdqu ymm0, [rdi]\n"
+                            "vmovdqu ymm1, [rsi]\n"
+                            "vpmuldq ymm3, ymm0, ymm1\n"
+                            "vmovdqu [rdx], ymm3\n"
+                            "ret\n";
 
 int main() {
 
   assemblyline_t al = asm_create_instance(NULL, 0);
-  if (asm_assemble_str(al, add_double_ymm) == EXIT_FAILURE)
+  if (asm_assemble_str(al, ADD_DOUBLE_YMM) == EXIT_FAILURE)
     return EXIT_FAILURE;
 
   void (*test_double)(double *A, double *B, double *C) = asm_get_code(al);
@@ -156,7 +159,7 @@ int main() {
   // clear previous test
   asm_set_offset(al, 0);
 
-  if (asm_assemble_str(al, sub_double_ymm) == EXIT_FAILURE)
+  if (asm_assemble_str(al, SUB_DOUBLE_YMM) == EXIT_FAILURE)
     return EXIT_FAILURE;
 
   test_double = asm_get_code(al);
@@ -169,7 +172,7 @@ int main() {
   // clear previous test
   asm_set_offset(al, 0);
 
-  if (asm_assemble_str(al, mul_double_ymm) == EXIT_FAILURE)
+  if (asm_assemble_str(al, MUL_DOUBLE_YMM) == EXIT_FAILURE)
     return EXIT_FAILURE;
 
   test_double = asm_get_code(al);
@@ -182,7 +185,7 @@ int main() {
   // clear previous test
   asm_set_offset(al, 0);
 
-  if (asm_assemble_str(al, div_double_ymm) == EXIT_FAILURE)
+  if (asm_assemble_str(al, DIV_DOUBLE_YMM) == EXIT_FAILURE)
     return EXIT_FAILURE;
 
   test_double = asm_get_code(al);
@@ -195,7 +198,7 @@ int main() {
   // clear previous test
   asm_set_offset(al, 0);
 
-  if (asm_assemble_str(al, add_long_ymm) == EXIT_FAILURE)
+  if (asm_assemble_str(al, ADD_LONG_YMM) == EXIT_FAILURE)
     return EXIT_FAILURE;
 
   void (*test_long)(long *A, long *B, long *C) = asm_get_code(al);
@@ -208,7 +211,7 @@ int main() {
   // clear previous test
   asm_set_offset(al, 0);
 
-  if (asm_assemble_str(al, sub_long_ymm) == EXIT_FAILURE)
+  if (asm_assemble_str(al, SUB_LONG_YMM) == EXIT_FAILURE)
     return EXIT_FAILURE;
 
   test_long = asm_get_code(al);
@@ -221,7 +224,7 @@ int main() {
   // clear previous test
   asm_set_offset(al, 0);
 
-  if (asm_assemble_str(al, mul_long_ymm) == EXIT_FAILURE)
+  if (asm_assemble_str(al, MUL_LONG_YMM) == EXIT_FAILURE)
     return EXIT_FAILURE;
 
   test_long = asm_get_code(al);

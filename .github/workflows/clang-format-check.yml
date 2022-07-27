@@ -1,0 +1,38 @@
+name: Clang-format Check
+
+on: [ push ]
+
+jobs:
+  formatting-check:
+    runs-on: ubuntu-latest
+
+    name: Expressive Formatting Check
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Run clang-format style check for C/C++/Protobuf programs.
+      uses: jidicula/clang-format-action@v4.6.2
+      with:
+        clang-format-version: '13'
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:    
+      - uses: actions/checkout@v3
+      - name: C/C++ Lint Action
+        uses: cpp-linter/cpp-linter-action@v1.4.3
+        id: linter
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          files-changed-only: false
+          thread-comments: true
+          style: file
+          version: 13
+          tidy-checks: ""
+      - name: Fail fast?!
+        if: steps.linter.outputs.checks-failed > 0
+        run: |
+          echo "Some files failed the linting checks!"; exit 1
+      

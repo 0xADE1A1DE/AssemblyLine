@@ -44,21 +44,20 @@ static unsigned int get_vector_rex_prefix(struct instr *all_instr, asm_reg m,
     if ((m & REG_MASK) > mm7 || m & REG_RB)
       prefix_hex += rex_b;
     return prefix_hex;
-  } else {
-    // M encoding refers to a memory displacement
-    if (all_instr->mem_disp)
-      return (m & ext8) ? rex_ + rex_b : NONE;
-    if ((m & MODE_MASK) == mmx64)
-      return NONE;
-    // only a single operand
-    if (m == reg_none || r == reg_none)
-      return NONE;
-    if ((m & MODE_MASK) < reg64 && !(m & REG_RB))
-      prefix_hex = NONE;
-    // an operand is part of the x64 extended set
-    if (m & REG_RB || r & REG_RB)
-      prefix_hex += rex_b;
   }
+  // M encoding refers to a memory displacement
+  if (all_instr->mem_disp)
+    return (m & ext8) ? rex_ + rex_b : NONE;
+  if ((m & MODE_MASK) == mmx64)
+    return NONE;
+  // only a single operand
+  if (m == reg_none || r == reg_none)
+    return NONE;
+  if ((m & MODE_MASK) < reg64 && !(m & REG_RB))
+    prefix_hex = NONE;
+  // an operand is part of the x64 extended set
+  if (m & REG_RB || r & REG_RB)
+    prefix_hex += rex_b;
   return prefix_hex;
 }
 
@@ -122,13 +121,14 @@ uint8_t get_reg(struct instr *instrc, struct operand *m, int r) {
     if (m->reg == NO_BASE)
       instrc->mod_disp = 0;
   }
-
   // check for index register
   if (m->index == reg_none) {
     instrc->hex.reg =
         instrc->mod_disp | ((r & VALUE_MASK) << 3) | (m->reg & VALUE_MASK);
     return EXIT_SUCCESS;
-  } else if ((m->index & REG_MASK) == spl) {
+  }
+  //
+  if ((m->index & REG_MASK) == spl) {
     FAIL_IF_MSG((m->reg & REG_MASK) == spl || instrc->sib_disp,
                 "error stack pointer register is not scalable\n");
   }

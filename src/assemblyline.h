@@ -25,7 +25,8 @@
 // different assembly options for mov immediate and SIB
 enum asm_opt { STRICT, NASM, SMART };
 
-#define DEFAULT SMART_MOV_IMM | NASM_SIB_INDEX_BASE_SWAP | NASM_SIB_NO_BASE
+// TODO:
+#define DEFAULT (SMART_MOV_IMM | NASM_SIB_INDEX_BASE_SWAP | NASM_SIB_NO_BASE)
 
 typedef struct assemblyline *assemblyline_t;
 

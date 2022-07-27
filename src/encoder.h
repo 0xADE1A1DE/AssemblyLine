@@ -23,18 +23,18 @@
 #include "instruction_data.h"
 
 /**
- * determines opcode offset of @param instruc for  different register size
+ * determines opcode offset of @param instrc for  different register size
  */
-void encode_offset(struct instr *instruc);
+void encode_offset(struct instr *instrc);
 
 /**
- * determines register and prefix opcode of @param instruc
+ * determines register and prefix opcode of @param instrc
  */
-int encode_operands(struct instr *instruc);
+int encode_operands(struct instr *instrc);
 
 /**
- * preprocess the immediate for @param instruc
+ * preprocess the immediate for @param instrc
  */
-void encode_imm(struct instr *instruc);
+void encode_imm(struct instr *instrc);
 
 #endif

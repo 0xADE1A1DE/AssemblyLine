@@ -20,6 +20,7 @@
 
 #include "common.h"
 #include "enums.h"
+#include <stdatomic.h>
 
 // table for storing register string to enum mapping
 struct opd_format_table {
@@ -65,7 +66,7 @@ struct instr_table {
    * on the register size for the instruction
    * (set this value to NA if not applicable to the instruction)
    */
-  int op_offset_i;
+  unsigned int op_offset_i;
 
   /* used for instructions with a single register operand denoted as '/digit'
    * in the intel manual section 3.1.1.1
@@ -74,7 +75,7 @@ struct instr_table {
   int single_reg_r;
 
   // number of bytes in the opcode[MAX_OPCODE_LEN] field
-  int instr_size;
+  unsigned int instr_size;
 
   /* opcode layout for an instruction ex: {REX,0x0f,0xa9,REG}
    * REX and REG are placeholders for the prefix and register values
@@ -85,6 +86,6 @@ struct instr_table {
 
 extern const struct opd_format_table OPD_FORMAT_TABLE[];
 extern const struct instr_table INSTR_TABLE[];
-extern int instr_table_index[26];
-extern int opd_format_table_index[26];
+extern _Atomic(int) instr_table_index[LETTERS_IN_ALPHABET];      // NOLINT
+extern _Atomic(int) opd_format_table_index[LETTERS_IN_ALPHABET]; // NOLINT
 #endif

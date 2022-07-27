@@ -185,7 +185,9 @@ typedef enum {
   neg,
   nop,
   not,
+  // clang-format off
   or,
+  // clang-format on
   paddb,
   paddd,
   paddq,

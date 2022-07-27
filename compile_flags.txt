@@ -1,0 +1,5 @@
+-I./src
+-I.
+-Wall
+-Wextra
+-std=gnu99

@@ -21,55 +21,61 @@
 #include <stdlib.h>
 #include <string.h>
 
+// expected return value
+#define RET_S "0x123"
+#define RADIX 16
+
 int main() {
 
-    const char *short_jmp =
-    "mov rcx, 0x123\n"
-    "jmp short 0x4\n"
-    "add rcx, 1\n"
-    "mov rax, rcx\n"
-    "ret";
+  const char *short_jmp = "mov rcx, " RET_S "\n"
+                          "jmp short 0x4\n"
+                          "add rcx, 1\n"
+                          "mov rax, rcx\n"
+                          "ret";
 
-    const char *long_jmp =
-    "mov rcx, 0x123\n"
-    "jmp long 0x4\n"
-    "add rcx, 1\n"
-    "mov rax, rcx\n"
-    "ret";
+  const char *long_jmp = "mov rcx, " RET_S "\n"
+                         "jmp long 0x4\n"
+                         "add rcx, 1\n"
+                         "mov rax, rcx\n"
+                         "ret";
 
-    const char *std_jmp =
-    "mov rcx, 0x123\n"
-    "jmp 0x4\n"
-    "add rcx, 1\n"
-    "mov rax, rcx\n"
-    "ret";
+  const char *std_jmp = "mov rcx, " RET_S "\n"
+                        "jmp 0x4\n"
+                        "add rcx, 1\n"
+                        "mov rax, rcx\n"
+                        "ret";
 
-    assemblyline_t al = asm_create_instance(NULL, 0);
-    if (asm_assemble_str(al, short_jmp) == EXIT_FAILURE) 
-        return EXIT_FAILURE; 
+  // init AL
+  assemblyline_t al = asm_create_instance(NULL, 0);
+  long ret = strtol(RET_S, NULL, RADIX);
+  long (*func)() = NULL;
 
-    int (*funcA)() = asm_get_code(al);
-    if(funcA() != 0x123)
-        return EXIT_FAILURE; 
+  // test short jump
+  asm_set_offset(al, 0);
+  if (asm_assemble_str(al, short_jmp) == EXIT_FAILURE)
+    return EXIT_FAILURE;
 
-    asm_set_offset(al, 0);
+  func = asm_get_code(al);
+  if (func() != ret)
+    return EXIT_FAILURE;
 
-    if (asm_assemble_str(al, long_jmp) == EXIT_FAILURE) 
-        return EXIT_FAILURE; 
+  // test long jump
+  asm_set_offset(al, 0);
+  if (asm_assemble_str(al, long_jmp) == EXIT_FAILURE)
+    return EXIT_FAILURE;
 
-    int (*funcB)() = asm_get_code(al);
-    if(funcB() != 0x123)
-        return EXIT_FAILURE; 
+  func = asm_get_code(al);
+  if (func() != ret)
+    return EXIT_FAILURE;
 
-    asm_set_offset(al, 0);
+  // test std jump
+  asm_set_offset(al, 0);
+  if (asm_assemble_str(al, std_jmp) == EXIT_FAILURE)
+    return EXIT_FAILURE;
 
-    if (asm_assemble_str(al, std_jmp) == EXIT_FAILURE) 
-        return EXIT_FAILURE; 
+  func = asm_get_code(al);
+  if (func() != ret)
+    return EXIT_FAILURE;
 
-    int (*funcC)() = asm_get_code(al);
-    if(funcC() != 0x123)
-        return EXIT_FAILURE; 
-
-
-    return 0;
+  return EXIT_SUCCESS;
 }

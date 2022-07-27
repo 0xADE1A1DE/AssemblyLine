@@ -53,9 +53,8 @@ int str_to_instr_key(char *instruction, operand_format opd_layout) {
         int found_instr = INSTR_TABLE[i].name;
         while (INSTR_TABLE[i].name == found_instr) {
           // compare operand formats
-          if (INSTR_TABLE[i].opd_format[0] == opd_layout)
-            return i;
-          else if (INSTR_TABLE[i].opd_format[1] == opd_layout)
+          if (INSTR_TABLE[i].opd_format[0] == opd_layout ||
+              INSTR_TABLE[i].opd_format[1] == opd_layout)
             return i;
           i++;
         }

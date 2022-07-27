@@ -212,7 +212,7 @@ mov dword [eax], 0x7f
 mov dword [eax], 0x80
 mov dword [eax], 0x80
 mov dword [eax], 0xff
-mov dword [r15d], 0x7ff
+mov dword [r15d+edi], 0x7ff
 mov dword [r13d], 0x7ff
 mov dword [ebp], -0xf
 mov dword [ebp], -0xe
