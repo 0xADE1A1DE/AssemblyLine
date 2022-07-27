@@ -7,7 +7,7 @@ runs:
     - uses: actions/checkout@v3
       with:
         repository: 0xADE1A1DE/AssemblyLine
-        ref: v1.2.2
+        ref: v1.3.0
 
     - name: Install dependencies
       shell: bash
