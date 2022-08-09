@@ -1,0 +1,20 @@
+vmovupd xmm0, [rsp]
+vmovupd xmm1, [rsp+ 0x08]
+vmovupd xmm2, [rsp+ 0x18]
+vmovupd xmm3, [rsp+ 0x28]
+vmovupd [rsp+ 0x38], xmm4
+vmovupd [rsp+ 0x48], xmm5
+vmovupd [rsp+ 0x58], xmm6
+vmovupd [rsp+ 0x68], xmm7
+
+vmovupd xmm8, [rsp+ 0x78]
+vmovupd xmm9, [rsp+ 0x88]
+vmovupd xmm10,[rsp+ 0x98]
+vmovupd xmm11,[rsp+ 0x108]
+vmovupd [rsp+ 0x118], xmm12
+vmovupd [rsp+ 0x128], xmm13
+vmovupd [rsp+ 0x138], xmm14
+vmovupd [rsp+ 0x148], xmm15
+
+vmovupd xmm0, xmm1
+vmovupd xmm1, xmm4

@@ -1,0 +1,21 @@
+vmovdqu xmm0, [rsp]
+vmovdqu xmm1, [rsp+ 0x08]
+vmovdqu xmm2, [rsp+ 0x18]
+vmovdqu xmm3, [rsp+ 0x28]
+vmovdqu xmm4, [rsp+ 0x38]
+vmovdqu xmm5, [rsp+ 0x48]
+vmovdqu xmm6, [rsp+ 0x58]
+vmovdqu xmm7, [rsp+ 0x68]
+vmovdqu [rsp+ 0x78],  xmm8
+vmovdqu [rsp+ 0x88],  xmm9
+vmovdqu [rsp+ 0x98],  xmm10
+vmovdqu [rsp+ 0x108], xmm11
+vmovdqu [rsp+ 0x118], xmm12
+vmovdqu [rsp+ 0x128], xmm13
+vmovdqu [rsp+ 0x138], xmm14
+vmovdqu [rsp+ 0x148], xmm15
+
+vmovdqu xmm1, xmm3
+vmovdqu xmm13, xmm3
+vmovdqu xmm13, xmm14
+

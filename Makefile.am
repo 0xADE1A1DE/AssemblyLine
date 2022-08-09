@@ -133,6 +133,8 @@ TEST_TAP = \
 		test/tap/misc.tap \
 		test/tap/movq.tap \
 		test/tap/nasm_incompatible.tap \
+		test/tap/vmovupd.tap \
+		test/tap/vmovdqu.tap \
 		test/tap/xor.tap
 
 # those are the tests, where asmline is expected to fail, for the suite to be ok.
