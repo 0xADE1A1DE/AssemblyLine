@@ -1,0 +1,31 @@
+movq rax, xmm2
+
+movq xmm1, r9
+movq xmm2, xmm1
+movq xmm0, rax
+movq xmm0, rcx
+movq xmm0, rdx
+movq xmm0, rbx
+movq xmm0, rsp
+movq xmm0, rbp
+movq xmm0, rsi
+movq xmm0, rdi
+movq xmm0, r8
+movq xmm0, r9
+movq xmm0, r10
+movq xmm0, r11
+movq xmm0, r12
+movq xmm0, r13
+movq xmm0, r14
+movq xmm0, r15
+
+movq xmm1, rcx
+movq xmm2, rdx
+
+movq [rsp], xmm15
+movq xmm15, [rsp]
+
+movq xmm0, xmm15
+
+movq [rsp + 0x08], xmm15
+movq xmm15, [rsp + 0x10]

@@ -216,6 +216,7 @@ typedef enum {
   push,
   pxor,
   rcr,
+  rdpmc,
   rdtsc,
   rdtscp,
   ret,

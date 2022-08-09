@@ -131,6 +131,7 @@ TEST_TAP = \
 		test/tap/imul.tap \
 		test/tap/lea.tap \
 		test/tap/misc.tap \
+		test/tap/movq.tap \
 		test/tap/nasm_incompatible.tap \
 		test/tap/xor.tap
 
@@ -195,6 +196,7 @@ TEST_ASM = \
 		  test/negative_mem_disp.asm \
 		  test/new_instruction.asm \
 		  test/no_ptr.asm \
+		  test/no_operand.asm \
 		  test/nop.asm \
 		  test/not.asm \
 		  test/or.asm \
