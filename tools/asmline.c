@@ -314,11 +314,10 @@ static int create_binary_file(assemblyline_t al, enum OUTPUT create_bin,
   switch (create_bin) {
 
   case BIN_FILE: {
-    char bin_ext[] = ".bin";
-    size_t bin_file_len = strlen(param_file) + strlen(bin_ext) + 1;
-    char *bin_file = calloc(bin_file_len, sizeof(char));
-    sprintf(bin_file, "%s%s", param_file, bin_ext);
-    write_file = bin_file;
+    const size_t len_ext = 5; // 4chars for '.bin', 1 for \0
+    size_t bin_file_len = strlen(param_file) + len_ext;
+    write_file = calloc(bin_file_len, sizeof(char));
+    snprintf(write_file, bin_file_len, "%s.bin", param_file);
   } break;
 
   case GENERIC_FILE:
@@ -334,13 +333,11 @@ static int create_binary_file(assemblyline_t al, enum OUTPUT create_bin,
     fprintf(stderr, "failed to create %s\n", param_file);
     ret = EXIT_FAILURE;
   }
-
-  if (write_file != NULL)
+  // free if we've allocated that filename
+  if (create_bin == BIN_FILE)
     free(write_file);
   return ret;
 }
-
-/** enum mode { M_STDIN, M_STDIN_COUNT, M_FILE, M_FILE_COUNT }; */
 
 struct mode {
   enum src { STD, FLE } src : 1;
@@ -364,6 +361,7 @@ struct mode findMode(struct parsed_ops *ops, int argc) {
   }
   return ret;
 }
+
 int main(int argc, char *argv[]) {
 
   int total_chunk_brks = -1;

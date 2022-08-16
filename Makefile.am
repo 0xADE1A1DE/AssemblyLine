@@ -127,6 +127,7 @@ TAP_LOG_COMPILER = ./test/tap/compiler.sh
 
 # add TAP tests here
 TEST_TAP = \
+		test/tap/call.tap \
 		test/tap/cmp.tap \
 		test/tap/imul.tap \
 		test/tap/lea.tap \
@@ -154,7 +155,8 @@ XFAIL_TESTS= $(TEST_EAF) \
 		test/tap/nasm_incompatible.tap
 
 # add SH-tests here
-TEST_SH = test/tools/asmline.sh
+TEST_SH = test/tools/asmline.sh \
+		  test/tools/asmlineP.sh
 
 
 # add .c -tests here

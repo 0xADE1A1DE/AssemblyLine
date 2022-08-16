@@ -1,0 +1,23 @@
+push rax
+push rcx
+push rdx
+push r8
+push r9
+push r10
+mov rcx, 0x637ea511
+mov rdx, 0x637ea4d1
+mov r8, 0x637ea4f1
+mov r9, 0x0
+push 0x0
+push 0x0
+mov r10, 0x61813ff0
+call r10
+pop rcx
+pop rcx
+pop r10
+pop r9
+pop r8
+pop rdx
+pop rcx
+pop rax
+ret
