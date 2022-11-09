@@ -294,3 +294,147 @@ shr r14, 51
 shr r9, 51
 shr rbp, 51
 shr r10, 51
+shr al, 0x13
+shr bl, 0x13
+shr cl, 0x13
+shr dl, 0x13
+shr dil, 0x13
+shr r8w, 0x13
+shr r9w, 0x13
+shr r10b, 0x13
+shr r11b, 0x13
+shr r12b, 0x13
+shr r13b, 0x13
+shr r14b, 0x13
+shr r15b, 0x13
+shr spl, 0x13
+shr sil, 0x13
+shr bpl, 0x13
+shr qword [rax], cl
+shr qword [rbx], cl
+shr qword [rcx], cl
+shr qword [rdx], cl
+shr qword [rdi], cl
+shr qword [r8], cl
+shr qword [r9], cl
+shr qword [r10], cl
+shr qword [r11], cl
+shr qword [r12], cl
+shr qword [r13], cl
+shr qword [r14], cl
+shr qword [r15], cl
+shr qword [rsp], cl
+shr qword [rsi], cl
+shr qword [rbp], cl
+shr dword [rax], cl
+shr dword [rbx], cl
+shr dword [rcx], cl
+shr dword [rdx], cl
+shr dword [rdi], cl
+shr dword [r8], cl
+shr dword [r9], cl
+shr dword [r10], cl
+shr dword [r11], cl
+shr dword [r12], cl
+shr dword [r13], cl
+shr dword [r14], cl
+shr dword [r15], cl
+shr dword [rsp], cl
+shr dword [rsi], cl
+shr dword [rbp], cl
+shr word [rax], cl
+shr word [rbx], cl
+shr word [rcx], cl
+shr word [rdx], cl
+shr word [rdi], cl
+shr word [r8], cl
+shr word [r9], cl
+shr word [r10], cl
+shr word [r11], cl
+shr word [r12], cl
+shr word [r13], cl
+shr word [r14], cl
+shr word [r15], cl
+shr word [rsp], cl
+shr word [rsi], cl
+shr word [rbp], cl
+shr byte [rax], cl
+shr byte [rbx], cl
+shr byte [rcx], cl
+shr byte [rdx], cl
+shr byte [rdi], cl
+shr byte [r8], cl
+shr byte [r9], cl
+shr byte [r10], cl
+shr byte [r11], cl
+shr byte [r12], cl
+shr byte [r13], cl
+shr byte [r14], cl
+shr byte [r15], cl
+shr byte [rsp], cl
+shr byte [rsi], cl
+shr byte [rbp], cl
+shr rax, cl
+shr rbx, cl
+shr rcx, cl
+shr rdx, cl
+shr rdi, cl
+shr r8, cl
+shr r9, cl
+shr r10, cl
+shr r11, cl
+shr r12, cl
+shr r13, cl
+shr r14, cl
+shr r15, cl
+shr rsp, cl
+shr rsi, cl
+shr rbp, cl
+shr eax, cl
+shr ebx, cl
+shr ecx, cl
+shr edx, cl
+shr edi, cl
+shr r8d, cl
+shr r9d, cl
+shr r10d, cl
+shr r11d, cl
+shr r12d, cl
+shr r13d, cl
+shr r14d, cl
+shr r15d, cl
+shr esp, cl
+shr esi, cl
+shr ebp, cl
+shr ax, cl
+shr bx, cl
+shr cx, cl
+shr dx, cl
+shr di, cl
+shr r8w, cl
+shr r9w, cl
+shr r10w, cl
+shr r11w, cl
+shr r12w, cl
+shr r13w, cl
+shr r14w, cl
+shr r15w, cl
+shr sp, cl
+shr si, cl
+shr bp, cl
+shr al, cl
+shr bl, cl
+shr cl, cl
+shr dl, cl
+shr dil, cl
+shr r8w, cl
+shr r9w, cl
+shr r10b, cl
+shr r11b, cl
+shr r12b, cl
+shr r13b, cl
+shr r14b, cl
+shr r15b, cl
+shr spl, cl
+shr sil, cl
+shr bpl, cl

@@ -251,6 +251,7 @@ static unsigned int assemble_instr(struct instr *instruc, unsigned char ptr[]) {
 
       case ib:
         instruc->reduced_imm = true;
+        instruc->cons &= MAX_UNSIGNED_8BIT;
         break;
 
       case rd:

@@ -29,7 +29,7 @@ as well process any offsets or immediate operands*/
  */
 static void auto_set_byte(struct instr *instrc) {
   // instructions that only supports a single 8-bit operand
-  if (INSTR_TABLE[instrc->key].type == BYTE_OPD) {
+  if (TYPE(instrc->key, BYTE_OPD)) {
     instrc->keyword.is_byte = true;
     instrc->op_offset = 0;
   }
@@ -66,7 +66,7 @@ void encode_offset(struct instr *instrc) {
       (instrc->opd[1].reg & MODE_MASK) == noext8)
     return;
   // set opcode offset
-  if (INSTR_TABLE[instrc->key].type != CONTROL_FLOW && !instrc->keyword.is_byte)
+  if (!TYPE(instrc->key, CONTROL_FLOW) && !instrc->keyword.is_byte)
     instrc->op_offset = get_opcode_offset(instrc);
 }
 
@@ -184,16 +184,19 @@ static int encode_special_opd(struct instr *instrc, int m, int i) {
 int encode_operands(struct instr *instrc) {
 
   // xchg instruction with RM operand encoding using rax or al register
-  if (INSTR_TABLE[instrc->key].name == xchg &&
-      INSTR_TABLE[instrc->key].encode_operand == RM) {
-    if ((reg64 & instrc->opd[0].reg) && (REG_MASK & instrc->opd[0].reg) == al) {
+  if (NAME(instrc->key, xchg) && !instrc->mem_disp) {
+    if ((MODE_MASK & instrc->opd[0].reg) > noext8 &&
+        (REG_MASK & instrc->opd[0].reg) == al) {
+      // swap operands
+      struct operand temp = instrc->opd[1];
+      instrc->opd[1] = instrc->opd[0];
+      instrc->opd[0] = temp;
       instrc->key++;
-      instrc->rd_offset = instrc->opd[1].reg & VALUE_MASK;
-    } else if ((reg64 & instrc->opd[1].reg) &&
+    } else if ((MODE_MASK & instrc->opd[1].reg) > noext8 &&
                (REG_MASK & instrc->opd[1].reg) == al) {
       instrc->key++;
-      instrc->rd_offset = instrc->opd[0].reg & VALUE_MASK;
     }
+    instrc->rd_offset = instrc->opd[0].reg & VALUE_MASK;
   }
   // set 'byte' keyword
   if (instrc->mem_disp)
@@ -302,36 +305,38 @@ static void encode_imm_operation(struct instr *instrc) {
 }
 
 void encode_imm(struct instr *instrc) {
-  // ignore imm value if instruction is a branch type
-  if ((INSTR_TABLE[instrc->key].type == SHIFT && instrc->cons == 1) ||
-      INSTR_TABLE[instrc->key].type == CONTROL_FLOW)
-    instrc->imm = false;
-  // used for shift instruction with an 8bit imm rather than one
-  else if (INSTR_TABLE[instrc->key].type == SHIFT && instrc->cons != 1)
-    instrc->key++;
   // change op offset based on reg and imm size
   if (!instrc->imm)
     return;
+  // ignore imm value if instruction is a branch type
+  if ((TYPE(instrc->key, SHIFT) && instrc->cons == 1) ||
+      TYPE(instrc->key, CONTROL_FLOW)) {
+    instrc->imm = false;
+    return;
+  }
+  // used for shift instruction with an 8bit imm rather than one
+  if (TYPE(instrc->key, SHIFT) && instrc->cons != 1) {
+    instrc->key++;
+    return;
+  }
   // return register used for imm instructions sub, sbb, add, adc
-  if (INSTR_TABLE[instrc->key].type == OPERATION)
+  if (TYPE(instrc->key, OPERATION))
     encode_imm_operation(instrc);
   // vector shift instrctions
   if ((instrc->opd[0].reg & MODE_MASK) == mmx64)
     instrc->reduced_imm = true;
   // special case for test
-  else if (instrc->op_offset == 1 &&
-           INSTR_TABLE[instrc->key].type == PAD_ALWAYS) {
+  else if (instrc->op_offset == 1 && TYPE(instrc->key, PAD_ALWAYS)) {
     if (IN_RANGE(instrc->cons, NEG32BIT + 1, NEG64BIT)) {
       DO_NOT_PAD(instrc->cons, instrc->reduced_imm, MAX_UNSIGNED_32BIT);
     }
     if ((instrc->opd[0].reg & REG_MASK) == al)
       instrc->key++;
     // 16 to 64 bit register and 8 bit immediate combination
-  } else if (instrc->op_offset == 1 &&
-             INSTR_TABLE[instrc->key].type != DATA_TRANSFER) {
+  } else if (instrc->op_offset == 1 && !TYPE(instrc->key, DATA_TRANSFER)) {
     encode_imm_non_data_transfer(instrc);
     // special condition for to mov instruction
-  } else if (INSTR_TABLE[instrc->key].type == DATA_TRANSFER)
+  } else if (TYPE(instrc->key, DATA_TRANSFER))
     encode_imm_data_transfer(instrc);
   // mask all bits except for the most significant byte
   if ((instrc->opd[0].reg & MODE_MASK) < reg32) {

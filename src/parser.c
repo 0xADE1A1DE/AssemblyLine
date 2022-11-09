@@ -60,6 +60,9 @@ static void all_opd_str_to_reg(struct instr *instr_data) {
  * tokenize and parse @param filtered_asm_str to fill in @param instr_data
  */
 static int line_to_instr(struct instr *instr_data, char *filtered_asm_str) {
+  // back up instruction for error checking
+  char asm_str[MAX_LINE_LEN];
+  strncpy(asm_str, filtered_asm_str, MAX_LINE_LEN);
   // default mod displacement value r/m is register
   instr_data->mod_disp = MOD24;
   // clear the least significant bit
@@ -86,9 +89,8 @@ static int line_to_instr(struct instr *instr_data, char *filtered_asm_str) {
   // convert instruction string to enum representation
   instr_data->key = str_to_instr_key(instr_data->instruction, opd_format);
   FAIL_IF_VAR(instr_data->key == INSTR_ERROR,
-              "unsupported or illegal instruction: %s\n",
-              instr_data->instruction);
-  if (instr_data->imm && INSTR_TABLE[instr_data->key].type == CONTROL_FLOW) {
+              "unsupported or illegal instruction: %s\n", asm_str);
+  if (instr_data->imm && TYPE(instr_data->key, CONTROL_FLOW)) {
     if (IN_RANGE(instr_data->cons, NEG80_32BIT, MAX_UNSIGNED_32BIT) ||
         (instr_data->cons <= MAX_SIGNED_8BIT && !instr_data->keyword.is_long))
       instr_data->keyword.is_short = true;
@@ -109,7 +111,7 @@ static int line_to_instr(struct instr *instr_data, char *filtered_asm_str) {
               "Invalid register for instruction: %s\n",
               instr_data->instruction);
   // force jump immediate to 32 bits
-  if (INSTR_TABLE[instr_data->key].type == CONTROL_FLOW &&
+  if (TYPE(instr_data->key, CONTROL_FLOW) &&
       IN_RANGE(instr_data->cons, NEG32BIT + 1, NEG64BIT))
     instr_data->cons &= MAX_UNSIGNED_32BIT;
   // encode for the reg_hex value and op_offset for instruction
@@ -124,8 +126,7 @@ static int line_to_instr(struct instr *instr_data, char *filtered_asm_str) {
   }
   // special case for push instruction with immediate
   // (used push imm16 or imm32 when immediate is greater than 0x7f)
-  if (INSTR_TABLE[instr_data->key].name == push &&
-      instr_data->cons > MAX_SIGNED_8BIT)
+  if (NAME(instr_data->key, push) && instr_data->cons > MAX_SIGNED_8BIT)
     instr_data->key++;
   return EXIT_SUCCESS;
 }

@@ -102,6 +102,7 @@ struct instr {
   bool reduced_imm : 1;
   unsigned long cons;
   bool zero_byte : 1;
+  // when operand is a memory reference M
   bool mem_disp : 1;
   bool mem_value : 1;
   bool is_sib_const : 1;

@@ -222,6 +222,7 @@ typedef enum {
   ret,
   ror,
   rorx,
+  sal,
   sar,
   sarx,
   sbb,

@@ -183,6 +183,10 @@
 #define SMART_MOV_IMM 0b00010
 #define GET_EN 0b11111100000000000000000
 
+// check instruction attributes
+#define TYPE(key, instr_type) (INSTR_TABLE[(key)].type == (instr_type))
+#define NAME(key, instr_name) (INSTR_TABLE[(key)].name == (instr_name))
+
 // various length nop instructions
 #define NOP 0x90
 #define NOP2 0x66, 0x90

@@ -10,3 +10,4 @@ rdtsc
 rdtscp
 clc
 cpuid
+ret

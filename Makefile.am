@@ -70,7 +70,7 @@ include_HEADERS = src/assemblyline.h
 # 3. Programs may need to be changed, recompiled, and relinked in order to use the new version. Bump current, set revision and age to 0.
 
 # in short, if only patch from configure.ac is bumped, bump the middle number below. If more is changed, read the above
-libassemblyline_la_LDFLAGS = -version-info 3:3:2
+libassemblyline_la_LDFLAGS = -version-info 3:4:2
 ##############################################################################################
 ##############################################################################################
 ###############################      BINS       ##############################################
@@ -180,6 +180,7 @@ TEST_ASM = \
 		  test/bextr.asm \
 		  test/bzhi.asm \
 		  test/clc.asm \
+		  test/clflush.asm \
 		  test/cmp.asm \
 		  test/cpuid.asm \
 		  test/high_low_xmm.asm \
@@ -198,7 +199,6 @@ TEST_ASM = \
 		  test/mulx.asm \
 		  test/neg.asm \
 		  test/negative_mem_disp.asm \
-		  test/new_instruction.asm \
 		  test/no_ptr.asm \
 		  test/no_operand.asm \
 		  test/nop.asm \
@@ -229,6 +229,8 @@ TEST_ASM = \
 		  test/rdtscp.asm \
 		  test/ror.asm \
 		  test/rorx.asm \
+		  test/sal.asm \
+		  test/sar.asm \
 		  test/sarx.asm \
 		  test/sbb.asm \
 		  test/setc.asm \
@@ -252,6 +254,8 @@ TEST_ASM = \
 		  test/vmovupd.asm \
 		  test/vperm2i128.asm \
 		  test/vsubpd.asm \
+		  test/xabort.asm \
+		  test/xchg.asm \
 		  test/xor.asm \
 		  test/zero_byte_rbp.asm
 
