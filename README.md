@@ -151,6 +151,7 @@ To add support for new instructions please refer to: [src/README.md](/src/README
 * An ARC Discovery Early Career Researcher Award (project number DE200101577) 
 * An ARC Discovery Project (project number DP210102670)  
 * The Blavatnik ICRC at Tel-Aviv University  
+* Data61, CSIRO
 * the Defense Advanced Research Projects Agency (DARPA) and Air Force Research Laboratory (AFRL) under contracts FA8750-19-C-0531 and HR001120C0087
 * the National Science Foundation under grant CNS-1954712
 * Gifts from AMD, Google, and Intel  
