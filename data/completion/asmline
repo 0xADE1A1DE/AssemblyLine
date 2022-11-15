@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+_asmline() {
+
+  local current="${COMP_WORDS[COMP_CWORD]}"
+  local options="
+--breaks
+--chunk
+--help
+--nasm
+--nasm-mov-imm
+--nasm-sib
+--nasm-sib-index-base-swap
+--nasm-sib-no-base
+--object
+--print
+--printfile
+--rand
+--return
+--smart-mov-imm
+--strict
+--strict-mov-imm
+--strict-sib
+--strict-sib-index-base-swap
+--strict-sib-no-base
+--version
+-P
+-b
+-c
+-h
+-n
+-o
+-p
+-r
+-t
+-v
+"
+  mapfile -t COMPREPLY < <(compgen -W "${options}" -- "${current}")
+}
+
+complete -F _asmline asmline

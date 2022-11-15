@@ -135,3 +135,12 @@ mov [rdi + 0x00], rax
 mov [rdi + 0x50], rax
 ret
 EOF
+
+ret=$(
+  ${tool} -b 3 <<EOF
+mov rax, 0xDEADBEEF
+mov [rdi + 0x50], rax
+ret
+EOF
+)
+test "${ret}" -eq 2

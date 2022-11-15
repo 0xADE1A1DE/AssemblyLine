@@ -67,109 +67,89 @@ struct parsed_ops {
 static void parse_opt(assemblyline_t al, int argc, char **argv,
                       struct parsed_ops *r);
 
+static void print_usage() {
+  printf("Usage: asmline [OPTIONS]... FILE\n");
+  printf("\
+Assembles FILE into memory.\n\
+  -r[=LEN], --return[=LEN]     Assembles FILE. Then executes it with six \n\
+                                 parameters to heap-allocated memory. Each \n\
+                                 pointer points to an array of LEN 64-bit \n\
+                                 elements which can be dereferenced in the asm-\n\
+                                 code, where LEN defaults to 10.\n\
+                                 After execution, it prints out the contents of\n\
+                                 the return (rax) register and frees the heap-\n\
+                                 memory.\n\
+  --rand                       Implies -r and will additionally initialize the \n\
+                                 memory from with random data. -r=11 can be used\n\
+                                 to alter LEN.\n\
+  -p, --print                  The corresponding machine code will be printed to\n\
+                                 stdout in hex form. Output is similar to \n\
+                                 `objdump`: Byte-wise delimited by space and \n\
+                                 linebreaks after 7 bytes. If -c is given, the\n\
+                                 chunks are delimited by '|' and each chunk is \n\
+                                 on one line.\n\
+  -P, --printfile FILENAME     The corresponding machine code will be printed to\n\
+                                 FILENAME in binary form. Can be set to \n\
+                                 '/dev/stdout' to write to stdout.\n\
+  -o, --object FILENAME        The corresponding machine code will be printed to\n\
+                                 FILENAME.bin in binary.\n\
+  -c, --chunk CHUNK_SIZE       Sets a given CHUNK_SIZE>1 boundary in bytes. Nop \n\
+                                 padding will be used to ensure no instruction \n\
+                                 opcode will cross the specified CHUNK_SIZE \n\
+                                 boundary.\n\
+  -b, --breaks CHUNK_BOUNDARY  Given a CHUNK_BOUNDARY>1, counts the number of \n\
+                                 instructions where their opcode crosses the  \n\
+                                 specified CHUNK_BOUNDARY size in bytes.\n\
+  --nasm-mov-imm               Enables nasm-style mov-immediate register-size\n\
+                                 handling. ex: if immediate size for mov is les\n\
+                                 than or equal to max signed 32 bit assemblyline\n\
+                                 will emit code to mov to the 32-bit register \n\
+                                 rather than 64-bit. That is: \n\
+                                 \"mov rax,0x7fffffff\" as \"mov eax,0x7fffffff\"\n\
+                                 -> b8 ff ff ff 7f note: rax got optimized to \n\
+                                 eax for faster immediate to register transfer\n\
+                                 and produces a shorter instruction\n\
+  --strict-mov-imm             Disables nasm-style mov-immediate register-size\n\
+                                 handling. ex: even if immediate size for mov \n\
+                                 is less than or equal to max signed 32 bit \n\
+                                 assemblyline. Will pad the immediate to fit \n\
+                                 64-bit. That is: \"mov rax,0x7fffffff\" as\n\
+                                 \"mov rax,0x000000007fffffff\" ->\n\
+                                 48 b8 ff ff ff 7f 00 00 00 00\n\
+  --smart-mov-imm              The immediate value will be checked for leading \n\
+                                 0's. Immediate must be zero padded to 64-bits\n\
+                                 exactly to ensure it will not optimize. This is\n\
+                                 currently set as default. ex: \n\
+                                 \"mov rax, 0x000000007fffffff\" -> \n\
+                                 48 b8 ff ff ff 7f 00 00 00 00\n\
+  --nasm-sib-index-base-swap   In SIB addressing if the index register is esp or\n\
+                                 rsp then the base and index registers will be \n\
+                                 swapped. That is: \"lea r15, [rax+rsp]\" ->\n\
+                                 \"lea r15, [rsp+rax]\"\n\
+  --strict-sib-index-base-swap In SIB addressing the base and index registers \n\
+                                 will not be swapped even if the index register\n\
+                                 is esp or rsp.\n\
+  --nasm-sib-no-base           In SIB addressing if there is no base register \n\
+                                 present and scale is equal to 2; the base \n\
+                                 register will be set to the index register and\n\
+                                 the scale will be reduced to 1. That is: \n\
+                                 \"lea r15, [2*rax]\" -> \"lea r15, [rax+1*rax]\"\n\
+  --strict-sib-no-base         In SIB addressing when there is no base register\n\
+                                 present the index and scale would not change \n\
+                                 regardless of scale value. That is: \n\
+                                 \"lea r15, [2*rax]\" -> \"lea r15, [2*rax]\" \n\
+  --nasm-sib                   Is equivalent to --nasm-sib-index-base-swap \n\
+                                 --nasm-sib-no-base \n\
+  --strict-sib                 Is equivalent to --strict-sib-index-base-swap \n\
+                                 --strict-sib-no-base \n\
+  -n, --nasm                   Is equivalent to --nasm-mov-imm --nasm-sib \n\
+  -t, --strict                 Is equivalent to --strict-mov-imm --strict-sib \n\
+  -h, --help                   Prints usage information to stdout and exits. \n\
+  -v, --version                Prints version information to stdout and exits.\n");
+}
 static void err_print_usage(char *error_msg) {
-  fprintf(
-      stderr,
-      "%s\nUsage: asmline "
-      "[OPTIONS]... path/to/file.asm\n\n"
-
-      "  -r[=LEN], --return[=LEN]\n"
-      "\tAssembles given code. Then executes it with six parameters to "
-      "heap-allocated memory.\n\tEach pointer points to an array of LEN 64-bit "
-      "elements which can be dereferenced \n\tin the asm-code, where LEN "
-      "defaults "
-      "to 10.\n\tAfter execution, it prints out the contents of the return "
-      "(rax) register and frees  \n\tthe heap-memory.\n\n"
-
-      "  --rand \n"
-      "\tImplies -r and will additionally initialize the memory from with "
-      "random data. \n\t-r=11 can be used to alter LEN.\n\n"
-
-      "  -p, --print\n"
-      "\tThe corresponding machine code will be printed to stdout in hex "
-      "form.\n"
-      "\tOutput is similar to `objdump`: Byte-wise delimited by space and "
-      "linebreaks after 7 bytes.\n\tIf -c is given, the chunks are "
-      "delimited by '|' and each chunk is on one line.\n\n"
-
-      "  -P, --printfile FILENAME\n"
-      "\tThe corresponding machine code will be printed to FILENAME in binary "
-      "form.\n\tCan be set to '/dev/stdout' to write to stdout.\n\n"
-
-      "  -o, --object FILENAME\n"
-      "\tThe corresponding machine code will be printed to FILENAME.bin in "
-      "binary.\n\n"
-
-      "  -c, --chunk CHUNK_SIZE>1\n"
-      "\tSets a given CHUNK_SIZE boundary in bytes. Nop padding will be used "
-      "to ensure no instruction\n"
-      "\topcode will cross the specified CHUNK_SIZE boundary.\n\n"
-
-      "  -b, --breaks CHUNK_BOUNDARY>1\n"
-      "\tGiven a CHUNK_BOUNDARY, counts the number of instructions where\n"
-      "\ttheir opcode crosses the specified CHUNK_BOUNDARY size in bytes.\n\n"
-
-      "  --nasm-mov-imm\n"
-      "\tEnables nasm-style mov-immediate register-size handling.\n"
-      "\tex: if immediate size for mov is less than or equal to max "
-      "signed 32 bit assemblyline\n"
-      "\t    will emit code to mov to the 32-bit register rather than 64-bit.\n"
-      "\tThat is: \"mov rax,0x7fffffff\" as \"mov eax,0x7fffffff\" "
-      "-> b8 ff ff ff 7f\n"
-      "\tnote: rax got optimized to eax for faster immediate to register "
-      "transfer\n"
-      "\t      and produces a shorter instruction\n\n"
-
-      "  --strict-mov-imm\n"
-      "\tDisables nasm-style mov-immediate register-size handling.\n"
-      "\tex: even if immediate size for mov is less than or equal to max "
-      "signed 32 bit assemblyline.\n"
-      "\t    will pad the immediate to fit 64-bit\n"
-      "\tThat is: \"mov rax,0x7fffffff\" as \"mov rax,0x000000007fffffff\"\n"
-      "\t          -> 48 b8 ff ff ff 7f 00 00 00 00\n\n"
-
-      "  --smart-mov-imm\n"
-      "\tThe immediate value will be checked for leading 0's.\n"
-      "\tImmediate must be zero padded to 64-bits exactly to ensure\n"
-      "\tit will not optimize. This is currently set as default.\n"
-      "\tex: \"mov rax, 0x000000007fffffff\" ->  48 b8 ff ff ff 7f 00 00 00 "
-      "00\n\n"
-
-      "  --nasm-sib-index-base-swap\n"
-      "\tIn SIB addressing if the index register is esp or rsp then\n"
-      "\tthe base and index registers will be swapped.\n"
-      "\tThat is: \"lea r15, [rax+rsp]\" -> \"lea r15, [rsp+rax]\"\n\n"
-      "  --strict-sib-index-base-swap\n"
-      "\tIn SIB addressing the base and index registers will not be swapped\n"
-      "\teven if the index register is esp or rsp.\n\n"
-
-      "  --nasm-sib-no-base\n"
-      "\tIn SIB addressing if there is no base register present and scale\n"
-      "\tis equal to 2; the base register will be set to the index register\n"
-      "\tand the scale will be reduced to 1.\n"
-      "\tThat is: \"lea r15, [2*rax]\" -> \"lea r15, [rax+1*rax]\"\n\n"
-      "  --strict-sib-no-base\n"
-      "\tIn SIB addressing when there is no base register present the index\n"
-      "\tand scale would not change regardless of scale value.\n"
-      "\tThat is: \"lea r15, [2*rax]\" -> \"lea r15, [2*rax]\"\n\n"
-
-      "  --nasm-sib\n"
-      "\tequivalent to --nasm-sib-index-base-swap --nasm-sib-no-base\n\n"
-      "  --strict-sib\n"
-      "\tequivalent to --strict-sib-index-base-swap --strict-sib-no-base\n\n"
-
-      "  -n, --nasm\n"
-      "\tequivalent to --nasm-mov-imm --nasm-sib\n\n"
-
-      "  -t, --strict\n"
-      "\tequivalent to --strict-mov-imm --strict-sib\n\n"
-
-      "  -h, --help\n"
-      "\tPrints usage information to stdout and exits.\n\n"
-
-      "  -v, --version\n"
-      "\tPrints version information to stdout and exits.\n\n",
-      error_msg);
+  fprintf(stderr, "%s", error_msg);
+  print_usage();
   exit(EXIT_FAILURE);
 }
 
@@ -405,6 +385,10 @@ int main(int argc, char *argv[]) {
     char *line = NULL;
     int chunk_brks = 0;
     size_t size = BUFFER_SIZE;
+    // init total count
+    if (m.count)
+      total_chunk_brks = 0;
+
     while (getline(&line, &size, stdin) != -1) {
 
       int ret = m.count ? asm_assemble_string_counting_chunks(
@@ -513,13 +497,13 @@ static void parse_opt(assemblyline_t al, int argc, char **argv,
       asm_set_all(al, SMART);
       break;
     case 'c':
-      if (optarg == NULL || (temp = atoi(optarg) <= 1))
+      if (optarg == NULL || (temp = atoi(optarg)) <= 1)
         err_print_usage("Error: [-c CHUNK_SIZE>1] expects an integer\n");
       asm_set_chunk_size(al, temp);
       break;
 
     case 'b':
-      if (optarg == NULL || (temp = atoi(optarg) <= 1))
+      if (optarg == NULL || (temp = atoi(optarg)) <= 1)
         err_print_usage("Error: [-b CHUNK_BOUNDARY>1] expects an integer\n");
       r->chunk_boundary = temp;
       break;

@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([assemblyline],[1.3.1],[yval@cs.adelaide.edu.au])
+AC_INIT([assemblyline],[1.3.2],[yval@cs.adelaide.edu.au])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_SRCDIR([src/assemblyline.c])
 AC_CONFIG_AUX_DIR([build-aux])
@@ -33,6 +33,43 @@ AC_TYPE_SIZE_T
 AC_TYPE_UINT32_T
 AC_TYPE_UINT64_T
 AC_TYPE_UINT8_T
+
+
+
+# completion --start--
+# bash
+AC_ARG_WITH([bash-completion-dir],
+            AS_HELP_STRING([--with-bash-completion-dir[=PATH]],
+                           [Install the bash auto-completion script in this directory. @<:@default=yes@:>@]),
+                           [],
+                           [with_bash_completion_dir=yes])
+
+if test "x$with_bash_completion_dir" = "xyes"; then
+    PKG_CHECK_MODULES([BASH_COMPLETION], [bash-completion >= 2.0],
+        [BASH_COMPLETION_DIR="`pkg-config --variable=completionsdir bash-completion`"],
+        [BASH_COMPLETION_DIR="$datadir/bash-completion/completions"])
+else
+    BASH_COMPLETION_DIR="$with_bash_completion_dir"
+fi
+AC_SUBST([BASH_COMPLETION_DIR])
+AM_CONDITIONAL([ENABLE_BASH_COMPLETION],[test "x$with_bash_completion_dir" != "xno"])
+# end bash
+# start zsh
+AC_ARG_WITH([zsh-completion-dir],
+            AS_HELP_STRING([--with-zsh-completion-dir[=PATH]],
+                           [Install the zsh auto-completion script in this directory. @<:@default=yes@:>@]),
+                           [],
+                           [with_zsh_completion_dir=yes])
+
+if test "x$with_zsh_completion_dir" = "xyes"; then
+    ZSH_COMPLETION_DIR="$datadir/zsh/site-functions"
+else
+    ZSH_COMPLETION_DIR="$with_zsh_completion_dir"
+fi
+AC_SUBST([ZSH_COMPLETION_DIR])
+AM_CONDITIONAL([ENABLE_ZSH_COMPLETION],[test "x$with_zsh_completion_dir" != "xno"])
+# end zsh
+# completion --end--
 
 # Checks for library functions.
 AC_FUNC_MALLOC
