@@ -8,6 +8,8 @@
 
 An ultra-lightweight C library and binary for generating machine code of x86\_64 assembly language and executing on the fly without invoking another compiler, assembler or linker.
 
+* Print or run assembly code with our cli tool `asmline` (see [tools/README.md](/tools/README.md)) 
+* Easy to use C library.
 * Support for MMX, SSE2, AVX, and AVX2 instruction sets.
 * Supports Scaled Index addressing mode (SIB) with the following syntax:  
 `[base + index*scale +\- offset]`, `[base + scale*index +\- offset]`  
@@ -16,27 +18,27 @@ An ultra-lightweight C library and binary for generating machine code of x86\_64
 * Supports multi-length nop instructions (by using `nop{2..11}` as the instruction)  
   see [test/nop.asm](test/nop.asm) for more information
 * Supports jump instructions without labels: short, long, and far
-* Memory chunk alignment by using nop-padding (similar to gcc).
+* Memory chunk alignment by using nop-padding.
+* Command line completion (zsh, bash) for `asmline`
 * Different modes for assembling instructions.  
 `NASM`: binary output will match that of nasm as closely as possible (default for SIB).  
 `STRICT`: binary output will be in an 'as is' state in respect to the instruction.  
 `SMART`: intructions could be manipulated to ensure binary output matches nasm (default).  
-please refer to [tools/README.md](/tools/README.md) **Different Modes of Assembly** section for more information
-* Easy to use command-line tool `asmline` (refer to [tools/README.md](/tools/README.md)) 
-* Command line completion (zsh, bash) for `asmline`
+  See [tools/README.md](/tools/README.md) **Different Modes of Assembly** section for more information
 * `man`-pages for `asmline` and `libassemblyline`
-* High instruction compatibility and easy to add new instructions (refer to [src/README.md](src/README.md))    
+* High instruction compatibility and easy to add new instructions (see [src/README.md](src/README.md))    
 
 ## How to use
 
 To get a stable release clone the repo from a tag or download the tarball. <br> 
 ***note: refer to [/src/instructions.c](/src/instructions.c) for a complete list of supported instructions***
 
-1. `$ bash autogen.sh` to generate the configure file (If cloned from repository. Can be skipped, when using the tarball)
+1. `$ ./autogen.sh` to generate the configure file (If cloned from repository. Can be skipped, when using the tarball)
 1. `$ ./configure` to generate Makefiles.
 1. `$ make` to compile
 1. `$ sudo make install` to install it
-1. `$ gcc -o executable your_program.c -lassemblyline` to compile a c program using assemblyline<br><br>   
+1. `$ gcc your_program.c -lassemblyline` to use the library and compile a C program using assemblyline<br><br>   
+1. `$ echo -e "mov rax, 0xADE1A1DE\nret" | asmline -r` to use our asmline-cli tool (Will print 'the value is 0xade1a1de')<br><br>   
 
 ## Example
   
@@ -131,11 +133,11 @@ then run `$ make clean check`. Finally, add `Makefile.am` and `sub.asm` to git.<
 
 ## Command-line tool: asmline
 
-Please refer to: [tools/README.md](/tools/README.md)<br><br>     
+See [tools/README.md](/tools/README.md) for more info.<br><br>     
   
 ## Adding new instructions
 
-To add support for new instructions please refer to: [src/README.md](/src/README.md)<br><br>  
+To add support for new instructions see [src/README.md](/src/README.md) for more info.<br><br>  
 
 ## Acknowledgements
 #### Authors:

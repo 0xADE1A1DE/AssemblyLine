@@ -2,11 +2,11 @@
 
 _arguments -S -s \
     '(H --rand)--rand[runs the code and initializes memory with random data _rdi--r9 can be dereferenced_.]:random heap:' \
-    '(H -r --return)'{-r=-,--return=-}'[runs assembled code]:number of elements::resolution:(300 500)' \
+    '(H -r --return)'{-r=-,--return=-}'[runs assembled code]:number of elements:' \
     '(H -p --print)'{-p,--print}'[print to stdout in ASCII-hex.]' \
-    '(H -P --printfile -o --object)'{-P+,--printfile+}'[write raw binary into FILE]' \
-    '(H -P --printfile -o --object)'{-o+,--object+}'[write raw binary machinecode to FILE.bin]' \
-    '(H -c --chunk)'{-c+,--chunk+}'[set (write) chunk size. Will NOP-pad every chunk]' \
+    '(H -P --printfile -o --object)'{-P+,--printfile+}'[write raw binary into FILE]:filename:_files' \
+    '(H -P --printfile -o --object)'{-o+,--object+}'[write raw binary machinecode to FILE.bin]:filename:_files' \
+    '(H -c --chunk)'{-c+,--chunk+}'[set (write) chunk size. Will NOP-pad every chunk]:size of chunks to pad to:' \
     '(H -b --breaks)'{-b+,--breaks+}'[set (read) chunk size. Counts how many chunks break a boundary.]' \
     + '(mov)' \
     "(H)--nasm-mov-imm[nasm   mov imm: mov to 32-bit reg if possible.]" \
