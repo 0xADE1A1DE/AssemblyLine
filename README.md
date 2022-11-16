@@ -24,6 +24,8 @@ An ultra-lightweight C library and binary for generating machine code of x86\_64
 `SMART`: intructions could be manipulated to ensure binary output matches nasm (default).  
 please refer to [tools/README.md](/tools/README.md) **Different Modes of Assembly** section for more information
 * Easy to use command-line tool `asmline` (refer to [tools/README.md](/tools/README.md)) 
+* Command line completion (zsh, bash) for `asmline`
+* `man`-pages for `asmline` and `libassemblyline`
 * High instruction compatibility and easy to add new instructions (refer to [src/README.md](src/README.md))    
 
 ## How to use
