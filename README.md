@@ -1,4 +1,4 @@
-# Assemblyline
+# AssemblyLine
 ![Unit Tests](https://github.com/0xADE1A1DE/AssemblyLine/actions/workflows/c-check.yml/badge.svg)
 ![Code Style](https://github.com/0xADE1A1DE/AssemblyLine/actions/workflows/clang-format-check.yml/badge.svg)
 ![Version](https://img.shields.io/github/v/release/0xADE1A1DE/AssemblyLine?logo=github&style=flat)
