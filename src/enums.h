@@ -217,6 +217,7 @@ typedef enum {
   pxor,
   rcr,
   rdpmc,
+  rdpru,
   rdtsc,
   rdtscp,
   ret,

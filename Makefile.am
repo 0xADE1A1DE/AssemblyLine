@@ -236,6 +236,7 @@ TEST_ASM = \
 		  test/ptr.asm \
 		  test/push.asm \
 		  test/pxor.asm \
+		  test/rdpmc.asm \
 		  test/rdtsc.asm \
 		  test/rdtscp.asm \
 		  test/ror.asm \
