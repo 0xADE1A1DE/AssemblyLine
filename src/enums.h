@@ -181,6 +181,7 @@ typedef enum {
   movq,
   movzx,
   mulpd,
+  mul,
   mulx,
   neg,
   nop,
