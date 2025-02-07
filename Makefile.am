@@ -207,6 +207,7 @@ TEST_ASM = \
 		  test/movntq.asm \
 		  test/movq.asm \
 		  test/movzx.asm \
+		  test/mul.asm \
 		  test/mulx.asm \
 		  test/neg.asm \
 		  test/negative_mem_disp.asm \
